@@ -1,0 +1,196 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.sdm.master.entity;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.util.FileManager;
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ *
+ * @author Htoonlin
+ */
+@Entity
+@Table(name = "tbl_file")
+public class FileEntity extends RestEntity<Long> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    public static final char STORAGE = 'S';
+    public static final char EXTERNAL = 'E';
+    public static final char TRASH = 'T';
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false)
+    private long id;
+
+    @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
+    private String name;
+
+    @Column(name = "extension", columnDefinition = "varchar(10)", nullable = false)
+    private String extension;
+
+    @Column(name = "type", columnDefinition = "varchar(50)", nullable = false)
+    private String type;
+
+    @JsonIgnore
+    @Column(name = "size", columnDefinition = "bigint", nullable = false)
+    private long fileSize;
+
+    @JsonIgnore
+    @Column(name = "storagePath", columnDefinition = "varchar(1000)", nullable = false)
+    private String storagePath;
+
+    @Column(name = "externalURL", columnDefinition = "varchar(1000)", nullable = false)
+    private String externalURL;
+
+    @JsonIgnore
+    @Column(name = "publicToken", columnDefinition = "char(12)", nullable = false)
+    private String publicToken;
+
+    @Column(name = "status", columnDefinition = "char(1)", nullable = false)
+    private char status;
+
+    public FileEntity() {
+        this.status = STORAGE;
+    }
+
+    public FileEntity(int id, String name, String extension, String type, long fileSize, String storagePath, String externalURL) {
+        if (externalURL == null || externalURL.length() <= 0) {
+            this.status = STORAGE;
+        } else {
+            this.status = EXTERNAL;
+        }
+        this.id = id;
+        this.name = name;
+        this.extension = extension;
+        this.type = type;
+        this.fileSize = fileSize;
+        this.storagePath = storagePath;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long size) {
+        this.fileSize = size;
+    }
+
+    @JsonGetter("size")
+    public String getSize() {
+        return FileManager.byteSize(fileSize);
+    }
+
+    @JsonSetter("size")
+    public void setSize() {
+
+    }
+
+    public String getStoragePath() {
+        return storagePath;
+    }
+
+    public void setStoragePath(String storagePath) {
+        this.storagePath = storagePath;
+    }
+
+    public String getExternalURL() {
+        return externalURL;
+    }
+
+    public void setExternalURL(String externalURL) {
+        this.externalURL = externalURL;
+    }
+
+    public String getPublicToken() {
+        return publicToken;
+    }
+
+    public void setPublicToken(String publicToken) {
+        this.publicToken = publicToken;
+    }
+
+    public char getStatus() {
+        return status;
+    }
+
+    public void setStatus(char status) {
+        this.status = status;
+    }
+
+    @JsonGetter("public_url")
+    public String getPublicURL() {
+        return FileManager.publicFileURL(this.publicToken, this.extension);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + (int) (this.id ^ (this.id >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final FileEntity other = (FileEntity) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+}
