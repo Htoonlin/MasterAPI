@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  *
  * @author Htoonlin
+ * @param <T>
  */
 @JsonPropertyOrder(value = {"code", "status", "content", "extra", "timestamp"})
 public class DefaultResponse<T extends IResponseContent> implements IBaseResponse{

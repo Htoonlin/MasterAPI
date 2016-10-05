@@ -46,10 +46,12 @@ public class GeneralResource extends DefaultResource {
     public DefaultResponse fontConverter(@QueryParam("input") String input) throws Exception {
         try {
             if (!MyanmarFontManager.isZawgyi(input)) {
-                return new DefaultResponse(new MessageResponse("NOT_ZAWGYI", input));
+                return new DefaultResponse(new MessageResponse(200, ResponseType.INFO, 
+                        "NOT_ZAWGYI", input));
             }
             String output = MyanmarFontManager.toUnicode(input);
-            return new DefaultResponse(new MessageResponse("success", output));
+            return new DefaultResponse(new MessageResponse(200, ResponseType.SUCCESS, 
+                    "success", output));
         } catch (Exception e) {
             logger.error(e);
             throw e;

@@ -18,11 +18,6 @@ import java.util.Map;
 @JsonPropertyOrder({"title", "message"})
 public class MessageResponse implements IResponseContent, Serializable {
     
-    @Deprecated
-    public MessageResponse(String title, String message) {
-        this(200, ResponseType.INFO, title, message);
-    }
-
     public MessageResponse(int code, ResponseType type, String title, String message) {
         this.code = code;
         this.type = type;        

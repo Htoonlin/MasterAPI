@@ -43,12 +43,12 @@ public class DefaultEntity implements Serializable, ILogEntity, ITimestampEntity
     private Date createdAt;
 
     @JsonProperty(value = "modified_at", index = 1004)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name = "modified_at", nullable = true, updatable = true, length = 19)
     private Date modifiedAt;
 
     @JsonProperty(value = "deleted_at", index = 1005)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name = "deleted_at", columnDefinition = "datetime", nullable = true, updatable = true, length = 19)
     private Date deletedAt;
 
