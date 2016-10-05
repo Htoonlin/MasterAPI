@@ -53,7 +53,7 @@ public class Globalizer {
     public static Date getTokenExpired() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_MONTH, Setting.getInstance().AUTH_TOKEN_LIEF);
+        cal.add(Calendar.DAY_OF_MONTH, Setting.getInstance().AUTH_TOKEN_LIFE);
         return cal.getTime();
     }
     

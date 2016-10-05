@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  *
  * @author Htoonlin
  */
-public class DefaultResource implements IBaseResource{
+public class DefaultResource implements IBaseResource {
 
     private static final Logger logger = Logger.getLogger(DefaultResource.class.getName());
 
@@ -37,12 +37,12 @@ public class DefaultResource implements IBaseResource{
 
     @Inject
     private HttpSession httpSession;
-    
+
     @Override
-    public HttpSession getHttpSession(){
+    public HttpSession getHttpSession() {
         return this.httpSession;
     }
-    
+
     @Override
     public int getUserId() {
         try {
@@ -63,18 +63,26 @@ public class DefaultResource implements IBaseResource{
         this.uriInfo = uriInfo;
     }
 
+    public String getBaseURI() {
+        String[] baseURI = getUriInfo().getAbsolutePath().toString().split("/api/", 2);
+        if (baseURI.length > 1) {
+            return baseURI[0] + "/api/";
+        }
+        return getUriInfo().getAbsolutePath().toString();
+    }
+
     protected List<RouteResponse> collectRoute(Resource resource, String basePath) {
         List<RouteResponse> routeList = new ArrayList<>();
         String parentPath = "";
         for (ResourceMethod method : resource.getResourceMethods()) {
-            RouteResponse route = new RouteResponse();          
+            RouteResponse route = new RouteResponse();
             Invocable invocable = method.getInvocable();
             //Set Resource Class
             route.setResourceClass(this.getClass().getName());
-            
+
             //Set Resource Method            
             route.setResourceMethod(invocable.getHandlingMethod().getName());
-            
+
             //Set Path
             if (!basePath.endsWith("/")) {
                 basePath += "/";
@@ -108,7 +116,7 @@ public class DefaultResource implements IBaseResource{
         for (Resource childResource : resource.getChildResources()) {
             routeList.addAll(collectRoute(childResource, parentPath));
         }
-        
+
         return routeList;
     }
 

@@ -6,12 +6,10 @@
 package com.sdm.master.resource;
 
 import com.sdm.core.Globalizer;
-import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.ResponseType;
-import com.sdm.core.Setting;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
@@ -25,6 +23,7 @@ import com.sdm.master.request.auth.AuthRequest;
 import com.sdm.master.request.auth.ChangePasswordRequest;
 import com.sdm.master.request.auth.ForgetPasswordRequest;
 import com.sdm.master.request.auth.RegistrationRequest;
+import com.sdm.master.util.AuthMailSend;
 import eu.bitwalker.useragentutils.UserAgent;
 import java.util.*;
 import javax.annotation.PostConstruct;
@@ -42,10 +41,15 @@ import org.apache.log4j.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource extends DefaultResource {
+
     private static final Logger logger = Logger.getLogger(AuthResource.class.getName());
-    private final int OTP_LIFE = 15;
     private UserDAO userDao;
-    
+    private AuthMailSend mailSend;
+
+    public AuthResource() {
+        mailSend = new AuthMailSend();
+    }
+
     @PostConstruct
     public void onLoad() {
         userDao = new UserDAO(getHttpSession());
@@ -57,47 +61,6 @@ public class AuthResource extends DefaultResource {
     private String getDeviceOS() {
         UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
         return userAgent.getOperatingSystem().getName();
-    }
-
-    private void sendNewPassword(UserEntity user) throws Exception {
-        String newPassword = user.getPassword().substring(0, 12);
-        String encryptPassword = SecurityInstance.md5String(user.getEmail(), newPassword);
-        user.setPassword(encryptPassword);
-        StringBuilder mailContent = new StringBuilder();
-        mailContent.append("<p>Dear " + user.getDisplayName() + ", <br/>")
-                .append("We generated new password for your request. Try to use this passsword for account login.")
-                .append("Your New Password is : <h3>")
-                .append(newPassword)
-                .append("</h3>")
-                .append("<code>\"Never give up to be a warrior.\"</code>");
-
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "New generated password for your request.",
-                mailContent.toString());
-        MailgunService.getInstance().sendHTML(info);
-    }
-
-    private void sendToken(UserEntity user, int mins, String type) throws Exception {
-        user.setOtpToken(Globalizer.generateToken(UserEntity.TOKEN_LENGTH));
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.MINUTE, mins);
-        user.setOtpExpired(cal.getTime());
-
-        StringBuilder mailContent = new StringBuilder();
-        mailContent.append("<p>Dear " + user.getDisplayName() + ", <br />")
-                .append("Thank you for your " + type + ". <br/>")
-                .append("Your OTP is : <h3>")
-                .append(user.getOtpToken())
-                .append("</h3>")
-                .append("It will be expired in next <b>")
-                .append(mins - 5)
-                .append("</b> minutes. <br/></p>")
-                .append("<code>\"Never give up to be a warrior.\"</code>");
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "OTP code to verify.",
-                mailContent.toString());
-        MailgunService.getInstance().sendHTML(info);
     }
 
     private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
@@ -122,9 +85,9 @@ public class AuthResource extends DefaultResource {
                     userDao.beginTransaction();
                     TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
                     if (cleanToken) {
-                        tokenDAO.cleanToken((int)authUser.getId());
+                        tokenDAO.cleanToken((int) authUser.getId());
                     }
-                    TokenEntity authToken = tokenDAO.generateToken((int)authUser.getId(), request.getDeviceId(), this.getDeviceOS());
+                    TokenEntity authToken = tokenDAO.generateToken((int) authUser.getId(), request.getDeviceId(), this.getDeviceOS());
                     authUser.setCurrentToken(authToken);
                     userDao.commitTransaction();
                     return new DefaultResponse(authUser);
@@ -175,7 +138,7 @@ public class AuthResource extends DefaultResource {
             user = new UserEntity(request.getEmail(),
                     request.getDisplayName(), password, true,
                     request.getCountry(), UserEntity.PENDING);
-            this.sendToken(user, this.OTP_LIFE, "registration.");
+            mailSend.activateLink(user, userAgentString, getBaseURI());
             userDao.insert(user, true);
             MessageResponse response = new MessageResponse(200, ResponseType.SUCCESS,
                     "REGISTRATION_SUCCESS", "Thank you for your registration. Pls check your mail for activation.");
@@ -184,6 +147,16 @@ public class AuthResource extends DefaultResource {
             logger.error(e);
             throw e;
         }
+    }
+
+    @PermitAll
+    @Path("activate")
+    @GET
+    public IBaseResponse linkActivation(@DefaultValue("") @QueryParam("token") String request) throws Exception {
+        request = SecurityInstance.base64Decode(request);
+        ActivateRequest activateRequest = Globalizer.jsonMapper().readValue(request, ActivateRequest.class);
+        activateRequest.setTimeStamp((new Date()).getTime());
+        return this.otpActivation(activateRequest);
     }
 
     @PermitAll
@@ -197,12 +170,12 @@ public class AuthResource extends DefaultResource {
 
             UserEntity user = userDao.checkToken(request.getEmail(), request.getToken());
             if (user == null) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING, 
+                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your request."));
             }
             userDao.beginTransaction();
             if (user.getOtpExpired().before(new Date())) {
-                this.sendToken(user, OTP_LIFE, " activate. It is new token for your registration.");
+                mailSend.activateLink(user, userAgentString, getBaseURI());
                 userDao.update(user, false);
                 MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
                         "TOKEN_EXPIRE", "Sorry! Your token has expired. We send new token to your email.");
@@ -211,14 +184,14 @@ public class AuthResource extends DefaultResource {
 
             user.setOtpToken(null);
             user.setOtpExpired(null);
-            user.setStatus(UserEntity.ACTIVE);            
+            user.setStatus(UserEntity.ACTIVE);
             userDao.update(user, false);
             TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
-            TokenEntity authToken = tokenDAO.generateToken((int)user.getId(), request.getDeviceId(), this.getDeviceOS());
+            TokenEntity authToken = tokenDAO.generateToken((int) user.getId(), request.getDeviceId(), this.getDeviceOS());
             user.setCurrentToken(authToken);
             userDao.commitTransaction();
             return new DefaultResponse(user);
-        } catch (Exception e) {         
+        } catch (Exception e) {
             userDao.rollbackTransaction();
             logger.error(e);
             throw e;
@@ -238,8 +211,8 @@ public class AuthResource extends DefaultResource {
             String oldPassword = SecurityInstance.md5String(request.getEmail(), request.getOldPassword());
             UserEntity user = userDao.userAuth(request.getEmail(), oldPassword);
 
-            if (user == null || ((int)user.getId() != (int)getUserId())) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING, 
+            if (user == null || ((int) user.getId() != (int) getUserId())) {
+                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your request."));
             }
 
@@ -263,11 +236,9 @@ public class AuthResource extends DefaultResource {
     }
 
     /**
-     * Has Security Error on Forget Password 
-     * Step 1: Request Forget Password with new Device 
-     * Step 2: Use token and Auth/Activate 
-     * Step 3: It will generate Token for new Device Step 4: Use generated
+     * Has Security Error on Forget Password Step 1: Request Forget Password with new Device Step 2: Use token and Auth/Activate Step 3: It will generate Token for new Device Step 4: Use generated
      * token for Forgot Password Step 5: Hacked!
+     *
      * @param request
      */
     @PermitAll
@@ -288,17 +259,17 @@ public class AuthResource extends DefaultResource {
 
             UserEntity user = userDao.getUserByEmail(request.getEmail());
             if (user == null) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING, 
+                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your request."));
             }
             MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                     "PASSWORD_GENERATED", "Hi, We generated new password for your account. Pls check your email for generated password.");
             TokenDAO tokenDao = new TokenDAO(userDao.getSession(), getHttpSession());
-            TokenEntity tokenInfo = tokenDao.getTokenByUserInfo((int)user.getId(), request.getDeviceId(), this.getDeviceOS());
+            TokenEntity tokenInfo = tokenDao.getTokenByUserInfo((int) user.getId(), request.getDeviceId(), this.getDeviceOS());
             if (tokenInfo != null && tokenInfo.getToken().length() == 36) {
-                this.sendNewPassword(user);
+                mailSend.newPassword(user);
             } else {
-                this.sendToken(user, this.OTP_LIFE, " password request.");
+                mailSend.otpToken(user, " password request.");
                 message.setTitle("PASSWORD_TOKEN_GENERATED");
                 message.setMessage("Hi, We send token to request for new password. Pls check your email for token.");
             }
@@ -325,16 +296,16 @@ public class AuthResource extends DefaultResource {
                         "NO_DATA", "There is no data for your request."));
             }
             if (user.getOtpExpired().before(new Date())) {
-                this.sendToken(user, OTP_LIFE, " activate. It is new token for your registration.");
+                mailSend.otpToken(user, " activate. It is new token for your registration.");
                 userDao.update(user, true);
                 MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
                         "TOKEN_EXPIRE", "Sorry! Your token has expired. We send new token to your email.");
                 return new DefaultResponse(message);
             }
-            this.sendNewPassword(user);
+            mailSend.newPassword(user);
             user.setOtpToken(null);
             user.setOtpExpired(null);
-            userDao.update(user, true);            
+            userDao.update(user, true);
             MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                     "PASSWORD_GENERATED", "Hi, We generated new password for your account. Pls check your email for generated password.");
             return new DefaultResponse(message);

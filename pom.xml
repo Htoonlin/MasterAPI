@@ -6,7 +6,7 @@
     <groupId>com.sdm</groupId>
     <artifactId>MasterAPI</artifactId>
     <packaging>war</packaging>
-    <version>1.5.0-DEV</version>
+    <version>1.5.1-DEV</version>
     <name>MasterAPI</name>
     <properties>
         <output.dir>${project.build.directory}/output</output.dir>

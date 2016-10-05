@@ -33,7 +33,8 @@ public final class Setting {
     
     /* Security Setting */
     public int ROOT_ID;
-    public int AUTH_TOKEN_LIEF;
+    public int AUTH_TOKEN_LIFE;
+    public int OTP_LIFE;
     public int SECURITY_TIMESTAMP_LIFE;
     public String AES_KEY;
     public String ENCRYPT_KEY;
@@ -42,7 +43,7 @@ public final class Setting {
     /* Date Time Setting */
     public SimpleDateFormat DATE_TIME_FORMAT;
     public SimpleDateFormat DATE_FORMAT;
-    public SimpleDateFormat TIME_FORMAT;
+    public SimpleDateFormat TIME_FORMAT;    
     
     /* CORS Setting */
     public String ACCESS_CONTROL_ALLOW_ORIGIN;
@@ -85,7 +86,8 @@ public final class Setting {
                 MAILGUN_DEF_MAIL_SENDER = settingProps.getProperty("MAILGUN_DEF_MAIL_SENDER", "");
                 
                 ROOT_ID = Integer.parseInt(settingProps.getProperty("ROOT_ID", "1"));
-                AUTH_TOKEN_LIEF = Integer.parseInt(settingProps.getProperty("AUTH_TOKEN_LIEF", "30"));
+                AUTH_TOKEN_LIFE = Integer.parseInt(settingProps.getProperty("AUTH_TOKEN_LIFE", "7"));
+                OTP_LIFE = Integer.parseInt(settingProps.getProperty("OTP_LIFE", "10"));
                 SECURITY_TIMESTAMP_LIFE = Integer.parseInt(settingProps.getProperty("SECURITY_TIMESTAMP_LIFE", "5"));
                 AES_KEY = settingProps.getProperty("AES_KEY", "aL8AEKV6SSyEaZhbuPXhfIDX550rwjvEj25E3oLxHro=");
                 ENCRYPT_KEY = settingProps.getProperty("ENCRYPT_KEY", "$undew@dm1n");
