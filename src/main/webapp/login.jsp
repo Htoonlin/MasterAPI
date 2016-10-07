@@ -46,7 +46,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <a href="#">Forget your password?</a>   
+                                <a href="reset-password.jsp">Forget your password?</a>   
                             </div>
                         </div>
                         <div class="panel-footer">                                                            

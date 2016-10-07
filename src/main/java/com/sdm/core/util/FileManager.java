@@ -50,15 +50,12 @@ public class FileManager {
                 .resolveTemplate("ext", ext).build().toString();
     }
 
-    public static String generateToken() {
-        SimpleDateFormat format = new SimpleDateFormat("/yyyy/MMMM/");
-        format = new SimpleDateFormat("yyyyMMddHHmmss");
-        return Globalizer.generateToken(10) + "-" + format.format(new Date());
+    public static String generateToken() {        
+        return Globalizer.generateToken(10) + "-" + Globalizer.getDateString("yyyyMMddHHmmss", new Date());
     }
 
-    public static File generateFile(int userId, String token, String ext) {
-        SimpleDateFormat format = new SimpleDateFormat("/yyyy/MMMM/");
-        String uploadPath = "/User-" + userId + format.format(new Date());
+    public static File generateFile(int userId, String token, String ext) {        
+        String uploadPath = "/User-" + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
         String fileName = token + "." + ext;
 
         File baseDir = new File(Setting.getInstance().STORAGE_PATH + uploadPath);

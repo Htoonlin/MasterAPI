@@ -101,7 +101,8 @@ public class AccessManager implements IAccessManager {
         if (!permission) {
             return false;
         }
-
+        
+        //Set User is online
         user.setOnline(true);
         try {
             userDAO.update(user, true);

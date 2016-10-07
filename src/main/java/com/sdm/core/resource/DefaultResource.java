@@ -66,7 +66,7 @@ public class DefaultResource implements IBaseResource {
     public String getBaseURI() {
         String[] baseURI = getUriInfo().getAbsolutePath().toString().split("/api/", 2);
         if (baseURI.length > 1) {
-            return baseURI[0] + "/api/";
+            return baseURI[0] + "/";
         }
         return getUriInfo().getAbsolutePath().toString();
     }

@@ -22,16 +22,18 @@
         <guava.version>19.0</guava.version>
         <log4j.version>1.2.17</log4j.version>
         <apache.poi.version>3.14</apache.poi.version>
+        <velocity.version>1.7</velocity.version>
     </properties>
     
     <dependencies>
-        <!-- New Dependenceis -->        
+        <!-- New Dependenceis -->      
+        <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version> 
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>${velocity.version}</version>
         </dependency>
-       
+         
         <!-- Version 1.5 Dependencies -->
         <dependency>
             <groupId>org.hibernate</groupId>

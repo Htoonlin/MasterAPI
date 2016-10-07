@@ -20,7 +20,7 @@ import java.util.Base64;
 public class SecurityInstance {
     public static String md5String(String salt, String input) {
         try {
-            String saltString = (salt + input + Setting.getInstance().ENCRYPT_KEY);
+            String saltString = (salt + input + Setting.getInstance().ENCRYPT_SALT);
             MessageDigest digest = MessageDigest.getInstance("MD5");
             digest.update(saltString.getBytes(), 0, saltString.length());
             return new BigInteger(1, digest.digest()).toString(16);

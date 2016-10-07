@@ -37,7 +37,7 @@ public final class Setting {
     public int OTP_LIFE;
     public int SECURITY_TIMESTAMP_LIFE;
     public String AES_KEY;
-    public String ENCRYPT_KEY;
+    public String ENCRYPT_SALT;
     public String TOKEN_CHAR;
 
     /* Date Time Setting */
@@ -90,7 +90,7 @@ public final class Setting {
                 OTP_LIFE = Integer.parseInt(settingProps.getProperty("OTP_LIFE", "10"));
                 SECURITY_TIMESTAMP_LIFE = Integer.parseInt(settingProps.getProperty("SECURITY_TIMESTAMP_LIFE", "5"));
                 AES_KEY = settingProps.getProperty("AES_KEY", "aL8AEKV6SSyEaZhbuPXhfIDX550rwjvEj25E3oLxHro=");
-                ENCRYPT_KEY = settingProps.getProperty("ENCRYPT_KEY", "$undew@dm1n");
+                ENCRYPT_SALT = settingProps.getProperty("ENCRYPT_SALT", "s4qYAxH0SqiHAwrgwWPSI6DVm");
                 TOKEN_CHAR = settingProps.getProperty("TOKEN_CHAR", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");                
                 
                 ACCESS_CONTROL_ALLOW_ORIGIN = settingProps.getProperty("ACCESS_CONTROL_ALLOW_ORIGIN", "*");

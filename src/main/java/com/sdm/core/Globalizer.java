@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sdm.core.util.security.AccessType;
 import com.sdm.core.util.security.AccessorType;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -48,6 +49,11 @@ public class Globalizer {
              return (status >= 100 && status <= 511);
          }
          return false;
+    }
+    
+    public static String getDateString(String format, Date date){
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        return formatter.format(date);
     }
     
     public static Date getTokenExpired() {
