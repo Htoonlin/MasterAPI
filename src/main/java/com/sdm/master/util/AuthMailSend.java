@@ -24,24 +24,6 @@ import java.util.Map;
  */
 public class AuthMailSend {
 
-    public void newPassword(UserEntity user) throws Exception {
-        String newPassword = user.getPassword().substring(0, 12);
-        String encryptPassword = SecurityInstance.md5String(user.getEmail(), newPassword);
-        user.setPassword(encryptPassword);
-        StringBuilder mailContent = new StringBuilder();
-        mailContent.append("<p>Dear " + user.getDisplayName() + ", <br/>")
-                .append("We generated new password for your request. Try to use this passsword for account login.")
-                .append("Your New Password is : <h3>")
-                .append(newPassword)
-                .append("</h3>")
-                .append("<code>\"Never give up to be a warrior.\"</code>");
-
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "New generated password for your request.",
-                mailContent.toString());
-        MailgunService.getInstance().sendHTML(info);
-    }
-
     private UserEntity setToken(UserEntity user) {
         user.setOtpToken(Globalizer.generateToken(UserEntity.TOKEN_LENGTH));
         Calendar cal = Calendar.getInstance();
@@ -110,6 +92,24 @@ public class AuthMailSend {
                 .append("<code>\"Never give up to be a warrior.\"</code>");
         MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
                 user.getEmail(), "OTP code to verify.",
+                mailContent.toString());
+        MailgunService.getInstance().sendHTML(info);
+    }
+    
+    public void newPassword(UserEntity user) throws Exception {
+        String newPassword = user.getPassword().substring(0, 12);
+        String encryptPassword = SecurityInstance.md5String(user.getEmail(), newPassword);
+        user.setPassword(encryptPassword);
+        StringBuilder mailContent = new StringBuilder();
+        mailContent.append("<p>Dear " + user.getDisplayName() + ", <br/>")
+                .append("We generated new password for your request. Try to use this passsword for account login.")
+                .append("Your New Password is : <h3>")
+                .append(newPassword)
+                .append("</h3>")
+                .append("<code>\"Never give up to be a warrior.\"</code>");
+
+        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
+                user.getEmail(), "New generated password for your request.",
                 mailContent.toString());
         MailgunService.getInstance().sendHTML(info);
     }

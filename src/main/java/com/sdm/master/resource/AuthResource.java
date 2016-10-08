@@ -5,7 +5,10 @@
  */
 package com.sdm.master.resource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sdm.core.Globalizer;
+import com.sdm.core.Setting;
+import com.sdm.core.request.AuthorizeRequest;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.resource.DefaultResource;
@@ -44,6 +47,20 @@ public class AuthResource extends DefaultResource {
     private static final Logger logger = Logger.getLogger(AuthResource.class.getName());
     private UserDAO userDao;
     private AuthMailSend mailSend;
+    public static final String LOGIN_FAILED_COUNT = "LOGIN_FAILED_COUNT";
+
+    private int getFailed() {
+        try {
+            return (int) getHttpSession().getAttribute(LOGIN_FAILED_COUNT);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private int blockTime() {
+        int seconds = getHttpSession().getMaxInactiveInterval() * 2;
+        return (seconds / 60);
+    }
 
     public AuthResource() {
         mailSend = new AuthMailSend();
@@ -62,6 +79,23 @@ public class AuthResource extends DefaultResource {
         return userAgent.getOperatingSystem().getName();
     }
 
+    private void storeToken(TokenEntity currentToken) throws JsonProcessingException {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_MONTH, Setting.getInstance().AUTH_TOKEN_LIFE);
+
+        AuthorizeRequest auth = new AuthorizeRequest();
+        auth.setUserId(currentToken.getUserId());
+        auth.setDeviceId(currentToken.getDeviceId());
+        auth.setDeviceOS(currentToken.getDeviceOs());
+        auth.setToken(currentToken.getToken());
+        auth.setTimeStamp(cal.getTimeInMillis());
+
+        String authString = Globalizer.jsonMapper().writeValueAsString(auth);
+        getHttpSession().setAttribute(Globalizer.SESSION_USER_TOKEN,
+                "Basic" + SecurityInstance.base64Encode(authString));
+    }
+
     private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
         try {
             if (!request.isValid()) {
@@ -70,17 +104,14 @@ public class AuthResource extends DefaultResource {
 
             MessageResponse message = new MessageResponse(401, ResponseType.ERROR, "USER_AUTH_FAILED",
                     "Opp! Request email or password is something wrong");
-            UserEntity authUser = userDao.userAuth(request.getEmail(), request.getCryptPassword());
-            if (authUser == null) {
-                return new DefaultResponse(message);
-            }
 
-            if (authUser.getStatus() == UserEntity.PENDING) {
-                message.setTitle("USER_PENDING");
-                message.setMessage("You need to activate your account first.");
-            }
-            if (request.isAuth(authUser)) {
-                if (authUser.getStatus() == UserEntity.ACTIVE) {
+            if (getFailed() >= Setting.getInstance().AUTH_FAILED_COUNT) {
+                message = new MessageResponse(401, ResponseType.WARNING, "SERVER_BLOCKED",
+                        "Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
+            } else {
+                UserEntity authUser = userDao.userAuth(request.getEmail(), request.getCryptPassword());
+                if (authUser != null && authUser.getStatus() == UserEntity.ACTIVE
+                        && request.isAuth(authUser)) {
                     userDao.beginTransaction();
                     TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
                     if (cleanToken) {
@@ -89,9 +120,12 @@ public class AuthResource extends DefaultResource {
                     TokenEntity authToken = tokenDAO.generateToken((int) authUser.getId(), request.getDeviceId(), this.getDeviceOS());
                     authUser.setCurrentToken(authToken);
                     userDao.commitTransaction();
+                    storeToken(authToken);
                     return new DefaultResponse(authUser);
                 }
             }
+            //Increase failed count
+            getHttpSession().setAttribute(LOGIN_FAILED_COUNT, getFailed() + 1);
             return new DefaultResponse(message);
         } catch (Exception e) {
             userDao.rollbackTransaction();
@@ -233,7 +267,7 @@ public class AuthResource extends DefaultResource {
             if (!request.isValid()) {
                 return new ErrorResponse(request.getErrors());
             }
-            MessageResponse message = new MessageResponse(400, ResponseType.WARNING, 
+            MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
                     "INVALID_TOKEN", "Sorry! Requested token is invalid or expired.");
             String token = request.getExtra().get("token").toString();
             UserEntity user = userDao.userAuth(request.getEmail(), request.getOldPassword());
@@ -252,6 +286,8 @@ public class AuthResource extends DefaultResource {
                     && user.getPassword().equals(request.getOldPassword())
                     && user.getOtpToken().equals(token)) {
                 String newPassword = SecurityInstance.md5String(request.getEmail(), request.getNewPassword());
+                user.setOtpExpired(null);
+                user.setOtpToken(null);
                 user.setPassword(newPassword);
                 user.setVersion(user.getVersion() + 1);
                 userDao.update(user, true);

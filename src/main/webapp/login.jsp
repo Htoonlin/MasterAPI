@@ -18,7 +18,7 @@
     <body>
         <div class="container">
             <div class="col-md-6 col-md-offset-3">
-                <form class="form" role="form">     
+                <form class="form" role="form" id="frmLogin">     
                     <div id="auth-box" class="panel panel-default">
                         <div class="panel-heading">
                             <h1 class="panel-title text-center">SUNDEW MASTER API</h1>                            
@@ -26,23 +26,27 @@
                                 <a href="register.jsp">Are you a new user? Sign up!</a>                         
                             </div>
                         </div>
-                        <div class="panel-body">                       
+                        <div class="panel-body">     
+                            <div id="loading-box">
+                                <img src="./img/loading.svg" alt="loading" style="margin: 350px auto 0;display:block;" />
+                            </div>
+                            <div id="server-message"></div>
                             <div class="form-group">
-                                <label class="control-label">E-mail :</label>
+                                <label class="control-label">E-mail :</label> <span class="label label-danger" id="msgEmail"></span>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-envelope"></span>
                                     </span>
-                                    <input type="email" class="form-control" placeholder="E-mail"/>
+                                    <input type="email" id="txtEmail" class="form-control" placeholder="E-mail"/>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Password :</label>
+                                <label class="control-label">Password :</label> <span class="label label-danger" id="msgPassword"></span>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-lock"></span>
                                     </span>
-                                    <input type="password" class="form-control" placeholder="Password" />
+                                    <input type="password" id="txtPassword" class="form-control" placeholder="Password" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -60,7 +64,56 @@
             </div>
         </div>
         <script type="text/javascript">
-            
+            $('document').ready(function () {
+                $('#loading-box').hide();
+            });
+            function call_api(url, method, data, callback, error) {
+                var ajax_request = {
+                    url: url,
+                    method: method,
+                    data: (data != null) ? JSON.stringify(data) : null,
+                    dataType: 'json',
+                    beforeSend: function (xhr) {
+                        $('#loading-box').show();
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                    },
+                    success: callback,
+                    error: error,
+                    complete: function () {
+                        $('#loading-box').hide();
+                    }
+                };
+
+                $.ajax(ajax_request);
+            }
+            $('#frmLogin').submit(function (event) {
+                event.preventDefault();
+                $("#server-message").removeClass('alert alert-danger').html('');
+                var data = {
+                    "email": $('#txtEmail').val(),
+                    "password": $('#txtPassword').val(),
+                    "device_id": navigator.userAgent,
+                    "timestamp": (new Date()).getTime()
+                };
+                call_api("api/auth/", "post", data, function (res) {
+                    window.location.href = "index.jsp";
+                }, function (res) {
+                    var content = res.responseJSON.content;
+                    if (content.message) {
+                        $("#server-message").addClass("alert alert-danger")
+                                .html(content.message);
+                    } else {
+                        $.each(content, function (prop, value) {
+                            console.log(prop + ":" + value);
+                            if (prop === "email") {
+                                $("span#msgEmail").html(value);
+                            } else if (prop === "password") {
+                                $("span#msgPassword").html(value);
+                            }
+                        });
+                    }
+                });
+            });
         </script>
     </body>
 </html>

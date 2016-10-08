@@ -104,17 +104,22 @@
                     alert(res.content.message);
                     window.location.href = "login.jsp";
                 }, function (res) {
-                    var data = res.responseJSON;
-                    $.each(data.content, function (prop, value) {
-                        console.log(prop + ":" + value);
-                        if (prop === "display_name") {
-                            $("span#msgName").html(value);
-                        } else if (prop === "email") {
-                            $("span#msgEmail").html(value);
-                        } else if (prop === "password") {
-                            $("span#msgPassword").html(value);
-                        }
-                    });
+                    var content = res.responseJSON.content;
+                    if (content.message) {
+                        $("#server-message").addClass("alert alert-danger")
+                                .html('<strong>' + content.title + '</strong>' + content.message);
+                    } else {
+                        $.each(content, function (prop, value) {
+                            console.log(prop + ":" + value);
+                            if (prop === "display_name") {
+                                $("span#msgName").html(value);
+                            } else if (prop === "email") {
+                                $("span#msgEmail").html(value);
+                            } else if (prop === "password") {
+                                $("span#msgPassword").html(value);
+                            }
+                        });
+                    }
                 });
             });
         </script>

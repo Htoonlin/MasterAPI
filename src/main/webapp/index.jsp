@@ -4,7 +4,21 @@
     Author     : Htoonlin
 --%>
 
+<%@page import="com.sdm.core.Globalizer"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    String accessToken = "";
+    try{
+        accessToken = session.getAttribute(Globalizer.SESSION_USER_TOKEN).toString();
+    }catch(Exception e){
+        accessToken = "";
+    }
+    
+    if(accessToken.trim().length() <= 0){
+        response.sendRedirect("login.jsp");
+    }
+
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -39,7 +53,7 @@
             <h1>SUNDEW MASTER</h1>            
             <div class="input-group">
                 <span class="input-group-addon">ACCESS TOKEN :</span>
-                <input type="text" class="form-control" id="txtAccessToken" value="" />
+                <input type="text" readonly="readonly" class="form-control" id="txtAccessToken" value="<%= accessToken %>" />
             </div>
             <hr />
             <div id="messageBox"></div>
@@ -233,7 +247,7 @@
                     });
                 }
                 function save_data() {
-                    var processId = parseInt(active_object.id);                    
+                    var processId = parseInt(active_object.id);
                     var process_data = {};
                     $.each(active_object, function (property, value) {
                         var input = $('div#manageModal div.modal-body #' + property);
@@ -282,12 +296,12 @@
 
                             $.each(active_object, function (property, value) {
                                 var input = $('div#manageModal div.modal-body #' + property);
-                                if (input && ($.inArray(property, hide_columns) === -1)) {                                    
+                                if (input && ($.inArray(property, hide_columns) === -1)) {
                                     if (input.prop('type') === 'checkbox') {
                                         input.prop('checked', value);
-                                    } else if(typeof value === "object"){
+                                    } else if (typeof value === "object") {
                                         input.val(value.id);
-                                    }else {
+                                    } else {
                                         input.val(value);
                                     }
                                 }

@@ -6,6 +6,7 @@
 package com.sdm.core.filter;
 
 import com.sdm.core.Globalizer;
+import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.request.AuthorizeRequest;
@@ -70,7 +71,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         Method method = resourceInfo.getResourceMethod();
         if (!method.isAnnotationPresent(PermitAll.class)) {
-            if (getFailed() >= 3) {
+            if (getFailed() >= Setting.getInstance().AUTH_FAILED_COUNT) {
                 requestContext.abortWith(buildResponse(403, "Block", 
                         "Sorry! Server blocked your request. You need to wait " + blockTime() + " minutes."));
                 return;

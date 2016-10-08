@@ -24,6 +24,7 @@ import java.util.Date;
  */
 public class Globalizer {
     public static final String SESSION_USER_ID = "CURRENT_AUTH_USER_ID";
+    public static final String SESSION_USER_TOKEN = "CURRENT_AUTH_USER_TOKEN";
     
     public static ObjectMapper jsonMapper() {
         ObjectMapper mapper = new ObjectMapper();

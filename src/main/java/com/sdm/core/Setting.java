@@ -39,6 +39,7 @@ public final class Setting {
     public String AES_KEY;
     public String ENCRYPT_SALT;
     public String TOKEN_CHAR;
+    public int AUTH_FAILED_COUNT;
 
     /* Date Time Setting */
     public SimpleDateFormat DATE_TIME_FORMAT;
@@ -91,7 +92,8 @@ public final class Setting {
                 SECURITY_TIMESTAMP_LIFE = Integer.parseInt(settingProps.getProperty("SECURITY_TIMESTAMP_LIFE", "5"));
                 AES_KEY = settingProps.getProperty("AES_KEY", "aL8AEKV6SSyEaZhbuPXhfIDX550rwjvEj25E3oLxHro=");
                 ENCRYPT_SALT = settingProps.getProperty("ENCRYPT_SALT", "s4qYAxH0SqiHAwrgwWPSI6DVm");
-                TOKEN_CHAR = settingProps.getProperty("TOKEN_CHAR", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");                
+                TOKEN_CHAR = settingProps.getProperty("TOKEN_CHAR", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"); 
+                AUTH_FAILED_COUNT = Integer.parseInt(settingProps.getProperty("AUTH_FAILED_COUNT", "3"));
                 
                 ACCESS_CONTROL_ALLOW_ORIGIN = settingProps.getProperty("ACCESS_CONTROL_ALLOW_ORIGIN", "*");
                 ACCESS_CONTROL_ALLOW_METHOD = settingProps.getProperty("ACCESS_CONTROL_ALLOW_METHOD", "GET, POST, DELETE, PUT, OPTIONS");
