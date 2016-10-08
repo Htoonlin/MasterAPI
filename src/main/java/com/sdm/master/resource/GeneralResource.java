@@ -1,0 +1,39 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.sdm.master.resource;
+
+import com.sdm.core.resource.DefaultResource;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
+import com.sdm.master.entity.UserEntity;
+import javax.annotation.security.PermitAll;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import org.apache.log4j.Logger;
+
+/**
+ *
+ * @author Htoonlin
+ */
+@Path("/")
+public class GeneralResource extends DefaultResource {
+
+    private static final Logger LOG = Logger.getLogger(ProfileResource.class.getName());
+
+    @PermitAll
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse welcome() throws Exception {
+        MessageResponse response = new MessageResponse(200, ResponseType.SUCCESS,
+                "WELCOME", "Welcome from sundew API. Never give up to be a warrior!");
+        return new DefaultResponse(response);
+    }
+
+}

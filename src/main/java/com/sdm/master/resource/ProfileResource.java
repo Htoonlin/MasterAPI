@@ -18,7 +18,6 @@ import com.sdm.master.request.auth.ChangePasswordRequest;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -29,7 +28,7 @@ import org.apache.log4j.Logger;
  *
  * @author Htoonlin
  */
-@Path("/")
+@Path("/me")
 public class ProfileResource extends DefaultResource {
 
     private static final Logger logger = Logger.getLogger(ProfileResource.class.getName());
@@ -41,26 +40,8 @@ public class ProfileResource extends DefaultResource {
         userDAO = new UserDAO(getHttpSession());
     }
 
-    @PermitAll
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse welcome() throws Exception {
-        if (getUserId() > 0) {
-            UserEntity userEntity = userDAO.fetchById(getUserId());
-            if (userEntity == null || userEntity.getStatus() != UserEntity.ACTIVE) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                        "NO_DATA", "There is no user. (or) User is not active."));
-            }
-            return new DefaultResponse(userEntity);
-        }
-        MessageResponse response = new MessageResponse(200, ResponseType.SUCCESS,
-                "WELCOME", "Welcome from sundew API. Never give up to be a warrior!");
-        return new DefaultResponse(response);
-    }
-
     @RolesAllowed("user")
-    @GET
-    @Path("me")
+    @GET    
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getProfile() throws Exception {
         UserEntity user = userDAO.fetchById(getUserId());
@@ -72,8 +53,7 @@ public class ProfileResource extends DefaultResource {
     }
 
     @RolesAllowed("user")
-    @POST
-    @Path("me")
+    @POST    
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse setProfile(UserEntity request) throws Exception {
