@@ -5,7 +5,6 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.core.util.MyanmarFontManager;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.ResponseType;
@@ -13,16 +12,14 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.util.SecurityInstance;
-import com.sdm.core.util.TemplateManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.auth.ChangePasswordRequest;
-import java.io.File;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import org.apache.log4j.Logger;
@@ -33,9 +30,9 @@ import org.apache.log4j.Logger;
  * @author Htoonlin
  */
 @Path("/")
-public class GeneralResource extends DefaultResource {
+public class ProfileResource extends DefaultResource {
 
-    private static final Logger logger = Logger.getLogger(GeneralResource.class.getName());
+    private static final Logger logger = Logger.getLogger(ProfileResource.class.getName());
 
     private UserDAO userDAO;
 
@@ -61,6 +58,7 @@ public class GeneralResource extends DefaultResource {
         return new DefaultResponse(response);
     }
 
+    @RolesAllowed("user")
     @GET
     @Path("me")
     @Produces(MediaType.APPLICATION_JSON)
@@ -73,6 +71,7 @@ public class GeneralResource extends DefaultResource {
         return new DefaultResponse(user);
     }
 
+    @RolesAllowed("user")
     @POST
     @Path("me")
     @Produces(MediaType.APPLICATION_JSON)
@@ -103,6 +102,7 @@ public class GeneralResource extends DefaultResource {
         }
     }
 
+    @RolesAllowed("user")
     @Path("changePassword")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

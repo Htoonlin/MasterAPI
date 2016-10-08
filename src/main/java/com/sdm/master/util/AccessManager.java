@@ -17,6 +17,7 @@ import com.sdm.master.entity.TokenEntity;
 import com.sdm.master.entity.UserEntity;
 import java.lang.reflect.Method;
 import java.util.Date;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -86,6 +87,17 @@ public class AccessManager implements IAccessManager {
         //Skip Permission for ROOT USER
         if (((int) user.getId()) == Setting.getInstance().ROOT_ID) {
             return true;
+        }
+        
+        //Skip Permission for User Methods => user
+        RolesAllowed roles = method.getAnnotation(RolesAllowed.class);
+        if(roles != null){
+            for (int i = 0; i < roles.value().length; i++) {
+                String role = roles.value()[i];
+                if(role.equalsIgnoreCase("user")){
+                    return true;
+                }
+            }
         }
 
         //Check Permission by User Roles
