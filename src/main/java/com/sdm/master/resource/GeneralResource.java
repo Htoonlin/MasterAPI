@@ -44,8 +44,8 @@ public class GeneralResource extends DefaultResource {
     @GET
     @Path("ip")
     @Produces(MediaType.APPLICATION_JSON)
-    public GeoIPManager getIpResponse(@Context HttpServletRequest request) throws Exception {
-        return new GeoIPManager(request.getRemoteAddr());
+    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {        
+        return new DefaultResponse(new GeoIPManager("203.81.71.30"));
     }
 
     @PermitAll
