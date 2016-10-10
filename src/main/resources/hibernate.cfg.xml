@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Hibernate Connection Properties -->
+        <property name="hibernate.dialect">com.sdm.core.database.SundewMySQLDialect</property>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/sundew_api?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=UTF-8</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">root</property>
+        <property name="hibernate.connection.pool_size">50</property>
+        
+        <!--Hibernate DB Properties -->                        
+        <property name="hibernate.transaction.auto_close_session">true</property>
+        <property name="hibernate.jdbc.batch_size">10</property>
+        
+        <!-- Master Entities Mapping -->
+        <mapping class="com.sdm.master.entity.UserEntity"/>
+        <mapping class="com.sdm.master.entity.RoleEntity"/>
+        <mapping class="com.sdm.master.entity.PermissionEntity"/>
+        <mapping class="com.sdm.master.entity.TokenEntity"/>        
+        <mapping class="com.sdm.master.entity.FileEntity"/>
+        <mapping class="com.sdm.master.entity.CurrencyEntity"/>
+        
+    </session-factory>
+</hibernate-configuration>
