@@ -177,7 +177,7 @@ public class AuthResource extends DefaultResource {
             user = new UserEntity(request.getEmail(),
                     request.getDisplayName(), password, true,
                     request.getCountry(), UserEntity.PENDING);
-            mailSend.activateLink(user, userAgentString, getBaseURI());
+            mailSend.activateLink(user, userAgentString);
             userDao.insert(user, true);
             MessageResponse response = new MessageResponse(200, ResponseType.SUCCESS,
                     "REGISTRATION_SUCCESS", "Thank you for your registration. Pls check your mail for activation.");
@@ -234,7 +234,7 @@ public class AuthResource extends DefaultResource {
             }
             userDao.beginTransaction();
             if (user.getOtpExpired().before(new Date())) {
-                mailSend.activateLink(user, userAgentString, getBaseURI());
+                mailSend.activateLink(user, userAgentString);
                 userDao.update(user, false);
                 MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
                         "TOKEN_EXPIRE", "Sorry! Your token has expired. We send new token to your email.");
@@ -278,7 +278,7 @@ public class AuthResource extends DefaultResource {
             }
 
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
-                mailSend.forgetPasswordLink(user, getBaseURI());
+                mailSend.forgetPasswordLink(user);
                 userDao.update(user, true);
                 message = new MessageResponse(400, ResponseType.WARNING,
                         "TOKEN_EXPIRE", "Sorry! Your token has expired. We send new link to your email.");
@@ -317,7 +317,7 @@ public class AuthResource extends DefaultResource {
                 if (user == null) {
                     message = new MessageResponse(400, ResponseType.WARNING, "INVALID_EMAIL", "Invalid email address.");
                 } else {
-                    mailSend.forgetPasswordLink(user, getBaseURI());
+                    mailSend.forgetPasswordLink(user);
                     userDao.update(user, true);
                     message = new MessageResponse(200, ResponseType.SUCCESS, "SUCCESS", "We send the reset password link to your e-mail.");
                 }

@@ -42,17 +42,15 @@ public class AuthMailSend {
         return request;
     }
 
-    public void forgetPasswordLink(UserEntity user, String baseURI) throws Exception {
+    public void forgetPasswordLink(UserEntity user) throws Exception {
         user = setToken(user);
         ActivateRequest request = buildRequest(user, user.getPassword());
 
-        //Build mail with Forget Password Link
-        String link = baseURI + "reset-password.jsp?token=";
-        link += SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request));
+        //Build mail with Forget Password Link        
         Map<String, Object> data = new HashMap<>();
         data.put("expire", Setting.getInstance().OTP_LIFE);
         data.put("user", user.getDisplayName());
-        data.put("activate_link", link);
+        data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = TemplateManager.mergeTemplate("/mail/forget-password.vm", data);
         MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
@@ -60,17 +58,15 @@ public class AuthMailSend {
         MailgunService.getInstance().sendHTML(info);
     }
 
-    public void activateLink(UserEntity user, String deviceId, String baseURI) throws Exception {
+    public void activateLink(UserEntity user, String deviceId) throws Exception {
         user = setToken(user);
         ActivateRequest request = buildRequest(user, deviceId);
 
-        //Build mail with activation link
-        String link = baseURI + "api/auth/activate/?token=";
-        link += SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request));
+        //Build mail with activation link        
         Map<String, Object> data = new HashMap<>();
         data.put("expire", Setting.getInstance().OTP_LIFE);
         data.put("user", user.getDisplayName());
-        data.put("activate_link", link);
+        data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = TemplateManager.mergeTemplate("/mail/auth-activate.vm", data);
         MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
