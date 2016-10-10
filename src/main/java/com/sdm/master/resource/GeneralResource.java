@@ -10,11 +10,14 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
+import com.sdm.core.util.GeoIPManager;
 import com.sdm.master.entity.UserEntity;
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 
@@ -36,4 +39,11 @@ public class GeneralResource extends DefaultResource {
         return new DefaultResponse(response);
     }
 
+    @PermitAll 
+    @GET
+    @Path("IP")
+    @Produces(MediaType.APPLICATION_JSON)
+    public GeoIPManager.GeoInfo getIpResponse(@Context HttpServletRequest request) throws Exception {
+        return GeoIPManager.getInfo(request.getRemoteAddr());
+    }
 }

@@ -25,7 +25,6 @@ public final class Setting {
     public String PUBLIC_FILE_PATH;
 
     /* Mail Gun Settings */
-    public String MAILGUN_URL = "https://api.mailgun.net/v3/";
     public String MAILGUN_PRI_API_KEY;
     public String MAILGUN_PUB_API_KEY;
     public String MAILGUN_DOMAIN;
@@ -79,8 +78,7 @@ public final class Setting {
                 DATE_TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_TIME_FORMAT", "yyyy-MM-dd HH:mm:ss"));
                 DATE_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_FORMAT", "yyyy-MM-dd"));
                 TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty("TIME_FORMAT", "HH:mm:ss"));
-                
-                MAILGUN_URL = settingProps.getProperty("MAILGUN_URL", "");
+                                
                 MAILGUN_PRI_API_KEY = settingProps.getProperty("MAILGUN_PRI_API_KEY", "");
                 MAILGUN_PUB_API_KEY = settingProps.getProperty("MAILGUN_PUB_API_KEY", "");
                 MAILGUN_DOMAIN = settingProps.getProperty("MAILGUN_DOMAIN", "");

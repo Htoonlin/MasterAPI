@@ -28,6 +28,8 @@ public class MailgunService {
 
     private static final Logger LOG = Logger.getLogger(MailgunService.class.getName());
 
+    private final String MAILGUN_URL = "https://api.mailgun.net/v3/";
+
     private final String SEND_PATH = Setting.getInstance().MAILGUN_DOMAIN + "/messages";
     private final String VALIDATE_PATH = "address/validate";
 
@@ -76,7 +78,7 @@ public class MailgunService {
     public ValidateResponse validateMail(String email) throws IOException {
         try {
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target(Setting.getInstance().MAILGUN_URL).path(VALIDATE_PATH);
+            WebTarget target = client.target(MAILGUN_URL).path(VALIDATE_PATH);
             target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PUB_API_KEY));
             String result = target.queryParam("address", email).request().get(String.class);
             return Globalizer.jsonMapper().readValue(result, ValidateResponse.class);
@@ -89,7 +91,7 @@ public class MailgunService {
     public Response sendHTML(MailInfo mailInfo) throws Exception {
         try {
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target(Setting.getInstance().MAILGUN_URL).path(SEND_PATH);
+            WebTarget target = client.target(MAILGUN_URL).path(SEND_PATH);
             target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PRI_API_KEY));
 
             MultivaluedMap formData = createFormData(mailInfo);
@@ -109,7 +111,7 @@ public class MailgunService {
     public Response sendRaw(MailInfo mailInfo) throws Exception {
         try {
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target(Setting.getInstance().MAILGUN_URL).path(SEND_PATH);
+            WebTarget target = client.target(MAILGUN_URL).path(SEND_PATH);
             target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PRI_API_KEY));
 
             MultivaluedMap formData = createFormData(mailInfo);
