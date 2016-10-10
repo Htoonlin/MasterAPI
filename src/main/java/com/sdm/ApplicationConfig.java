@@ -103,10 +103,6 @@ public class ApplicationConfig extends Application {
         resources.add(com.sdm.master.resource.ProfileResource.class);
         resources.add(com.sdm.master.resource.RoleResource.class);
         resources.add(com.sdm.master.resource.UserResource.class);
-        resources.add(com.sdm.messenger.resource.BotResource.class);
-        resources.add(com.sdm.messenger.resource.CompanyResource.class);
-        resources.add(com.sdm.messenger.resource.MessengerResource.class);
-        resources.add(com.sdm.messenger.resource.TemplateResource.class);
         resources.add(org.glassfish.jersey.server.wadl.internal.WadlResource.class);
         resources.add(org.glassfish.json.jaxrs.JsonStructureBodyReader.class);
         resources.add(org.glassfish.json.jaxrs.JsonStructureBodyWriter.class);
