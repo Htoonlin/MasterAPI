@@ -8,3 +8,6 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 /src/main/java/com/sdm/messenger/
+/src/main/resources/velocity.properties
+/src/main/resources/log4j.properties
+/src/main/resources/setting.properties
