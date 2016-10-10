@@ -97,7 +97,7 @@
                     "display_name": $('#txtFullName').val(),
                     "email": $('#txtEmail').val(),
                     "password": $('#txtPassword').val(),
-                    "country": "MY",
+                    "country": "MM",
                     "timestamp": (new Date()).getTime()
                 };
                 call_api("api/auth/register/", "post", data, function (res) {

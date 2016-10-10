@@ -23,10 +23,11 @@
         <log4j.version>1.2.17</log4j.version>
         <apache.poi.version>3.14</apache.poi.version>
         <velocity.version>1.7</velocity.version>
+        <language.detect.version>0.6</language.detect.version>
     </properties>
     
     <dependencies>
-        <!-- New Dependenceis -->      
+        
         <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
         <dependency>
             <groupId>org.apache.velocity</groupId>
