@@ -42,10 +42,10 @@ public class GeneralResource extends DefaultResource {
 
     @PermitAll
     @GET
-    @Path("IP")
+    @Path("ip")
     @Produces(MediaType.APPLICATION_JSON)
-    public GeoIPManager.GeoInfo getIpResponse(@Context HttpServletRequest request) throws Exception {
-        return GeoIPManager.getInfo(request.getRemoteAddr());
+    public GeoIPManager getIpResponse(@Context HttpServletRequest request) throws Exception {
+        return new GeoIPManager(request.getRemoteAddr());
     }
 
     @PermitAll
