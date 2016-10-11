@@ -5,9 +5,9 @@
         <!-- Hibernate Connection Properties -->
         <property name="hibernate.dialect">com.sdm.core.database.SundewMySQLDialect</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/sundew_api?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=UTF-8</property>
-        <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">root</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/sundew_bot?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=UTF-8</property>
+        <property name="hibernate.connection.username">sundew_bot</property>
+        <property name="hibernate.connection.password">y9@cJ[5+s@P3</property>
         <property name="hibernate.connection.pool_size">50</property>
         
         <!--Hibernate DB Properties -->                        
@@ -21,6 +21,10 @@
         <mapping class="com.sdm.master.entity.TokenEntity"/>        
         <mapping class="com.sdm.master.entity.FileEntity"/>
         <mapping class="com.sdm.master.entity.CurrencyEntity"/>
+        
+        <!-- Utilities Entities Mapping -->
+        <mapping class="com.sdm.master.entity.GeoIPCacheEntity"/>
+        
         
     </session-factory>
 </hibernate-configuration>

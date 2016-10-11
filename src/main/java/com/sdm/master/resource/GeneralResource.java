@@ -12,6 +12,7 @@ import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.util.GeoIPManager;
 import com.sdm.core.util.MyanmarFontManager;
+import com.sdm.master.dao.GeoIPCacheDAO;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -44,8 +45,9 @@ public class GeneralResource extends DefaultResource {
     @GET
     @Path("ip")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {        
-        return new DefaultResponse(new GeoIPManager("203.81.71.30"));
+    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {   
+        GeoIPManager ipManager = new GeoIPManager(new GeoIPCacheDAO());
+        return new DefaultResponse(ipManager.lookupInfo(request.getRemoteAddr()));
     }
 
     @PermitAll
