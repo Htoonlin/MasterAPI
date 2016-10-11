@@ -11,3 +11,4 @@ buildNumber.properties
 /src/main/resources/velocity.properties
 /src/main/resources/log4j.properties
 /src/main/resources/setting.properties
+/src/main/resources/hibernate.cfg.xml
