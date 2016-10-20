@@ -5,7 +5,10 @@
  */
 package com.sdm.core.response;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.sdm.core.Globalizer;
 import java.io.Serializable;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -30,6 +33,12 @@ public class PropertiesResponse implements Serializable {
         this.requestName = requestName;
     }
 
+    @JsonGetter("human_readable")
+    public String getReadable(){
+        String input = StringUtils.capitalize(name);
+        return Globalizer.camelToReadable(input);
+    }
+    
     public String getName() {
         return name;
     }
