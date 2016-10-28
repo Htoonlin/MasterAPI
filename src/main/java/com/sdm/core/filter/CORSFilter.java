@@ -33,8 +33,7 @@ public class CORSFilter implements ContainerResponseFilter {
         headers.add("Access-Control-Max-Age", Setting.getInstance().ACCESS_CONTROL_MAX_AGE);
         headers.add("Access-Control-Expose-Headers", "xsrf-token");
         if("OPTIONS".equals(requestContext.getMethod())){
-            responseContext.setStatus(200);
-            return;
+            responseContext.setStatus(200);            
         }
     }
 

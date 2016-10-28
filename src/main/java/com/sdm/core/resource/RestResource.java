@@ -5,6 +5,7 @@
  */
 package com.sdm.core.resource;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.Globalizer;
 import com.sdm.core.database.HibernateConnector;
 import com.sdm.core.database.dao.RestDAO;
@@ -165,26 +166,38 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
         Metamodel metaModel = HibernateConnector.getFactory().getMetamodel();
         List<PropertiesResponse> properties = new ArrayList<>();
         for (Attribute<T, ?> attribute : metaModel.entity(currentEntityClass).getDeclaredAttributes()) {
+            Field field = null;
+            //Get Field Info
+            try {
+                field = currentEntityClass.getDeclaredField(attribute.getName());
+                if (field == null) {
+                    continue;
+                }
+
+                if (field.getAnnotation(JsonIgnore.class) != null) {
+                    continue;
+                }
+            } catch (NoSuchFieldException | SecurityException e) {
+                LOG.error(e);
+                continue;
+            }
+
             PropertiesResponse property = new PropertiesResponse();
             property.setRequestName(Globalizer.camelToLowerUnderScore(attribute.getName()));
             property.setName(attribute.getName());
             property.setType(attribute.getJavaType().getSimpleName());
-            try {
-                Field field = currentEntityClass.getDeclaredField(attribute.getName());
-                if (field.getAnnotation(Id.class) != null) {
-                    property.setPrimaryKey(true);
-                }
-                Column column = field.getAnnotation(Column.class);
-                if (column != null) {
-                    property.setDbName(column.name());
-                    property.setDbType(column.columnDefinition());
-                    if (column.nullable()) {
-                        property.setNullable(column.nullable());
-                    }
-                }
-            } catch (NoSuchFieldException | SecurityException e) {
-                LOG.error(e);
+            if (field.getAnnotation(Id.class) != null) {
+                property.setPrimaryKey(true);
             }
+            Column column = field.getAnnotation(Column.class);
+            if (column != null) {
+                property.setDbName(column.name());
+                property.setDbType(column.columnDefinition());
+                if (column.nullable()) {
+                    property.setNullable(column.nullable());
+                }
+            }
+
             if (attribute.getPersistentAttributeType() != Attribute.PersistentAttributeType.BASIC) {
                 property.setSpecial(attribute.getPersistentAttributeType().name());
             }

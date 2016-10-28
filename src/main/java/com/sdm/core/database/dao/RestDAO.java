@@ -28,7 +28,7 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
     public static final char SYNC_INSERT = 'I';
     public static final char SYNC_UPDATE = 'U';
     public static final char SYNC_REMOVE = 'R';
-    
+
     protected boolean useLog;
     protected boolean useTimeStamp;
     private final HttpSession httpSession;
@@ -81,7 +81,7 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
                 break;
             case SYNC_UPDATE:
                 filter += " AND (modifiedAt >= :lastSync) AND (version > 1) "
-                       + "AND (modifiedAt != createdAt) AND (deletedAt IS NULL)";
+                        + "AND (modifiedAt != createdAt) AND (deletedAt IS NULL)";
                 break;
             case SYNC_REMOVE:
                 filter += " AND (deletedAt >= :lastSync)";
@@ -96,6 +96,7 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
     }
 
     public PaginationResponse pagination(String searchProperty, String filter, int size, int page, String sortString) throws Exception {
+        Map<String, String> sortMaps = new HashMap<>();
         try {
             if (page <= 0) {
                 page = 1;
@@ -117,8 +118,10 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
                     String[] sortParams = sort.trim().split(":", 2);
                     if (sortParams.length >= 2 && sortParams[1].equalsIgnoreCase("desc")) {
                         hqlString += sortParams[0] + " " + sortParams[1];
+                        sortMaps.put(sortParams[0], sortParams[1]);
                     } else {
                         hqlString += sortParams[0];
+                        sortMaps.put(sortParams[0], "asc");
                     }
                     hqlString += ",";
                 }
@@ -134,12 +137,12 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
             List<T> queryList = this.createQuery(hqlString, params, size, start).getResultList();
             long total = (long) this.createQuery(hqlCount, params).getSingleResult();
             if (queryList != null && queryList.size() > 0) {
-                return new PaginationResponse(total, page, size, queryList);
+                return new PaginationResponse(total, page, size, sortMaps, queryList);
             }
         } catch (Exception e) {
             throw e;
         }
-        return new PaginationResponse(0, page, size, new ArrayList<>());
+        return new PaginationResponse(0, page, size, sortMaps, new ArrayList<>());
     }
 
     public List<T> fetchAll() throws Exception {
@@ -156,10 +159,10 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
 
     public T fetchById(Serializable id) {
         try {
-            T result = mainSession.get(this.entityClass, id);            
+            T result = mainSession.get(this.entityClass, id);
             if (result == null) {
                 return null;
-            }else if(useTimeStamp && ((ITimestampEntity)result).getDeletedAt() != null){
+            } else if (useTimeStamp && ((ITimestampEntity) result).getDeletedAt() != null) {
                 return null;
             }
             return result;
@@ -238,5 +241,5 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
             }
             throw e;
         }
-    }    
+    }
 }

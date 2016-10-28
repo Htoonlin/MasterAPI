@@ -9,31 +9,35 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "data"})
-public class PaginationResponse implements IResponseContent, Serializable{
+@JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "sort", "data"})
+public class PaginationResponse implements IResponseContent, Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     private long total;
     private int currentPage;
     private int pageSize;
+    private Map<String, String> sort;
 
-    public PaginationResponse(long total, int currentPage, int pageSize, List data) {
+    public PaginationResponse(long total, int currentPage, int pageSize, Map<String, String> sort, List data) {
         this.total = total;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
         this.data = data;
+        this.sort = sort;
     }
-    
-    public int getPageCount(){
-        return (int)Math.ceil((double)total / pageSize);
+
+    public int getPageCount() {
+        return (int) Math.ceil((double) total / pageSize);
     }
-    
+
     public int getCount() {
         return this.data.size();
     }
@@ -60,6 +64,14 @@ public class PaginationResponse implements IResponseContent, Serializable{
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public Map<String, String> getSort() {
+        return sort;
+    }
+
+    public void setSort(Map<String, String> sort) {
+        this.sort = sort;
     }
 
     private List data;

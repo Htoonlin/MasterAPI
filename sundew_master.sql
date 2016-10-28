@@ -16,6 +16,27 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `tbl_geoip_cache`
+--
+
+DROP TABLE IF EXISTS `tbl_geoip_cache`;
+CREATE TABLE IF NOT EXISTS `tbl_geoip_cache` (
+  `ipAddress` varchar(50) COLLATE utf8_bin NOT NULL,
+  `countryCode` char(2) COLLATE utf8_bin NOT NULL,
+  `region` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `regionName` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `zip` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `city` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `lat` decimal(10,8) DEFAULT NULL,
+  `lon` decimal(11,8) DEFAULT NULL,
+  `timezone` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `isp` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `association` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`ipAddress`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+
+--
 -- Table structure for table `tbl_currency`
 --
 
@@ -64,6 +85,29 @@ CREATE TABLE `tbl_file` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tbl_geoip_cache`
+--
+
+DROP TABLE IF EXISTS `tbl_geoip_cache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_geoip_cache` (
+  `ipAddress` varchar(50) COLLATE utf8_bin NOT NULL,
+  `countryCode` char(2) COLLATE utf8_bin NOT NULL,
+  `region` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `regionName` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `zip` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `city` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `lat` decimal(10,8) DEFAULT NULL,
+  `lon` decimal(11,8) DEFAULT NULL,
+  `timezone` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `isp` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `association` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`ipAddress`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +180,7 @@ CREATE TABLE `tbl_user` (
   `modified_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,4 +230,4 @@ CREATE TABLE `tbl_user_token` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-10-04 17:55:18
+-- Dump completed on 2016-10-11 15:15:39
