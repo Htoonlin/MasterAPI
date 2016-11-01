@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.database.entity.UIStructure;
 import com.sdm.core.util.FileManager;
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -35,18 +36,22 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
+    @UIStructure(order = 0, label = "#", readOnly = true)
     private long id;
 
+    @UIStructure(order = 1, label = "Name")
     @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
     private String name;
 
+    @UIStructure(order = 2, label = "Ext.")
     @Column(name = "extension", columnDefinition = "varchar(10)", nullable = false)
     private String extension;
 
+    @UIStructure(order = 3, label = "Type") 
     @Column(name = "type", columnDefinition = "varchar(50)", nullable = false)
     private String type;
 
-    @JsonIgnore
+    @JsonIgnore    
     @Column(name = "size", columnDefinition = "bigint", nullable = false)
     private long fileSize;
 
@@ -54,6 +59,7 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     @Column(name = "storagePath", columnDefinition = "varchar(1000)", nullable = false)
     private String storagePath;
 
+    @UIStructure(order = 4, label = "External URL")
     @Column(name = "externalURL", columnDefinition = "varchar(1000)", nullable = false)
     private String externalURL;
 
@@ -61,6 +67,7 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     @Column(name = "publicToken", columnDefinition = "char(12)", nullable = false)
     private String publicToken;
 
+    @UIStructure(order = 5, label = "Status")
     @Column(name = "status", columnDefinition = "char(1)", nullable = false)
     private char status;
 

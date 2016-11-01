@@ -14,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.database.entity.UIStructure;
 import java.util.Set;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -49,15 +50,19 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @UIStructure(order = 0, label = "#", readOnly = true)
     @Column(name = "id", unique = true, nullable = false)
     private int id;
 
+    @UIStructure(order = 1, label = "E-mail")
     @Column(name = "email", nullable = false)
     private String email;
 
+    @UIStructure(order = 2, label = "Name")
     @Column(name = "displayName", nullable = false)
     private String displayName;
 
+    @UIStructure(order = 3, label = "Roles", hideInGrid = true)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tbl_user_role",
             joinColumns = {@JoinColumn(name = "userId")},
@@ -68,12 +73,15 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
     @Column(name = "password", nullable = false)
     private String password;
 
+    @UIStructure(order = 4, label = "Is online?")
     @Column(name = "isOnline", nullable = false)
     private boolean online;
 
+    @UIStructure(order = 5, label = "Country")
     @Column(name = "countryCode", nullable = false, length = 2)
     private String countryCode;
 
+    @UIStructure(order = 6, label = "Image")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "profileImage", columnDefinition = "bigint", nullable = true)
     @NotFound(action = NotFoundAction.IGNORE)
@@ -92,6 +100,7 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
     @Column(name = "otpExpired", length = 19)
     private Date otpExpired;
 
+    @UIStructure(order = 7, label = "Status")
     @Column(name = "status", nullable = false, length = 1)
     private char status;
     

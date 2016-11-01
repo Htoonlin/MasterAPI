@@ -2,6 +2,7 @@ package com.sdm.master.entity;
 // Generated 04-Mar-2016 00:48:07 by Hibernate Tools 4.3.1
 
 import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.database.entity.UIStructure;
 
 import java.util.Date;
 import java.util.Objects;
@@ -22,23 +23,29 @@ public class TokenEntity extends RestEntity<String> implements java.io.Serializa
     private static final long serialVersionUID = 1L;
 
     @Id
+    @UIStructure(order = 0, label = "Token", readOnly = true)
     @Column(name = "token", unique = true, nullable = false, length = 36)
     private String token;
 
+    @UIStructure(order = 1, label = "User ID")
     @Column(name = "userId", nullable = false)
     private int userId;
 
+    @UIStructure(order = 2, label = "Device-ID")
     @Column(name = "deviceId", nullable = false, length = 255)
     private String deviceId;
 
+    @UIStructure(order = 3, label = "Device-OS")
     @Column(name = "deviceOS", nullable = false, length = 10)
     private String deviceOs;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @UIStructure(order = 4, label = "Lasted Login")
     @Column(name = "lastedLogin", nullable = false, length = 19, updatable = true)
     private Date lastLogin;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @UIStructure(order = 5, label = "Expired")
     @Column(name = "tokenExpired", nullable = false, length = 19)
     private Date tokenExpired;
 

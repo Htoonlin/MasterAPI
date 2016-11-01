@@ -29,7 +29,7 @@ public class PropertiesResponse implements Serializable {
 
     public PropertiesResponse() {
         this.hideInGrid = false;
-        this.readOnly = false;
+        this.readOnly = false;        
     }
 
     @JsonGetter("request_name")
@@ -46,7 +46,7 @@ public class PropertiesResponse implements Serializable {
     }
 
     public String getLabel() {
-        if (label.length() <= 0) {
+        if (label == null || label.length() <= 0) {
             return name;
         }
         return label;

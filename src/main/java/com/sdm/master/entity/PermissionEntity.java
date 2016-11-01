@@ -7,6 +7,7 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.database.entity.UIStructure;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,18 +36,23 @@ public class PermissionEntity extends RestEntity<Integer> implements Serializabl
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UIStructure(order = 0, label = "#", readOnly = true)
     @Column(name = "id", columnDefinition = "bigint", nullable = false, unique = true)
     private int id;
     
+    @UIStructure(order = 1, label = "Role-ID")
     @Column(name = "roleId", columnDefinition = "int(11)", nullable = false)
     private int roleId;
     
+    @UIStructure(order = 2, label = "Class")
     @Column(name = "resourceClass", columnDefinition = "varchar(255)", nullable = false)
     private String resourceClass;    
     
+    @UIStructure(order = 3, label = "Method")
     @Column(name = "resourceMethod", columnDefinition = "varchar(255)", nullable = false)
     private String resourceMethod;
     
+    @UIStructure(order = 4, label = "Http-Method")
     @Column(name = "requestMethod", columnDefinition = "varchar(10)", nullable = false)
     private String requestMethod;
 

@@ -17,9 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Formula;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -29,8 +26,6 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_currency")
-@XmlRootElement(name = "currency")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class CurrencyEntity extends RestEntity<Integer> implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -8,6 +8,7 @@ package com.sdm.master.entity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.database.entity.UIStructure;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Column;
@@ -23,7 +24,6 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -40,12 +40,15 @@ public class RoleEntity extends RestEntity<Integer> implements Serializable {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @UIStructure(order = 0, label = "#", readOnly = true)
     @Column(name = "id", unique = true, nullable = false)
     private int id;
 
+    @UIStructure(order = 1, label = "Name")
     @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
     private String name;
 
+    @UIStructure(order = 2, label = "Description")
     @Column(name = "description", columnDefinition = "varchar(500)", nullable = false)
     private String description;
 
