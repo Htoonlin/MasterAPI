@@ -7,6 +7,7 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.database.entity.UIStructure;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,21 +41,27 @@ public class CurrencyEntity extends RestEntity<Integer> implements Serializable 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UIStructure(order = 0, label = "#", readOnly = true)
     private int id;
 
     @Column(name = "sign", columnDefinition = "varchar(5)", nullable = false)
+    @UIStructure(order = 1, label = "Sign")
     private String sign;
 
     @Column(name = "code", columnDefinition = "char(3)", unique = true, nullable = false)
+    @UIStructure(order = 2, label = "Code")
     private String code;
 
     @Column(name = "name", columnDefinition = "varchar(100)", nullable = false)
+    @UIStructure(order = 3, label = "Name")
     private String name;
 
     @Column(name = "currentRate", columnDefinition = "float", nullable = false)
+    @UIStructure(order = 4, label = "Rate")
     private float currentRate;
 
     @Column(name = "isActive", columnDefinition = "bit(1)", nullable = false)
+    @UIStructure(order = 5, label = "Is active?")
     private boolean active;
 
     public CurrencyEntity(int id, String sign, String code, String name, float currentRate) {
@@ -64,12 +71,12 @@ public class CurrencyEntity extends RestEntity<Integer> implements Serializable 
         this.name = name;
         this.currentRate = currentRate;
     }
-    
+
     public CurrencyEntity(String sign, String code, String name, float currentRate) {
         this();
         this.sign = sign;
         this.code = code;
-        this.name = name;        
+        this.name = name;
         this.currentRate = currentRate;
     }
 
@@ -84,12 +91,12 @@ public class CurrencyEntity extends RestEntity<Integer> implements Serializable 
     public void setSearch(String search) {
         this.search = search;
     }
-   
+
     @Override
     public Integer getId() {
         return id;
     }
-    
+
     @Override
     public void setId(Integer id) {
         this.id = id;

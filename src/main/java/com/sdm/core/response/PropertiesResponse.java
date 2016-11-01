@@ -8,7 +8,6 @@ package com.sdm.core.response;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.sdm.core.Globalizer;
 import java.io.Serializable;
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -17,28 +16,27 @@ import org.apache.commons.lang.StringUtils;
 public class PropertiesResponse implements Serializable {
 
     private String name;
-    private String requestName;
+    private String label;
     private String type;
     private String dbName;
     private String dbType;
     private String special;
-    private Boolean nullable;
     private Boolean primaryKey;
+    private boolean nullable;
+    private boolean hideInGrid;
+    private boolean readOnly;
+    private int orderIndex;
 
+    public PropertiesResponse() {
+        this.hideInGrid = false;
+        this.readOnly = false;
+    }
+
+    @JsonGetter("request_name")
     public String getRequestName() {
-        return requestName;
+        return Globalizer.camelToLowerUnderScore(name);
     }
 
-    public void setRequestName(String requestName) {
-        this.requestName = requestName;
-    }
-
-    @JsonGetter("human_readable")
-    public String getReadable(){
-        String input = StringUtils.capitalize(name);
-        return Globalizer.camelToReadable(input);
-    }
-    
     public String getName() {
         return name;
     }
@@ -47,7 +45,21 @@ public class PropertiesResponse implements Serializable {
         this.name = name;
     }
 
+    public String getLabel() {
+        if (label.length() <= 0) {
+            return name;
+        }
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     public String getDbName() {
+        if (dbName == null) {
+            dbName = name;
+        }
         return dbName;
     }
 
@@ -71,11 +83,11 @@ public class PropertiesResponse implements Serializable {
         this.dbType = dbType;
     }
 
-    public Boolean getNullable() {
+    public boolean getNullable() {
         return nullable;
     }
 
-    public void setNullable(Boolean nullable) {
+    public void setNullable(boolean nullable) {
         this.nullable = nullable;
     }
 
@@ -93,6 +105,30 @@ public class PropertiesResponse implements Serializable {
 
     public void setPrimaryKey(Boolean primaryKey) {
         this.primaryKey = primaryKey;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    public boolean isHideInGrid() {
+        return hideInGrid;
+    }
+
+    public void setHideInGrid(boolean hideInGrid) {
+        this.hideInGrid = hideInGrid;
+    }
+
+    public int getOrderIndex() {
+        return orderIndex;
+    }
+
+    public void setOrderIndex(int orderIndex) {
+        this.orderIndex = orderIndex;
     }
 
 }

@@ -10,6 +10,7 @@ import com.sdm.core.Globalizer;
 import com.sdm.core.database.HibernateConnector;
 import com.sdm.core.database.dao.RestDAO;
 import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.database.entity.UIStructure;
 import com.sdm.core.request.QueryRequest;
 import com.sdm.core.request.SyncRequest;
 import com.sdm.core.request.query.Alias;
@@ -27,6 +28,9 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -183,15 +187,31 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
             }
 
             PropertiesResponse property = new PropertiesResponse();
-            property.setRequestName(Globalizer.camelToLowerUnderScore(attribute.getName()));
+
+            //General info
             property.setName(attribute.getName());
             property.setType(attribute.getJavaType().getSimpleName());
             if (field.getAnnotation(Id.class) != null) {
                 property.setPrimaryKey(true);
             }
+
+            //UI Info
+            UIStructure structure = field.getAnnotation(UIStructure.class);
+            if (structure != null) {
+                property.setLabel(structure.label());
+                property.setHideInGrid(structure.hideInGrid());
+                property.setOrderIndex(structure.order());
+                property.setReadOnly(structure.readOnly());
+            }
+
+            //Db Info
             Column column = field.getAnnotation(Column.class);
             if (column != null) {
-                property.setDbName(column.name());
+                if (column.name().length() > 0) {
+                    property.setDbName(column.name());
+                } else {
+                    property.setDbName(attribute.getName());
+                }
                 property.setDbType(column.columnDefinition());
                 if (column.nullable()) {
                     property.setNullable(column.nullable());
@@ -201,8 +221,16 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
             if (attribute.getPersistentAttributeType() != Attribute.PersistentAttributeType.BASIC) {
                 property.setSpecial(attribute.getPersistentAttributeType().name());
             }
+
             properties.add(property);
         }
+        Collections.sort(properties, new Comparator<PropertiesResponse>() {
+            @Override
+            public int compare(PropertiesResponse t1, PropertiesResponse t2) {
+                return Integer.compare(t1.getOrderIndex(), t2.getOrderIndex());
+            }
+        });
+
         return new DefaultResponse(new ListResponse(properties));
     }
 
