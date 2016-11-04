@@ -7,7 +7,7 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.database.entity.RestEntity;
-import com.sdm.core.database.entity.UIStructure;
+import com.sdm.core.ui.UIStructure;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

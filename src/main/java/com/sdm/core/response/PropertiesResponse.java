@@ -6,6 +6,7 @@
 package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sdm.core.Globalizer;
 import java.io.Serializable;
 
@@ -13,24 +14,18 @@ import java.io.Serializable;
  *
  * @author Htoonlin
  */
+@JsonPropertyOrder({"name", "request_name", "type", "label", "input_type", "primary", "nullable", "read_only", "hide_in_grid"})
 public class PropertiesResponse implements Serializable {
 
     private String name;
-    private String label;
     private String type;
-    private String dbName;
-    private String dbType;
-    private String special;
-    private Boolean primaryKey;
-    private boolean nullable;
-    private boolean hideInGrid;
+    private Boolean primary;
+    private String label;
+    private String inputType;
     private boolean readOnly;
+    private boolean hideInGrid;
+    private boolean nullable;
     private int orderIndex;
-
-    public PropertiesResponse() {
-        this.hideInGrid = false;
-        this.readOnly = false;        
-    }
 
     @JsonGetter("request_name")
     public String getRequestName() {
@@ -45,42 +40,12 @@ public class PropertiesResponse implements Serializable {
         this.name = name;
     }
 
-    public String getLabel() {
-        if (label == null || label.length() <= 0) {
-            return name;
-        }
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getDbName() {
-        if (dbName == null) {
-            dbName = name;
-        }
-        return dbName;
-    }
-
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getDbType() {
-        return dbType;
-    }
-
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
     }
 
     public boolean getNullable() {
@@ -91,20 +56,28 @@ public class PropertiesResponse implements Serializable {
         this.nullable = nullable;
     }
 
-    public String getSpecial() {
-        return special;
+    public Boolean getPrimary() {
+        return primary;
     }
 
-    public void setSpecial(String special) {
-        this.special = special;
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
     }
 
-    public Boolean isPrimaryKey() {
-        return primaryKey;
+    public String getLabel() {
+        return label;
     }
 
-    public void setPrimaryKey(Boolean primaryKey) {
-        this.primaryKey = primaryKey;
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getInputType() {
+        return inputType;
+    }
+
+    public void setInputType(String inputType) {
+        this.inputType = inputType;
     }
 
     public boolean isReadOnly() {

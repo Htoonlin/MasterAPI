@@ -33,7 +33,7 @@ public interface IUtilResource<T extends RestEntity> {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("struct")
-    public DefaultResponse getStructure();
+    public DefaultResponse getStructure() throws Exception;
 
     @POST
     @Path("sync")

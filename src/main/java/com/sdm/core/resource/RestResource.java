@@ -5,12 +5,8 @@
  */
 package com.sdm.core.resource;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.Globalizer;
-import com.sdm.core.database.HibernateConnector;
 import com.sdm.core.database.dao.RestDAO;
 import com.sdm.core.database.entity.RestEntity;
-import com.sdm.core.database.entity.UIStructure;
 import com.sdm.core.request.QueryRequest;
 import com.sdm.core.request.SyncRequest;
 import com.sdm.core.request.query.Alias;
@@ -25,22 +21,14 @@ import com.sdm.core.response.PropertiesResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.SyncResponse;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.persistence.Column;
-import javax.persistence.Id;
 import org.apache.log4j.Logger;
-import org.hibernate.Metamodel;
-import javax.persistence.metamodel.Attribute;
 
 /**
  *
@@ -166,71 +154,9 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     }
 
     @Override
-    public DefaultResponse getStructure() {
-        Metamodel metaModel = HibernateConnector.getFactory().getMetamodel();
-        List<PropertiesResponse> properties = new ArrayList<>();
-        for (Attribute<T, ?> attribute : metaModel.entity(currentEntityClass).getDeclaredAttributes()) {
-            Field field = null;
-            //Get Field Info
-            try {
-                field = currentEntityClass.getDeclaredField(attribute.getName());
-                if (field == null) {
-                    continue;
-                }
-
-                if (field.getAnnotation(JsonIgnore.class) != null) {
-                    continue;
-                }
-            } catch (NoSuchFieldException | SecurityException e) {
-                LOG.error(e);
-                continue;
-            }
-
-            PropertiesResponse property = new PropertiesResponse();
-
-            //General info
-            property.setName(attribute.getName());
-            property.setType(attribute.getJavaType().getSimpleName());
-            if (field.getAnnotation(Id.class) != null) {
-                property.setPrimaryKey(true);
-            }
-
-            //UI Info
-            UIStructure structure = field.getAnnotation(UIStructure.class);
-            if (structure != null) {
-                property.setLabel(structure.label());
-                property.setHideInGrid(structure.hideInGrid());
-                property.setOrderIndex(structure.order());
-                property.setReadOnly(structure.readOnly());
-            }
-
-            //Db Info
-            Column column = field.getAnnotation(Column.class);
-            if (column != null) {
-                if (column.name().length() > 0) {
-                    property.setDbName(column.name());
-                } else {
-                    property.setDbName(attribute.getName());
-                }
-                property.setDbType(column.columnDefinition());
-                if (column.nullable()) {
-                    property.setNullable(column.nullable());
-                }
-            }
-
-            if (attribute.getPersistentAttributeType() != Attribute.PersistentAttributeType.BASIC) {
-                property.setSpecial(attribute.getPersistentAttributeType().name());
-            }
-
-            properties.add(property);
-        }
-        Collections.sort(properties, new Comparator<PropertiesResponse>() {
-            @Override
-            public int compare(PropertiesResponse t1, PropertiesResponse t2) {
-                return Integer.compare(t1.getOrderIndex(), t2.getOrderIndex());
-            }
-        });
-
+    public DefaultResponse getStructure() throws Exception{
+        T instance = currentEntityClass.newInstance();
+        List<PropertiesResponse> properties = instance.getStructure();
         return new DefaultResponse(new ListResponse(properties));
     }
 

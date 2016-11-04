@@ -14,7 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.sdm.core.database.entity.RestEntity;
-import com.sdm.core.database.entity.UIStructure;
+import com.sdm.core.ui.UIStructure;
 import java.util.Set;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;

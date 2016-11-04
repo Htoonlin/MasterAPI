@@ -7,7 +7,7 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.database.entity.RestEntity;
-import com.sdm.core.database.entity.UIStructure;
+import com.sdm.core.ui.UIStructure;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,7 +56,7 @@ public class CurrencyEntity extends RestEntity<Integer> implements Serializable 
     private float currentRate;
 
     @Column(name = "isActive", columnDefinition = "bit(1)", nullable = false)
-    @UIStructure(order = 5, label = "Is active?")
+    @UIStructure(order = 5, label = "Is active?", inputType = "checkbox")
     private boolean active;
 
     public CurrencyEntity(int id, String sign, String code, String name, float currentRate) {

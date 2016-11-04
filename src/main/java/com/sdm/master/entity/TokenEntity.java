@@ -2,7 +2,7 @@ package com.sdm.master.entity;
 // Generated 04-Mar-2016 00:48:07 by Hibernate Tools 4.3.1
 
 import com.sdm.core.database.entity.RestEntity;
-import com.sdm.core.database.entity.UIStructure;
+import com.sdm.core.ui.UIStructure;
 
 import java.util.Date;
 import java.util.Objects;

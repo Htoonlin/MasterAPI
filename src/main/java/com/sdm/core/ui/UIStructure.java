@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.database.entity;
+package com.sdm.core.ui;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,11 +18,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface UIStructure {
 
-    public int order() default 0;
+    int order() default 0;
 
-    public boolean hideInGrid() default false;
+    boolean hideInGrid() default false;
 
-    public boolean readOnly() default false;
+    boolean readOnly() default false;
 
-    public String label() default "";
+    String label() default "";
+
+    String inputType() default "text";
+
 }

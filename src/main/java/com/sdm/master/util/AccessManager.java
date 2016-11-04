@@ -37,12 +37,16 @@ public class AccessManager implements IAccessManager {
 
     @Override
     public boolean validateToken(AuthorizeRequest request) {
+        if (request == null) {
+            return false;
+        }
+
         if (!request.isValid()) {
             logger.error(request.getErrors());
             return false;
         }
 
-        if (request.getToken() == null || request.getToken().length() != 36) {
+        if (request.getToken().length() != 36) {
             return false;
         }
         TokenDAO tokenDao = new TokenDAO(httpSession);
@@ -88,13 +92,13 @@ public class AccessManager implements IAccessManager {
         if (((int) user.getId()) == Setting.getInstance().ROOT_ID) {
             return true;
         }
-        
+
         //Skip Permission for User Methods => user
         RolesAllowed roles = method.getAnnotation(RolesAllowed.class);
-        if(roles != null){
+        if (roles != null) {
             for (int i = 0; i < roles.value().length; i++) {
                 String role = roles.value()[i];
-                if(role.equalsIgnoreCase("user")){
+                if (role.equalsIgnoreCase("user")) {
                     return true;
                 }
             }
@@ -113,7 +117,7 @@ public class AccessManager implements IAccessManager {
         if (!permission) {
             return false;
         }
-        
+
         //Set User is online
         user.setOnline(true);
         try {
