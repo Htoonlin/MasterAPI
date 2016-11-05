@@ -52,7 +52,7 @@ public class CurrencyEntity extends RestEntity<Integer> implements Serializable 
     private String name;
 
     @Column(name = "currentRate", columnDefinition = "float", nullable = false)
-    @UIStructure(order = 4, label = "Rate")
+    @UIStructure(order = 4, label = "Rate", inputType = "number")
     private float currentRate;
 
     @Column(name = "isActive", columnDefinition = "bit(1)", nullable = false)

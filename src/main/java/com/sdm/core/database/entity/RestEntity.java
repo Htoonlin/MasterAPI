@@ -38,19 +38,20 @@ import javax.validation.Validator;
  * @author Htoonlin
  * @param <PK>
  */
-
 public abstract class RestEntity<PK extends Serializable> extends DefaultEntity implements IBaseRequest, IResponseContent {
+
     private static final long serialVersionUID = 1L;
-        
+
     @JsonProperty(value = "id", index = -999)
     protected PK id;
-        
+
     public abstract PK getId();
+
     @JsonSetter(value = "id")
     public abstract void setId(PK id);
-    
-    private Date timestamp;   
-    
+
+    private Date timestamp;
+
     @JsonIgnore
     public Date getTimestamp() {
         return this.timestamp;
@@ -95,17 +96,18 @@ public abstract class RestEntity<PK extends Serializable> extends DefaultEntity 
             String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
             errors.put(propertyName, v.getMessage());
         }
-        return violoationSet.isEmpty();        
+        return violoationSet.isEmpty();
     }
-    
-    public List<PropertiesResponse> getStructure() {        
+
+    @JsonIgnore
+    public List<PropertiesResponse> getStructure() {
         List<PropertiesResponse> properties = new ArrayList<>();
-        for (Field field : this.getClass().getDeclaredFields()) {            
+        for (Field field : this.getClass().getDeclaredFields()) {
             //Check has annotations
             if (field.getAnnotations().length <= 0) {
                 continue;
             }
-            
+
             //Check JsonIgnore 
             if (field.getAnnotation(JsonIgnore.class) != null) {
                 continue;
@@ -126,7 +128,7 @@ public abstract class RestEntity<PK extends Serializable> extends DefaultEntity 
                 property.setLabel(structure.label());
                 property.setHideInGrid(structure.hideInGrid());
                 property.setReadOnly(structure.readOnly());
-                property.setOrderIndex(structure.order());                
+                property.setOrderIndex(structure.order());
             }
 
             //Db Info
@@ -135,19 +137,19 @@ public abstract class RestEntity<PK extends Serializable> extends DefaultEntity 
                 if (column.nullable()) {
                     property.setNullable(column.nullable());
                 }
-            }            
+            }
 
             //Validations Info
             properties.add(property);
         }
-        
+
         Collections.sort(properties, new Comparator<PropertiesResponse>() {
             @Override
             public int compare(PropertiesResponse t1, PropertiesResponse t2) {
                 return Integer.compare(t1.getOrderIndex(), t2.getOrderIndex());
             }
         });
-        
+
         return properties;
     }
 
