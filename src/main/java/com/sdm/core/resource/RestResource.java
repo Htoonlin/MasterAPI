@@ -11,6 +11,7 @@ import com.sdm.core.request.QueryRequest;
 import com.sdm.core.request.SyncRequest;
 import com.sdm.core.request.query.Alias;
 import com.sdm.core.request.query.Condition;
+import com.sdm.core.request.query.Expression;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
@@ -23,10 +24,13 @@ import com.sdm.core.response.SyncResponse;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 
@@ -154,7 +158,7 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     }
 
     @Override
-    public DefaultResponse getStructure() throws Exception{
+    public DefaultResponse getStructure() throws Exception {
         T instance = currentEntityClass.newInstance();
         List<PropertiesResponse> properties = instance.getStructure();
         return new DefaultResponse(new ListResponse(properties));
@@ -276,8 +280,14 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
                     query += " " + condition.getLogic().getValue();
                     query += " " + condition.getColumn();
                     query += " " + condition.getExpression().getValue();
-                    query += " :param_" + i;
-                    params.put("param_" + i, condition.getValue());
+                    if (condition.getExpression() == Expression.IN || condition.getExpression() == Expression.NIN) {
+                        query += " (:param_" + i + ")";
+                        Set<String> values = new HashSet<>(Arrays.asList(condition.getValue().toString().split(",")));
+                        params.put("param_" + i, values);
+                    } else {
+                        query += " :param_" + i;
+                        params.put("param_" + i, condition.getValue());
+                    }
                     i++;
                 }
             }
