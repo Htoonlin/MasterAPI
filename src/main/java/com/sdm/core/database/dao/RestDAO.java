@@ -8,6 +8,7 @@ package com.sdm.core.database.dao;
 import com.sdm.core.Globalizer;
 import com.sdm.core.database.entity.ITimestampEntity;
 import com.sdm.core.database.entity.ILogEntity;
+import com.sdm.core.request.query.Sort;
 import com.sdm.core.response.PaginationResponse;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
         this.useTimeStamp = ITimestampEntity.class.isAssignableFrom(entityClass);
     }
 
-    private String fetchHQL() throws Exception {
+    public String fetchHQL() throws Exception {
         String hql = "FROM " + this.entityClass.getSimpleName();
         if (useTimeStamp) {
             hql += " WHERE deletedAt IS NULL ";
@@ -93,56 +94,6 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
         Map<String, Object> params = new HashMap<>();
         params.put("lastSync", lastSync);
         return this.createQuery(hql, params).getResultList();
-    }
-
-    public PaginationResponse pagination(String searchProperty, String filter, int size, int page, String sortString) throws Exception {
-        Map<String, String> sortMaps = new HashMap<>();
-        try {
-            if (page <= 0) {
-                page = 1;
-            }
-            int start = size * (page - 1);
-            String hqlCount = " SELECT count(*) " + fetchHQL();
-            String hqlString = fetchHQL();
-            if (filter.length() > 0) {
-                String filtering = " AND " + searchProperty + " LIKE :search";
-                hqlString += filtering;
-                hqlCount += filtering;
-            }
-            if (sortString.length() > 0) {
-                String[] sorts = sortString.split(",");
-                if (sorts.length > 0) {
-                    hqlString += " ORDER BY ";
-                }
-                for (String sort : sorts) {
-                    String[] sortParams = sort.trim().split(":", 2);
-                    if (sortParams.length >= 2 && sortParams[1].equalsIgnoreCase("desc")) {
-                        hqlString += sortParams[0] + " " + sortParams[1];
-                        sortMaps.put(sortParams[0], sortParams[1]);
-                    } else {
-                        hqlString += sortParams[0];
-                        sortMaps.put(sortParams[0], "asc");
-                    }
-                    hqlString += ",";
-                }
-                if (hqlString.endsWith(",")) {
-                    hqlString = hqlString.substring(0, hqlString.length() - 1);
-                }
-            }
-
-            Map<String, Object> params = new HashMap<>();
-            if (filter.length() > 0) {
-                params.put("search", "%" + filter + "%");
-            }
-            List<T> queryList = this.createQuery(hqlString, params, size, start).getResultList();
-            long total = (long) this.createQuery(hqlCount, params).getSingleResult();
-            if (queryList != null && queryList.size() > 0) {
-                return new PaginationResponse(total, page, size, sortMaps, queryList);
-            }
-        } catch (Exception e) {
-            throw e;
-        }
-        return new PaginationResponse(0, page, size, sortMaps, new ArrayList<>());
     }
 
     public List<T> fetchAll() throws Exception {

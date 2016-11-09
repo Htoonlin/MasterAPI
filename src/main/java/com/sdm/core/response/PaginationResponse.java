@@ -7,6 +7,7 @@ package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.sdm.core.request.query.Sort;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +25,9 @@ public class PaginationResponse implements IResponseContent, Serializable {
     private long total;
     private int currentPage;
     private int pageSize;
-    private Map<String, String> sort;
+    private Map<String, Sort> sort;
 
-    public PaginationResponse(long total, int currentPage, int pageSize, Map<String, String> sort, List data) {
+    public PaginationResponse(long total, int currentPage, int pageSize, Map<String, Sort> sort, List data) {
         this.total = total;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
@@ -66,11 +67,11 @@ public class PaginationResponse implements IResponseContent, Serializable {
         this.pageSize = pageSize;
     }
 
-    public Map<String, String> getSort() {
+    public Map<String, Sort> getSort() {
         return sort;
     }
 
-    public void setSort(Map<String, String> sort) {
+    public void setSort(Map<String, Sort> sort) {
         this.sort = sort;
     }
 

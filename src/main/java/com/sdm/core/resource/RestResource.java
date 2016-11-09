@@ -12,6 +12,8 @@ import com.sdm.core.request.SyncRequest;
 import com.sdm.core.request.query.Alias;
 import com.sdm.core.request.query.Condition;
 import com.sdm.core.request.query.Expression;
+import com.sdm.core.request.query.Logical;
+import com.sdm.core.request.query.Sort;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
@@ -70,7 +72,7 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     }
 
     @Override
-    public DefaultResponse getAll() throws Exception {
+    public IBaseResponse getAll() throws Exception {
         try {
             List<T> data = mainDAO.fetchAll();
             return new DefaultResponse(new ListResponse(data));
@@ -81,10 +83,33 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     }
 
     @Override
-    public DefaultResponse getPaging(String filter, int pageId, int pageSize, String sort) throws Exception {
+    public IBaseResponse getPaging(String filter, int pageId, int pageSize, String sortString) throws Exception {
         try {
-            PaginationResponse response = mainDAO.pagination("search", filter, pageSize, pageId, sort);
-            return new DefaultResponse(response);
+            //Build Global Search
+            List<Condition> conditions = new ArrayList<>();
+            //Skip Single Quote for SQL Injection
+            filter = "%" + filter.replaceAll("'", "''") + "%"; 
+            Condition searchCondition = new Condition(Logical.MUST, Expression.LIKE, "search", filter);
+            conditions.add(searchCondition);
+
+            //Build SortMap
+            Map<String, Sort> sortMaps = new HashMap<>();
+            if (sortString.length() > 0) {
+                String[] sorts = sortString.split(",");
+                for (String sort : sorts) {
+                    String[] sortParams = sort.trim().split(":", 2);
+                    if (sortParams.length >= 2 && sortParams[1].equalsIgnoreCase("desc")) {
+                        sortMaps.put(sortParams[0], Sort.DESC);
+                    } else {
+                        sortMaps.put(sortParams[0], Sort.ASC);
+                    }
+                }
+            }
+
+            //Build Query
+            QueryRequest request = new QueryRequest(conditions, sortMaps, pageId, pageSize);
+            request.setTimeStamp(new Date().getTime());
+            return this.queryData(request);
         } catch (Exception e) {
             LOG.error(e);
             throw e;
@@ -92,7 +117,7 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     }
 
     @Override
-    public DefaultResponse getById(PK id) throws Exception {
+    public IBaseResponse getById(PK id) throws Exception {
         T data = mainDAO.fetchById(id);
         if (data == null) {
             return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
@@ -140,7 +165,7 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     }
 
     @Override
-    public DefaultResponse remove(PK id) throws Exception {
+    public IBaseResponse remove(PK id) throws Exception {
         try {
             T entity = mainDAO.fetchById(id);
             if (entity == null) {
@@ -253,25 +278,6 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
             //Init Query String
             String query = "FROM " + currentEntityClass.getSimpleName() + " WHERE deletedAt IS NULL";
 
-            //Add Selected Column
-            List<String> resultColumns = new ArrayList<>();
-            if (request.getColumns() != null && request.getColumns().size() > 0) {
-                String columns = "";
-                for (Alias column : request.getColumns()) {
-                    if (column.getAlias() != null && column.getAlias().length() > 0) {
-                        columns += column.getName() + " AS " + column.getAlias() + ",";
-                        resultColumns.add(column.getAlias());
-                    } else {
-                        columns += column.getName() + ",";
-                        resultColumns.add(column.getName());
-                    }
-                }
-                if (columns.endsWith(",")) {
-                    columns = columns.substring(0, columns.length() - 1);
-                }
-                query = "SELECT " + columns + " " + query;
-            }
-
             //Build Where Condition
             Map<String, Object> params = new HashMap<>();
             if (request.getQuery() != null) {
@@ -292,6 +298,27 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
                 }
             }
 
+            String countQuery = "SELECT count(*) " + query;
+
+            //Add Selected Column
+            List<String> resultColumns = new ArrayList<>();
+            if (request.getColumns() != null && request.getColumns().size() > 0) {
+                String columns = "";
+                for (Alias column : request.getColumns()) {
+                    if (column.getAlias() != null && column.getAlias().length() > 0) {
+                        columns += column.getName() + " AS " + column.getAlias() + ",";
+                        resultColumns.add(column.getAlias());
+                    } else {
+                        columns += column.getName() + ",";
+                        resultColumns.add(column.getName());
+                    }
+                }
+                if (columns.endsWith(",")) {
+                    columns = columns.substring(0, columns.length() - 1);
+                }
+                query = "SELECT " + columns + " " + query;
+            }
+
             //Build Sort
             if (request.getSort() != null && request.getSort().size() > 0) {
                 query += " ORDER BY";
@@ -303,8 +330,15 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
                 }
             }
 
+            //Calculate Start Index
+            if (request.getPage() <= 0) {
+                request.setPage(1);
+            }
+            int start = request.getSize() * (request.getPage() - 1);
+
             //Retrieve Data
-            List data = mainDAO.createQuery(query, params, request.getSize(), request.getStart()).getResultList();
+            List data = mainDAO.createQuery(query, params, request.getSize(), start).getResultList();
+            long total = (long) mainDAO.createQuery(countQuery, params).getSingleResult();
             if (data == null) {
                 return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your query string."));
@@ -321,10 +355,11 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
                     }
                     output.add(dataWithCol);
                 }
-                return new DefaultResponse(new ListResponse(output));
+                data = output;
             }
 
-            return new DefaultResponse(new ListResponse((List<T>) data));
+            PaginationResponse response = new PaginationResponse(total, request.getPage(), request.getSize(), request.getSort(), data);
+            return new DefaultResponse(response);
         } catch (Exception e) {
             LOG.error(e);
             throw e;

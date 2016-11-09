@@ -21,11 +21,18 @@ public class QueryRequest extends DefaultRequest implements Serializable {
     private List<Alias> columns;
     private List<Condition> query;
     private Map<String, Sort> sort;
-    private int start;
+    private int page;
     private int size;
 
+    public QueryRequest(List<Condition> query, Map<String, Sort> sort, int page, int size) {
+        this.query = query;
+        this.sort = sort;
+        this.page = page;
+        this.size = size;
+    }
+
     public QueryRequest() {
-        start = 0;
+        page = 1;
         size = 10;
     }
 
@@ -53,12 +60,12 @@ public class QueryRequest extends DefaultRequest implements Serializable {
         this.sort = sort;
     }
 
-    public int getStart() {
-        return start;
+    public int getPage() {
+        return page;
     }
 
-    public void setStart(int start) {
-        this.start = start;
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public int getSize() {

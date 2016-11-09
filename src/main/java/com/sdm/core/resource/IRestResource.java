@@ -31,11 +31,11 @@ public interface IRestResource<T extends RestEntity, PK extends Serializable> {
     @GET
     @Path("all")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getAll() throws Exception;
+    public IBaseResponse getAll() throws Exception;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getPaging(
+    public IBaseResponse getPaging(
             @DefaultValue("") @QueryParam("filter") String filter,
             @DefaultValue("1") @QueryParam("page") int pageId,
             @DefaultValue("10") @QueryParam("size") int pageSize,
@@ -44,7 +44,7 @@ public interface IRestResource<T extends RestEntity, PK extends Serializable> {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getById(@PathParam("id") PK id) throws Exception;
+    public IBaseResponse getById(@PathParam("id") PK id) throws Exception;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -60,5 +60,5 @@ public interface IRestResource<T extends RestEntity, PK extends Serializable> {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse remove(@PathParam("id") PK id) throws Exception;
+    public IBaseResponse remove(@PathParam("id") PK id) throws Exception;
 }

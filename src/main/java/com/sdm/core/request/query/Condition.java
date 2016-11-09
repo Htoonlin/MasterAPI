@@ -18,6 +18,16 @@ public class Condition implements Serializable {
     private String column;
     private Object value;
 
+    public Condition() {
+    }
+
+    public Condition(Logical logic, Expression expression, String column, Object value) {
+        this.logic = logic;
+        this.expression = expression;
+        this.column = column;
+        this.value = value;
+    }
+
     public Logical getLogic() {
         return logic;
     }
