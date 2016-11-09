@@ -18,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.hibernate.annotations.Formula;
 
 /**
  *
@@ -33,6 +34,10 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     public static final char EXTERNAL = 'E';
     public static final char TRASH = 'T';
 
+    @JsonIgnore
+    @Formula(value = "concat(name, extension, type)")
+    private String search;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
@@ -47,11 +52,11 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     @Column(name = "extension", columnDefinition = "varchar(10)", nullable = false)
     private String extension;
 
-    @UIStructure(order = 3, label = "Type") 
+    @UIStructure(order = 3, label = "Type")
     @Column(name = "type", columnDefinition = "varchar(50)", nullable = false)
     private String type;
 
-    @JsonIgnore    
+    @JsonIgnore
     @Column(name = "size", columnDefinition = "bigint", nullable = false)
     private long fileSize;
 
@@ -87,6 +92,14 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
         this.type = type;
         this.fileSize = fileSize;
         this.storagePath = storagePath;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
     }
 
     @Override

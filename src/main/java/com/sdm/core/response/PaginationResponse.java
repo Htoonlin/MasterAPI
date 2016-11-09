@@ -7,6 +7,7 @@ package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.sdm.core.request.query.Condition;
 import com.sdm.core.request.query.Sort;
 import java.io.Serializable;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Map;
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "sort", "data"})
+@JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "query", "sort", "data"})
 public class PaginationResponse implements IResponseContent, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,14 +26,16 @@ public class PaginationResponse implements IResponseContent, Serializable {
     private long total;
     private int currentPage;
     private int pageSize;
+    private List<Condition> query;
     private Map<String, Sort> sort;
 
-    public PaginationResponse(long total, int currentPage, int pageSize, Map<String, Sort> sort, List data) {
+    public PaginationResponse(long total, int currentPage, int pageSize, List<Condition> query, Map<String, Sort> sort, List data) {
         this.total = total;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
-        this.data = data;
+        this.query = query;
         this.sort = sort;
+        this.data = data;
     }
 
     public int getPageCount() {
@@ -65,6 +68,14 @@ public class PaginationResponse implements IResponseContent, Serializable {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public List<Condition> getQuery() {
+        return query;
+    }
+
+    public void setQuery(List<Condition> query) {
+        this.query = query;
     }
 
     public Map<String, Sort> getSort() {

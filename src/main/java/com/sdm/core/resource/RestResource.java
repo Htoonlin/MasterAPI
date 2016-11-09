@@ -86,9 +86,9 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     public IBaseResponse getPaging(String filter, int pageId, int pageSize, String sortString) throws Exception {
         try {
             //Build Global Search
-            List<Condition> conditions = new ArrayList<>();
-            //Skip Single Quote for SQL Injection
-            filter = "%" + filter.replaceAll("'", "''") + "%"; 
+                List<Condition> conditions = new ArrayList<>();
+            //Skip Single Quote for SQL 
+            filter = "%" + filter + "%";
             Condition searchCondition = new Condition(Logical.MUST, Expression.LIKE, "search", filter);
             conditions.add(searchCondition);
 
@@ -358,7 +358,8 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
                 data = output;
             }
 
-            PaginationResponse response = new PaginationResponse(total, request.getPage(), request.getSize(), request.getSort(), data);
+            PaginationResponse response = new PaginationResponse(total, request.getPage(),
+                    request.getSize(), request.getQuery(), request.getSort(), data);
             return new DefaultResponse(response);
         } catch (Exception e) {
             LOG.error(e);
