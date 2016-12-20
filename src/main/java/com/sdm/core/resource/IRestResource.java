@@ -7,7 +7,6 @@ package com.sdm.core.resource;
 
 import com.sdm.core.database.entity.RestEntity;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.DefaultResponse;
 import java.io.Serializable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -39,7 +38,7 @@ public interface IRestResource<T extends RestEntity, PK extends Serializable> {
             @DefaultValue("") @QueryParam("filter") String filter,
             @DefaultValue("1") @QueryParam("page") int pageId,
             @DefaultValue("10") @QueryParam("size") int pageSize,
-            @DefaultValue("id:asc") @QueryParam("sort") String sort) throws Exception;
+            @DefaultValue("id:ASC") @QueryParam("sort") String sort) throws Exception;
 
     @GET
     @Path("{id}")

@@ -28,7 +28,7 @@ public class MailgunService {
 
     private static final Logger LOG = Logger.getLogger(MailgunService.class.getName());
 
-    private final String MAILGUN_URL = "https://api.mailgun.net/v3/";
+    private final String MAILGUN_URL = "https://api.mailgun.net/v3/"; 
 
     private final String SEND_PATH = Setting.getInstance().MAILGUN_DOMAIN + "/messages";
     private final String VALIDATE_PATH = "address/validate";

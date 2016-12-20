@@ -8,8 +8,6 @@ package com.sdm.core.database.dao;
 import com.sdm.core.Globalizer;
 import com.sdm.core.database.entity.ITimestampEntity;
 import com.sdm.core.database.entity.ILogEntity;
-import com.sdm.core.request.query.Sort;
-import com.sdm.core.response.PaginationResponse;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;

@@ -23,10 +23,18 @@
         <log4j.version>1.2.17</log4j.version>
         <apache.poi.version>3.14</apache.poi.version>
         <velocity.version>1.7</velocity.version>
+        <sqlite.version>3.15.1</sqlite.version>
         <language.detect.version>0.6</language.detect.version>
     </properties>
     
     <dependencies>
+        
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqlite.version}</version>
+        </dependency>
         
         <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
         <dependency>
@@ -36,11 +44,6 @@
         </dependency>
          
         <!-- Version 1.5 Dependencies -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate.validator.version}</version>            
-        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
