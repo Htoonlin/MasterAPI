@@ -44,8 +44,9 @@ public class JSPTemplateManager implements ITemplateManager {
 
     @Context
     private HttpServletResponse response;
-    
-    @Context HttpServletRequest request;
+
+    @Context
+    private HttpServletRequest request;
 
     @Override
     public String buildTemplate(String template, Map<String, Object> data) {
@@ -53,7 +54,7 @@ public class JSPTemplateManager implements ITemplateManager {
             for (Map.Entry<String, Object> entry : data.entrySet()) {
                 request.setAttribute(entry.getKey(), entry.getValue());
             }
-            TemplateWriter writer = new TemplateWriter(response);            
+            TemplateWriter writer = new TemplateWriter(response);
             template = Setting.getInstance().TEMPLATE_PATH + template;
             request.getRequestDispatcher(template).forward(request, writer);
             return writer.getContent();

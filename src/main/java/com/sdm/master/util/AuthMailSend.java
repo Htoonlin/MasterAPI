@@ -7,6 +7,7 @@ package com.sdm.master.util;
 
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
+import com.sdm.core.util.ITemplateManager;
 import com.sdm.core.util.SecurityInstance;
 import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
@@ -16,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.inject.Inject;
 
 /**
  *
@@ -23,6 +25,13 @@ import java.util.Map;
  */
 public class AuthMailSend {
 
+    private final ITemplateManager manager;
+
+    public AuthMailSend(ITemplateManager manager) {
+        this.manager = manager;
+    }
+    
+    
     private UserEntity setToken(UserEntity user) {
         user.setOtpToken(Globalizer.generateToken(UserEntity.TOKEN_LENGTH));
         Calendar cal = Calendar.getInstance();
@@ -51,10 +60,10 @@ public class AuthMailSend {
         data.put("user", user.getDisplayName());
         data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
-        
-        /*MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "Forget password response", Entity.html(mailBody).toString());
-        MailgunService.getInstance().sendHTML(info);*/
+        String mailBody = manager.buildTemplate("mail/forget-password.jsp", data);
+        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
+                user.getEmail(), "Forget password response", mailBody);
+        MailgunService.getInstance().sendHTML(info);
     }
 
     public void activateLink(UserEntity user, String deviceId) throws Exception {
@@ -67,12 +76,13 @@ public class AuthMailSend {
         data.put("user", user.getDisplayName());
         data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));        
-        
-        /*MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "Activate your account on SUNDEW MASTER API.", Entity.html(mailBody).toString());
-        MailgunService.getInstance().sendHTML(info);*/
+        String mailBody = manager.buildTemplate("mail/auth-activate.jsp", data);
+        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
+                user.getEmail(), "Activate your account on SUNDEW MASTER API.", mailBody);
+        MailgunService.getInstance().sendHTML(info);
     }
 
+    /*
     public void otpToken(UserEntity user, String type) throws Exception {
         user = this.setToken(user);
         StringBuilder mailContent = new StringBuilder();
@@ -107,5 +117,5 @@ public class AuthMailSend {
                 user.getEmail(), "New generated password for your request.",
                 mailContent.toString());
         MailgunService.getInstance().sendHTML(info);
-    }
+    } */
 }

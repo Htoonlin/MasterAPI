@@ -48,8 +48,11 @@ import org.apache.log4j.Logger;
 public class AuthResource extends DefaultResource {
 
     private static final Logger logger = Logger.getLogger(AuthResource.class.getName());
+
+    @Inject
+    ITemplateManager templateManager;
+
     private UserDAO userDao;
-    private AuthMailSend mailSend;
     public static final String LOGIN_FAILED_COUNT = "LOGIN_FAILED_COUNT";
 
     private int getFailed() {
@@ -63,10 +66,6 @@ public class AuthResource extends DefaultResource {
     private int blockTime() {
         int seconds = getHttpSession().getMaxInactiveInterval() * 2;
         return (seconds / 60);
-    }
-
-    public AuthResource() {
-        mailSend = new AuthMailSend();
     }
 
     @PostConstruct
@@ -180,6 +179,7 @@ public class AuthResource extends DefaultResource {
             user = new UserEntity(request.getEmail(),
                     request.getDisplayName(), password, true,
                     request.getCountry(), UserEntity.PENDING);
+            AuthMailSend mailSend = new AuthMailSend(templateManager);
             mailSend.activateLink(user, userAgentString);
             userDao.insert(user, true);
             MessageResponse response = new MessageResponse(200, ResponseType.SUCCESS,
@@ -190,9 +190,6 @@ public class AuthResource extends DefaultResource {
             throw e;
         }
     }
-
-    @Inject
-    ITemplateManager templateManager;
 
     @PermitAll
     @GET
@@ -210,6 +207,10 @@ public class AuthResource extends DefaultResource {
             if (response.getContent() instanceof UserEntity) {
                 data.put("title", "Activation Success");
                 data.put("message", "<p>Your account is ready. Thank you for your registration.</p>");
+            } else if (response.getContent() instanceof MessageResponse) {
+                MessageResponse message = (MessageResponse)response.getContent();
+                data.put("title", message.getTitle());
+                data.put("message", "<p class=\"text-warning\">" + message.getMessage() + "</p>");
             } else {
                 data.put("title", "Activation Failed");
                 data.put("message", "<p class=\"text-warning\">Sorry! Your activation token is <strong>Invalid.</strong></p>");
@@ -240,15 +241,17 @@ public class AuthResource extends DefaultResource {
                 return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your request."));
             }
-            userDao.beginTransaction();
+            
             if (user.getOtpExpired().before(new Date())) {
+                AuthMailSend mailSend = new AuthMailSend(templateManager);
                 mailSend.activateLink(user, userAgentString);
-                userDao.update(user, false);
+                userDao.update(user, true);
                 MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
                         "TOKEN_EXPIRE", "Sorry! Your token has expired. We send new token to your email.");
                 return new DefaultResponse(message);
             }
 
+            userDao.beginTransaction();
             user.setOtpToken(null);
             user.setOtpExpired(null);
             user.setStatus(UserEntity.ACTIVE);
@@ -286,6 +289,7 @@ public class AuthResource extends DefaultResource {
             }
 
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
+                AuthMailSend mailSend = new AuthMailSend(templateManager);
                 mailSend.forgetPasswordLink(user);
                 userDao.update(user, true);
                 message = new MessageResponse(400, ResponseType.WARNING,
@@ -325,6 +329,7 @@ public class AuthResource extends DefaultResource {
                 if (user == null) {
                     message = new MessageResponse(400, ResponseType.WARNING, "INVALID_EMAIL", "Invalid email address.");
                 } else {
+                    AuthMailSend mailSend = new AuthMailSend(templateManager);
                     mailSend.forgetPasswordLink(user);
                     userDao.update(user, true);
                     message = new MessageResponse(200, ResponseType.SUCCESS, "SUCCESS", "We send the reset password link to your e-mail.");

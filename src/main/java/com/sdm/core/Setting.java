@@ -22,7 +22,7 @@ public final class Setting {
     
     /* Storage Settings */
     public String STORAGE_PATH;
-    public String PUBLIC_FILE_PATH;
+    public String BASE_PATH;
     public String TEMPLATE_PATH;
 
     /* Mail Gun Settings */
@@ -74,7 +74,7 @@ public final class Setting {
                 settingProps.load(inputStream);
                 ENVIRONMENT = settingProps.getProperty("SYSTEM_ENVIRONMENT", "BETA");
                 STORAGE_PATH = settingProps.getProperty("STORAGE_PATH", "");
-                PUBLIC_FILE_PATH = settingProps.getProperty("PUBLIC_FILE_PATH", "/file/public/{token}.{ext}");
+                BASE_PATH = settingProps.getProperty("BASE_PATH", "http://localhost:8080/MasterAPI");
                 TEMPLATE_PATH = settingProps.getProperty("TEMPLATE_PATH", "/WEB-INF/");
                 
                 DATE_TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_TIME_FORMAT", "yyyy-MM-dd HH:mm:ss"));

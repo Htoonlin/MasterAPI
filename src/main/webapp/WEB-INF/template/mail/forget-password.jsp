@@ -4,6 +4,7 @@
     Author     : Htoonlin
 --%>
 
+<%@page import="com.sdm.core.Setting"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -22,7 +23,7 @@
 				<p style="warning"><strong>No!</strong> : Delete this email because someone is trying to hack your account.</p>
                 <p><strong>Yes!</strong> : Click the following link to reset password your account:</p>
                 <p style="margin:25px 0px;">
-                    <a href="https://bot.sundewmyanmar.com/MasterAPI/reset-password.jsp?token=${token}" 
+                    <a href="<%= Setting.getInstance().BASE_PATH %>/reset-password.jsp?token=${token}" 
 						style="text-decoration:none;color: #fff;padding: 8px 20px;background: #FF7500;border: 1px solid #EA9D2A;font-weight: bold;">                        
                         Click here to reset your account now!
                     </a>

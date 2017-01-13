@@ -4,6 +4,7 @@
     Author     : Htoonlin
 --%>
 
+<%@page import="com.sdm.core.Setting"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -20,8 +21,8 @@
                 <p>Hi <i>${user}</i>, </p>
                 <p>Please click the following link to activate your account:</p>
                 <p style="margin:25px 0px;">
-                    <a href="https://bot.sundewmyanmar.com/MasterAPI/api/auth/activate/?token=${token}" 
-						style="text-decoration:none;color: #fff;padding: 8px 20px;background: #FF7500;border: 1px solid #EA9D2A;font-weight: bold;">                        
+                    <a href="<%= Setting.getInstance().BASE_PATH %>api/auth/activate/?token=${token}" 
+                       style="text-decoration:none;color: #fff;padding: 8px 20px;background: #FF7500;border: 1px solid #EA9D2A;font-weight: bold;">                        
                         Click here to activate your account now!
                     </a>
                 </p>    
@@ -30,7 +31,7 @@
             </div>
             <div style="color: #bfbbb9;background-color: #fbf2db;border-top:1px solid #c5a456;padding: 20px 50px;text-align: center;font-size: 10pt;">                                                     
                 <p>
-                    Copyright Â© 2011 - ${current_year} by <a style="color: #71bcff;text-decoration:none; font-size:10pt;" href="http://www.sundewmyanmar.com">SUNDEW MYANMAR</a>. <br>
+                    Copyright © 2011 - ${current_year} by <a style="color: #71bcff;text-decoration:none; font-size:10pt;" href="http://www.sundewmyanmar.com">SUNDEW MYANMAR</a>. <br>
                     All rights reserved.
                 </p>
             </div>

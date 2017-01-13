@@ -4,6 +4,7 @@
     Author     : Htoonlin
 --%>
 
+<%@page import="com.sdm.core.Setting"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -13,7 +14,7 @@
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>  
-        <link href="https://bot.sundewmyanmar.com/MasterAPI/css/auth.css" rel="stylesheet" type="text/css" />
+        <link href="<%= Setting.getInstance().BASE_PATH %>/css/auth.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
         <div class="container">

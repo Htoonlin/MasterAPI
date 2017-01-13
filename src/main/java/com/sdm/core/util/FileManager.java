@@ -45,7 +45,8 @@ public class FileManager {
     }
 
     public static String publicFileURL(String token, String ext) {
-        return UriBuilder.fromUri(Setting.getInstance().PUBLIC_FILE_PATH)
+        String uri = Setting.getInstance().BASE_PATH + "/file/public/{token}.{ext}";
+        return UriBuilder.fromUri(uri.replaceAll("//", "/"))
                 .resolveTemplate("token", token)
                 .resolveTemplate("ext", ext).build().toString();
     }
