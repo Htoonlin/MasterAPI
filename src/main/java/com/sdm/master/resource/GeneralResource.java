@@ -13,6 +13,8 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.util.GeoIPManager;
 import com.sdm.core.util.MyanmarFontManager;
 import com.sdm.master.dao.GeoIPCacheDAO;
+import com.sdm.master.dao.UserDAO;
+import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -31,6 +33,11 @@ import org.apache.log4j.Logger;
 public class GeneralResource extends DefaultResource {
 
     private static final Logger LOG = Logger.getLogger(ProfileResource.class.getName());
+    
+     @PostConstruct
+    public void onLoad() {
+        LOG.info("Welcome...");
+    }
 
     @PermitAll
     @GET

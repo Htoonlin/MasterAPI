@@ -16,8 +16,9 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.util.ITemplateManager;
 import com.sdm.core.util.SecurityInstance;
-import com.sdm.core.util.TemplateManager;
+import com.sdm.core.util.JSPTemplateManager;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.TokenEntity;
@@ -31,10 +32,12 @@ import eu.bitwalker.useragentutils.UserAgent;
 import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.*;
 import javax.ws.rs.*;
 import org.apache.log4j.Logger;
-import org.apache.velocity.VelocityContext;
 
 /**
  * REST Web Service
@@ -188,12 +191,16 @@ public class AuthResource extends DefaultResource {
         }
     }
 
+    @Inject
+    ITemplateManager templateManager;
+
     @PermitAll
     @GET
     @Path("activate")
-    @Produces("text/html")
+    @Produces(MediaType.TEXT_HTML)
     public Response linkActivation(@DefaultValue("") @QueryParam("token") String request) throws Exception {
-        VelocityContext data = new VelocityContext();
+
+        Map<String, Object> data = new HashMap<>();
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         try {
             request = SecurityInstance.base64Decode(request);
@@ -212,7 +219,8 @@ public class AuthResource extends DefaultResource {
             data.put("title", "SERVER ERROR");
             data.put("message", "<p class=\"text-danger\">" + e.getLocalizedMessage() + "</p>");
         }
-        String output = TemplateManager.mergeTemplate("auth-message.vm", data);
+
+        String output = templateManager.buildTemplate("auth-message.jsp", data);
         return Response.ok(output).build();
     }
 

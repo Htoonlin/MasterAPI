@@ -23,6 +23,7 @@ public final class Setting {
     /* Storage Settings */
     public String STORAGE_PATH;
     public String PUBLIC_FILE_PATH;
+    public String TEMPLATE_PATH;
 
     /* Mail Gun Settings */
     public String MAILGUN_PRI_API_KEY;
@@ -49,8 +50,8 @@ public final class Setting {
     public String ACCESS_CONTROL_ALLOW_ORIGIN;
     public String ACCESS_CONTROL_ALLOW_METHOD;
     public String ACCESS_CONTROL_ALLOW_HEADERS;
-    public String ACCESS_CONTROL_MAX_AGE;
-
+    public String ACCESS_CONTROL_MAX_AGE;    
+    
     private final Properties settingProps;
     
     private static Setting instance;
@@ -74,6 +75,7 @@ public final class Setting {
                 ENVIRONMENT = settingProps.getProperty("SYSTEM_ENVIRONMENT", "BETA");
                 STORAGE_PATH = settingProps.getProperty("STORAGE_PATH", "");
                 PUBLIC_FILE_PATH = settingProps.getProperty("PUBLIC_FILE_PATH", "/file/public/{token}.{ext}");
+                TEMPLATE_PATH = settingProps.getProperty("TEMPLATE_PATH", "/WEB-INF/");
                 
                 DATE_TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_TIME_FORMAT", "yyyy-MM-dd HH:mm:ss"));
                 DATE_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_FORMAT", "yyyy-MM-dd"));

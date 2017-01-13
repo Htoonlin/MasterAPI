@@ -8,7 +8,6 @@ package com.sdm.master.util;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.util.SecurityInstance;
-import com.sdm.core.util.TemplateManager;
 import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.master.entity.UserEntity;
@@ -52,10 +51,10 @@ public class AuthMailSend {
         data.put("user", user.getDisplayName());
         data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
-        String mailBody = TemplateManager.mergeTemplate("/mail/forget-password.vm", data);
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "Forget password response", mailBody);
-        MailgunService.getInstance().sendHTML(info);
+        
+        /*MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
+                user.getEmail(), "Forget password response", Entity.html(mailBody).toString());
+        MailgunService.getInstance().sendHTML(info);*/
     }
 
     public void activateLink(UserEntity user, String deviceId) throws Exception {
@@ -67,11 +66,11 @@ public class AuthMailSend {
         data.put("expire", Setting.getInstance().OTP_LIFE);
         data.put("user", user.getDisplayName());
         data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
-        data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
-        String mailBody = TemplateManager.mergeTemplate("/mail/auth-activate.vm", data);
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "Activate your account on SUNDEW MASTER API.", mailBody);
-        MailgunService.getInstance().sendHTML(info);
+        data.put("current_year", Globalizer.getDateString("yyyy", new Date()));        
+        
+        /*MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
+                user.getEmail(), "Activate your account on SUNDEW MASTER API.", Entity.html(mailBody).toString());
+        MailgunService.getInstance().sendHTML(info);*/
     }
 
     public void otpToken(UserEntity user, String type) throws Exception {
