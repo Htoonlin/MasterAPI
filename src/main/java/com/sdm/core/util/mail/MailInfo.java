@@ -5,6 +5,8 @@
  */
 package com.sdm.core.util.mail;
 
+import java.io.File;
+
 /**
  *
  * @author Htoonlin
@@ -80,6 +82,4 @@ public class MailInfo {
     public void setBody(String body) {
         this.body = body;
     }
-    
-    
 }

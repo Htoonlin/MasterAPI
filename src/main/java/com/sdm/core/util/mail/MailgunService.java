@@ -8,17 +8,23 @@ package com.sdm.core.util.mail;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.util.mail.response.ValidateResponse;
+import java.io.File;
 import java.io.IOException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.ClientResponse;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
 /**
  *
@@ -28,7 +34,7 @@ public class MailgunService {
 
     private static final Logger LOG = Logger.getLogger(MailgunService.class.getName());
 
-    private final String MAILGUN_URL = "https://api.mailgun.net/v3/"; 
+    private final String MAILGUN_URL = "https://api.mailgun.net/v3/";
 
     private final String SEND_PATH = Setting.getInstance().MAILGUN_DOMAIN + "/messages";
     private final String VALIDATE_PATH = "address/validate";
@@ -86,6 +92,38 @@ public class MailgunService {
             LOG.error(e);
             throw e;
         }
+    }
+
+    public Response sendAttachment(MailInfo mailInfo, File attachment, MediaType attachmentType) {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(MAILGUN_URL).path(SEND_PATH);
+        target.register(MultiPartFeature.class);
+        target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PRI_API_KEY));
+
+        FormDataMultiPart formData = new FormDataMultiPart();
+        formData.field("from", mailInfo.getFrom());
+
+        formData.field("to", mailInfo.getTo());
+
+        if (mailInfo.getCc() != null) {
+            formData.field("cc", mailInfo.getCc());
+        }
+
+        if (mailInfo.getBcc() != null) {
+            formData.field("bcc", mailInfo.getBcc());
+        }
+
+        formData.field("subject", mailInfo.getSubject());
+        formData.field("html", mailInfo.getBody());
+
+        formData.bodyPart(new FileDataBodyPart("attachment", attachment, attachmentType));
+        Response response = target.request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                .post(Entity.entity(formData, MediaType.MULTIPART_FORM_DATA));
+        if (response.getStatus() == 200) {
+            return response;
+        }
+
+        return null;
     }
 
     public Response sendHTML(MailInfo mailInfo) throws Exception {
