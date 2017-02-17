@@ -46,6 +46,9 @@ public class ApplicationConfig extends Application {
         //Inject AccessManager
         Injections.addBinding(Injections.newBinder(AccessManager.class).to(IAccessManager.class), dc);
         
+        //Inject TemplateManager
+        Injections.addBinding(Injections.newBinder(JSPTemplateManager.class).to(ITemplateManager.class), dc);
+        
         dc.commit();
     }
 
