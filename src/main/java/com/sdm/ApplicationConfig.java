@@ -10,6 +10,8 @@ import com.sdm.core.di.HttpSessionFactory;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.master.util.AccessManager;
 import com.sdm.core.filter.JacksonObjectMapper;
+import com.sdm.core.util.ITemplateManager;
+import com.sdm.core.util.JSPTemplateManager;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,12 +87,6 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper.class);
-        resources.add(com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper.class);
-        resources.add(com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider.class);
-        resources.add(com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider.class);
-        resources.add(com.fasterxml.jackson.jaxrs.json.JsonMappingExceptionMapper.class);
-        resources.add(com.fasterxml.jackson.jaxrs.json.JsonParseExceptionMapper.class);
         resources.add(com.sdm.core.exception.GenericExceptionMapper.class);
         resources.add(com.sdm.core.exception.IllegalStateExceptionMapper.class);
         resources.add(com.sdm.core.exception.UnrecognizedPropertyExceptionMapper.class);
@@ -106,8 +102,5 @@ public class ApplicationConfig extends Application {
         resources.add(com.sdm.master.resource.ProfileResource.class);
         resources.add(com.sdm.master.resource.RoleResource.class);
         resources.add(com.sdm.master.resource.UserResource.class);
-        resources.add(org.glassfish.jersey.server.wadl.internal.WadlResource.class);
-        resources.add(org.glassfish.json.jaxrs.JsonStructureBodyReader.class);
-        resources.add(org.glassfish.json.jaxrs.JsonStructureBodyWriter.class);
     }
 }
