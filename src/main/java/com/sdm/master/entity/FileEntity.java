@@ -45,15 +45,15 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     private long id;
 
     @UIStructure(order = 1, label = "Name")
-    @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "name", columnDefinition = "varchar(255)",length=255, nullable = false)
     private String name;
 
     @UIStructure(order = 2, label = "Ext.")
-    @Column(name = "extension", columnDefinition = "varchar(10)", nullable = false)
+    @Column(name = "extension", columnDefinition = "varchar(10)",length=10, nullable = false)
     private String extension;
 
     @UIStructure(order = 3, label = "Type")
-    @Column(name = "type", columnDefinition = "varchar(50)", nullable = false)
+    @Column(name = "type", columnDefinition = "varchar(50)",length=50, nullable = false)
     private String type;
 
     @JsonIgnore
@@ -61,19 +61,19 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     private long fileSize;
 
     @JsonIgnore
-    @Column(name = "storagePath", columnDefinition = "varchar(1000)", nullable = false)
+    @Column(name = "storagePath", columnDefinition = "varchar(1000)",length=1000, nullable = false)
     private String storagePath;
 
     @UIStructure(order = 4, label = "External URL")
-    @Column(name = "externalURL", columnDefinition = "varchar(1000)", nullable = false)
+    @Column(name = "externalURL", columnDefinition = "varchar(1000)",length=1000, nullable = false)
     private String externalURL;
 
     @JsonIgnore
-    @Column(name = "publicToken", columnDefinition = "char(12)", nullable = false)
+    @Column(name = "publicToken", columnDefinition = "char(12)",length=12, nullable = false)
     private String publicToken;
 
     @UIStructure(order = 5, label = "Status")
-    @Column(name = "status", columnDefinition = "char(1)", nullable = false)
+    @Column(name = "status", columnDefinition = "char(1)",length=1, nullable = false)
     private char status;
 
     public FileEntity() {

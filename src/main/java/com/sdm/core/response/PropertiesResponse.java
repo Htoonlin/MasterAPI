@@ -26,6 +26,15 @@ public class PropertiesResponse implements Serializable {
     private boolean hideInGrid;
     private boolean nullable;
     private int orderIndex;
+    private int length;
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
 
     @JsonGetter("request_name")
     public String getRequestName() {

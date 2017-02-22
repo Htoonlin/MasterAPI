@@ -45,11 +45,11 @@ public class RoleEntity extends RestEntity<Integer> implements Serializable {
     private int id;
 
     @UIStructure(order = 1, label = "Name")
-    @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "name", columnDefinition = "varchar(255)", length=255, nullable = false)
     private String name;
 
     @UIStructure(order = 2, label = "Description")
-    @Column(name = "description", columnDefinition = "varchar(500)", nullable = false)
+    @Column(name = "description", columnDefinition = "varchar(500)", length=500, nullable = false)
     private String description;
 
     @JsonIgnore

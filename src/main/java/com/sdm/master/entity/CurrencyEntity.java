@@ -39,15 +39,15 @@ public class CurrencyEntity extends RestEntity<Integer> implements Serializable 
     @UIStructure(order = 0, label = "#", readOnly = true)
     private int id;
 
-    @Column(name = "sign", columnDefinition = "varchar(5)", nullable = false)
+    @Column(name = "sign", columnDefinition = "varchar(5)",length=5, nullable = false)
     @UIStructure(order = 1, label = "Sign")
     private String sign;
 
-    @Column(name = "code", columnDefinition = "char(3)", unique = true, nullable = false)
+    @Column(name = "code", columnDefinition = "char(3)", length=3, unique = true, nullable = false)
     @UIStructure(order = 2, label = "Code")
     private String code;
 
-    @Column(name = "name", columnDefinition = "varchar(100)", nullable = false)
+    @Column(name = "name", columnDefinition = "varchar(100)", length=100, nullable = false)
     @UIStructure(order = 3, label = "Name")
     private String name;
 

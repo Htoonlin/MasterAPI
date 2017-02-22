@@ -45,15 +45,15 @@ public class PermissionEntity extends RestEntity<Integer> implements Serializabl
     private int roleId;
     
     @UIStructure(order = 2, label = "Class")
-    @Column(name = "resourceClass", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "resourceClass", columnDefinition = "varchar(255)",length=255, nullable = false)
     private String resourceClass;    
     
     @UIStructure(order = 3, label = "Method")
-    @Column(name = "resourceMethod", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "resourceMethod", columnDefinition = "varchar(255)",length=255, nullable = false)
     private String resourceMethod;
     
     @UIStructure(order = 4, label = "Http-Method")
-    @Column(name = "requestMethod", columnDefinition = "varchar(10)", nullable = false)
+    @Column(name = "requestMethod", columnDefinition = "varchar(10)",length=10, nullable = false)
     private String requestMethod;
 
     @Override

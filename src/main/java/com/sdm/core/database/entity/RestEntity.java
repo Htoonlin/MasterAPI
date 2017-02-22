@@ -115,6 +115,7 @@ public abstract class RestEntity<PK extends Serializable> extends DefaultEntity 
             //General info
             property.setName(field.getName());
             property.setType(field.getType().getSimpleName());
+
             if (field.getAnnotation(Id.class) != null) {
                 property.setPrimary(true);
             }
@@ -128,13 +129,14 @@ public abstract class RestEntity<PK extends Serializable> extends DefaultEntity 
                 property.setReadOnly(structure.readOnly());
                 property.setOrderIndex(structure.order());
             }
-
+            
             //Db Info
             Column column = field.getAnnotation(Column.class);
             if (column != null) {
                 if (column.nullable()) {
                     property.setNullable(column.nullable());
                 }
+                property.setLength(column.length());
             }
 
             //Validations Info

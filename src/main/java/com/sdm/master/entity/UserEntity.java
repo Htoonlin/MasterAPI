@@ -55,11 +55,11 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
     private int id;
 
     @UIStructure(order = 1, label = "E-mail")
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length=255)
     private String email;
 
     @UIStructure(order = 2, label = "Name")
-    @Column(name = "displayName", nullable = false)
+    @Column(name = "displayName", nullable = false, length=255)
     private String displayName;
 
     @UIStructure(order = 3, label = "Roles", hideInGrid = true)
