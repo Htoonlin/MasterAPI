@@ -12,3 +12,4 @@ buildNumber.properties
 /src/main/resources/log4j.properties
 /src/main/resources/setting.properties
 /src/main/resources/hibernate.cfg.xml
+/src/main/java/com/sdm/vote/
