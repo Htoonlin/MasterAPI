@@ -102,5 +102,10 @@ public class ApplicationConfig extends Application {
         resources.add(com.sdm.master.resource.ProfileResource.class);
         resources.add(com.sdm.master.resource.RoleResource.class);
         resources.add(com.sdm.master.resource.UserResource.class);
+        resources.add(com.sdm.vote.resource.CandidateResource.class);
+        resources.add(com.sdm.vote.resource.HouseResource.class);
+        resources.add(com.sdm.vote.resource.PartyResource.class);
+        resources.add(com.sdm.vote.resource.PollingStationResource.class);
+        resources.add(com.sdm.vote.resource.TownshipResource.class);
     }
 }

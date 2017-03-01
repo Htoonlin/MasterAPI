@@ -13,3 +13,5 @@ buildNumber.properties
 /src/main/resources/setting.properties
 /src/main/resources/hibernate.cfg.xml
 /src/main/java/com/sdm/vote/
+/src/main/resources/
+/src/main/webapp/META-INF/
