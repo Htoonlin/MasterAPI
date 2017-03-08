@@ -15,4 +15,4 @@ buildNumber.properties
 /src/main/java/com/sdm/vote/
 /src/main/resources/
 /src/main/webapp/META-INF/
-/src/main/java/com/sdm/master/ApplicationConfig.java
+/src/main/java/com/sdm/ApplicationConfig.java
