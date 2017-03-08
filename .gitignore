@@ -1,4 +1,5 @@
 target/
+pom.xml
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -7,6 +8,7 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+/src/main/webapp/META-INF/context.xml
 /src/main/java/com/sdm/messenger/
 /src/main/resources/velocity.properties
 /src/main/resources/log4j.properties
