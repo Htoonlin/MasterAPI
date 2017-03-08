@@ -138,7 +138,7 @@
         
     </dependencies>
     <build>
-        <finalName>SundewVoteAPI</finalName>
+        <finalName>MasterAPI</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
