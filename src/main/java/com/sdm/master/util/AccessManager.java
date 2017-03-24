@@ -89,7 +89,7 @@ public class AccessManager implements IAccessManager {
         }
 
         //Skip Permission for ROOT USER
-        if (((int) user.getId()) == Setting.getInstance().ROOT_ID) {
+        if (((long) user.getId()) == Setting.getInstance().ROOT_ID) {
             return true;
         }
 

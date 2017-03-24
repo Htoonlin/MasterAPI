@@ -1,11 +1,13 @@
 package com.sdm.core.util;
 
+import java.io.StringReader;
 import org.apache.log4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 
 /**
  * Created by Converter => saturngod on 23/1/15. Zawgyi Detector => Technomation Studio
@@ -119,28 +121,24 @@ public class MyanmarFontManager {
     private static final Pattern IS_UNICODE_PATTERN = Pattern.compile("[ဃငစဆဇဈဉညတဋဌဍဎဏဒဓနဘရဝဟဠအ]်|"
             + "ျ[က-အ]ါ|ျ[ါ-း]|\u103e|\u103f|\u1031[^\u1000-\u1021\u103b\u106a\u106b\u107e-\u1084\u108f\u1090]|"
             + "\u1031$|\u100b\u1039|\u1031[က-အ]\u1032|\u1025\u102f|\u103c\u103d");
-    
+
     private static String convert(String rule, String output) {
+        JsonReader reader = Json.createReader(new StringReader(rule));
+        JsonArray rule_array = reader.readArray();
+        int max_loop = rule_array.size();
 
-        try {
-            JSONArray rule_array = new JSONArray(rule);
-            int max_loop = rule_array.length();
+        //because of JDK 7 bugs in Android
+        output = output.replace("null", "\uFFFF\uFFFF");
 
-            //because of JDK 7 bugs in Android
-            output = output.replace("null", "\uFFFF\uFFFF");
+        for (int i = 0; i < max_loop; i++) {
 
-            for (int i = 0; i < max_loop; i++) {
+            JsonObject obj = rule_array.getJsonObject(i);
+            String from = obj.getString("from");
+            String to = obj.getString("to");
 
-                JSONObject obj = rule_array.getJSONObject(i);
-                String from = obj.getString("from");
-                String to = obj.getString("to");
+            output = output.replaceAll(from, to);
+            output = output.replace("null", "");
 
-                output = output.replaceAll(from, to);
-                output = output.replace("null", "");
-
-            }
-        } catch (JSONException e) {
-            LOG.error(e);
         }
 
         output = output.replace("\uFFFF\uFFFF", "null");

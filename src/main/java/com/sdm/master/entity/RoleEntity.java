@@ -41,7 +41,7 @@ public class RoleEntity extends RestEntity<Integer> implements Serializable {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @UIStructure(order = 0, label = "#", readOnly = true)
-    @Column(name = "id", unique = true, nullable = false)
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
     private int id;
 
     @UIStructure(order = 1, label = "Name")
@@ -54,7 +54,7 @@ public class RoleEntity extends RestEntity<Integer> implements Serializable {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roleId")
+    @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<PermissionEntity> permissions;
 

@@ -114,9 +114,9 @@ public class AuthResource extends DefaultResource {
                     userDao.beginTransaction();
                     TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
                     if (cleanToken) {
-                        tokenDAO.cleanToken((int) authUser.getId());
+                        tokenDAO.cleanToken((long) authUser.getId());
                     }
-                    TokenEntity authToken = tokenDAO.generateToken((int) authUser.getId(), request.getDeviceId(), this.getDeviceOS());
+                    TokenEntity authToken = tokenDAO.generateToken((long) authUser.getId(), request.getDeviceId(), this.getDeviceOS());
                     authUser.setCurrentToken(authToken);
                     userDao.commitTransaction();
                     storeToken(authToken);
@@ -254,7 +254,7 @@ public class AuthResource extends DefaultResource {
             user.setStatus(UserEntity.ACTIVE);
             userDao.update(user, false);
             TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
-            TokenEntity authToken = tokenDAO.generateToken((int) user.getId(), request.getDeviceId(), this.getDeviceOS());
+            TokenEntity authToken = tokenDAO.generateToken((long) user.getId(), request.getDeviceId(), this.getDeviceOS());
             user.setCurrentToken(authToken);
             userDao.commitTransaction();
             return new DefaultResponse(user);

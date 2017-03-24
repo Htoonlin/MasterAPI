@@ -6,7 +6,7 @@
     <groupId>com.sdm</groupId>
     <artifactId>MasterAPI</artifactId>
     <packaging>war</packaging>
-    <version>1.6.0-DEV</version>
+    <version>1.7.0-DEV</version>
     <name>MasterAPI</name>
     <properties>
         <output.dir>${project.build.directory}/output</output.dir>
@@ -17,14 +17,8 @@
         <jdbc.version>5.1.39</jdbc.version>
         <user.agent.version>1.20</user.agent.version>
         <hibernate.orm.version>5.2.6.Final</hibernate.orm.version>
-        <hibernate.validator.version>5.3.4.Final</hibernate.validator.version>
-        <json.version>20160810</json.version>
-        <guava.version>19.0</guava.version>
-        <log4j.version>1.2.17</log4j.version>
-        <apache.poi.version>3.14</apache.poi.version>
-        <velocity.version>1.7</velocity.version>
-        <sqlite.version>3.15.1</sqlite.version>
-        <language.detect.version>0.6</language.detect.version>
+        <hibernate.validator.version>5.3.4.Final</hibernate.validator.version>                
+        <log4j.version>1.2.17</log4j.version>                
         <zxing.version>3.3.0</zxing.version>
     </properties>
     
@@ -127,13 +121,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>            
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>${json.version}</version>            
         </dependency>
         
     </dependencies>

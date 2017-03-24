@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
  */
 public class DefaultResource implements IBaseResource {
 
-    private static final Logger logger = Logger.getLogger(DefaultResource.class.getName());
+    private static final Logger LOG = Logger.getLogger(DefaultResource.class.getName());
 
     @Context
     private UriInfo uriInfo;
@@ -44,11 +44,11 @@ public class DefaultResource implements IBaseResource {
     }
 
     @Override
-    public int getUserId() {
+    public long getUserId() {
         try {
-            return (int) this.getHttpSession().getAttribute(Globalizer.SESSION_USER_ID);
+            return (long) this.getHttpSession().getAttribute(Globalizer.SESSION_USER_ID);
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             return 0;
         }
     }
@@ -131,7 +131,7 @@ public class DefaultResource implements IBaseResource {
             List<RouteResponse> routeList = collectRoute(resource, "/");
             return new DefaultResponse(new ListResponse(routeList));
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }

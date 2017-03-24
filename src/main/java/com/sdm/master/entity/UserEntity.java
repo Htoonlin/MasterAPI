@@ -7,7 +7,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -17,6 +16,7 @@ import com.sdm.core.database.entity.RestEntity;
 import com.sdm.core.ui.UIStructure;
 import java.util.Set;
 import javax.persistence.FetchType;
+import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -35,7 +35,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_user")
-public class UserEntity extends RestEntity<Integer> implements java.io.Serializable {
+public class UserEntity extends RestEntity<Long> implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,10 +49,10 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
     private String search;
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @UIStructure(order = 0, label = "#", readOnly = true)
-    @Column(name = "id", unique = true, nullable = false)
-    private int id;
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "INT(11) UNSIGNED")
+    private long id;
 
     @UIStructure(order = 1, label = "E-mail")
     @Column(name = "email", nullable = false, length=255)
@@ -65,8 +65,8 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
     @UIStructure(order = 3, label = "Roles", hideInGrid = true)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tbl_user_role",
-            joinColumns = {@JoinColumn(name = "userId")},
-            inverseJoinColumns = {@JoinColumn(name = "roleId")})
+            joinColumns = {@JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED")},
+            inverseJoinColumns = {@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<RoleEntity> roles;
 
@@ -83,7 +83,7 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
 
     @UIStructure(order = 6, label = "Image")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "profileImage", columnDefinition = "bigint", nullable = true)
+    @JoinColumn(name = "profileImage", columnDefinition = "BIGINT(20) UNSIGNED", nullable = true)
     @NotFound(action = NotFoundAction.IGNORE)
     private FileEntity profileImage;
 
@@ -128,12 +128,12 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
     }
 
     @Override
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
     @Override
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -246,8 +246,8 @@ public class UserEntity extends RestEntity<Integer> implements java.io.Serializa
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + this.id;
+        int hash = 3;
+        hash = 53 * hash + (int) (this.id ^ (this.id >>> 32));
         return hash;
     }
 

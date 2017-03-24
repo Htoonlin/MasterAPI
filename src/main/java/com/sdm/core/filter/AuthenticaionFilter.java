@@ -146,7 +146,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
         return Response.status(code).entity(new DefaultResponse(message)).build();
     }
 
-    private void saveUserId(int userId) {
+    private void saveUserId(long userId) {
         this.httpSession.setAttribute(Globalizer.SESSION_USER_ID, userId);
     }
 }

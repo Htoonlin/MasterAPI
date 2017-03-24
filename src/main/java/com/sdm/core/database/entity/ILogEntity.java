@@ -10,15 +10,15 @@ package com.sdm.core.database.entity;
  * @author Htoonlin
  */
 public interface ILogEntity {
-    int getVersion();
+    long getVersion();
     
-    void setVersion(int version);
+    void setVersion(long version);
     
-    int getCreatedBy();
+    long getCreatedBy();
 
-    void setCreatedBy(int userId);
+    void setCreatedBy(long userId);
 
-    int getModifiedBy();
+    long getModifiedBy();
 
-    void setModifiedBy(int userId);
+    void setModifiedBy(long userId);
 }

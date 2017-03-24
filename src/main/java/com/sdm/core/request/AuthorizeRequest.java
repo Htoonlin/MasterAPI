@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class AuthorizeRequest extends DefaultRequest implements Serializable {
 
-    private int userId;
+    private long userId;
     
     private String deviceId;
 
@@ -26,11 +26,11 @@ public class AuthorizeRequest extends DefaultRequest implements Serializable {
     private String token;
 
     @NotNull
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

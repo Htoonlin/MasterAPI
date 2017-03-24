@@ -33,13 +33,13 @@ public class TokenDAO extends RestDAO<TokenEntity> {
         super(session, TokenEntity.class, httpSession);
     }
 
-    public void cleanToken(int userId) throws Exception {
+    public void cleanToken(long userId) throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         super.execute(CLEAN_TOKEN, params);
     }
 
-    public TokenEntity getTokenByUserInfo(int userId, String deviceId, String deviceOS) throws Exception {
+    public TokenEntity getTokenByUserInfo(long userId, String deviceId, String deviceOS) throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("deviceId", deviceId);
@@ -54,7 +54,7 @@ public class TokenDAO extends RestDAO<TokenEntity> {
         execute(UPDATE_EXPIRED_BY_TOKEN, params);
     }
 
-    public TokenEntity generateToken(int userId, String deviceId, String deviceOS) throws Exception {
+    public TokenEntity generateToken(long userId, String deviceId, String deviceOS) throws Exception {
         boolean isNew = false;
         TokenEntity token = this.getTokenByUserInfo(userId, deviceId, deviceOS);
         if (token == null) {

@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder({"name", "request_name", "type", "label", "input_type", "primary", "nullable", "read_only", "hide_in_grid"})
+@JsonPropertyOrder({"name", "request_name", "type", "length", "label", "input_type", "primary", "nullable", "read_only", "hide_in_grid"})
 public class PropertiesResponse implements Serializable {
 
     private String name;

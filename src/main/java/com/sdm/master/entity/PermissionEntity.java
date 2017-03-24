@@ -18,7 +18,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -27,7 +26,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_permission")
-public class PermissionEntity extends RestEntity<Integer> implements Serializable{
+public class PermissionEntity extends RestEntity<Long> implements Serializable{
     private static final long serialVersionUID = 1L;
     
     @JsonIgnore
@@ -37,11 +36,11 @@ public class PermissionEntity extends RestEntity<Integer> implements Serializabl
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @UIStructure(order = 0, label = "#", readOnly = true)
-    @Column(name = "id", columnDefinition = "bigint", nullable = false, unique = true)
-    private int id;
+    @Column(name = "id", columnDefinition = "INT UNSIGNED", nullable = false, unique = true)
+    private long id;
     
     @UIStructure(order = 1, label = "Role-ID")
-    @Column(name = "roleId", columnDefinition = "int(11)", nullable = false)
+    @Column(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED", nullable = false)
     private int roleId;
     
     @UIStructure(order = 2, label = "Class")
@@ -56,13 +55,21 @@ public class PermissionEntity extends RestEntity<Integer> implements Serializabl
     @Column(name = "requestMethod", columnDefinition = "varchar(10)",length=10, nullable = false)
     private String requestMethod;
 
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
+    
     @Override
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
     @Override
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -108,7 +115,7 @@ public class PermissionEntity extends RestEntity<Integer> implements Serializabl
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 53 * hash + this.id;
+        hash = 67 * hash + (int) (this.id ^ (this.id >>> 32));
         return hash;
     }
 

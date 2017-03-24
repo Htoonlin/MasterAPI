@@ -28,8 +28,8 @@ public class TokenEntity extends RestEntity<String> implements java.io.Serializa
     private String token;
 
     @UIStructure(order = 1, label = "User ID")
-    @Column(name = "userId", nullable = false)
-    private int userId;
+    @Column(name = "userId", columnDefinition = "INT UNSIGNED", nullable = false)
+    private long userId;
 
     @UIStructure(order = 2, label = "Device-ID")
     @Column(name = "deviceId", nullable = false, length = 255)
@@ -65,9 +65,9 @@ public class TokenEntity extends RestEntity<String> implements java.io.Serializa
     public String getId() {
         return this.getToken();
     }
-    
+
     @Override
-    public void setId(String token){
+    public void setId(String token) {
         this.setToken(token.toString());
     }
 
@@ -79,11 +79,11 @@ public class TokenEntity extends RestEntity<String> implements java.io.Serializa
         this.token = token;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

@@ -5,7 +5,7 @@
  */
 package com.sdm.core.database;
 
-import org.hibernate.dialect.MySQLInnoDBDialect;
+import org.hibernate.dialect.MySQL57InnoDBDialect;
 import org.hibernate.dialect.function.SQLFunctionTemplate;
 import org.hibernate.type.StandardBasicTypes;
 
@@ -13,7 +13,7 @@ import org.hibernate.type.StandardBasicTypes;
  *
  * @author Htoonlin
  */
-public class SundewMySQLDialect extends MySQLInnoDBDialect {
+public class SundewMySQLDialect extends MySQL57InnoDBDialect {
 
     public SundewMySQLDialect() {
         super();

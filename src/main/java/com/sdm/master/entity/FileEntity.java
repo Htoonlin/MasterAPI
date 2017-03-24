@@ -26,7 +26,7 @@ import org.hibernate.annotations.Formula;
  */
 @Entity
 @Table(name = "tbl_file")
-public class FileEntity extends RestEntity<Long> implements Serializable {
+public class FileEntity extends RestEntity<Double> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,9 +40,9 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "BIGINT(20) UNSIGNED")
     @UIStructure(order = 0, label = "#", readOnly = true)
-    private long id;
+    private double id;
 
     @UIStructure(order = 1, label = "Name")
     @Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
@@ -103,12 +103,12 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
     }
 
     @Override
-    public Long getId() {
+    public Double getId() {
         return id;
     }
 
     @Override
-    public void setId(Long id) {
+    public void setId(Double id) {
         this.id = id;
     }
 
@@ -197,8 +197,8 @@ public class FileEntity extends RestEntity<Long> implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 97 * hash + (int) (this.id ^ (this.id >>> 32));
+        int hash = 7;
+        hash = 29 * hash + (int) (Double.doubleToLongBits(this.id) ^ (Double.doubleToLongBits(this.id) >>> 32));
         return hash;
     }
 

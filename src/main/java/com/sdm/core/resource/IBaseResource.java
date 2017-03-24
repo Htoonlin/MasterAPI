@@ -18,7 +18,7 @@ import javax.ws.rs.core.UriInfo;
 public interface IBaseResource {
     public Object getHttpSession();
     
-    public int getUserId();
+    public long getUserId();
 
     public UriInfo getUriInfo();
 
