@@ -40,7 +40,7 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false, columnDefinition = "BIGINT(20) UNSIGNED")
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "BIGINT UNSIGNED")
     @UIStructure(order = 0, label = "#", readOnly = true)
     private double id;
 
@@ -57,7 +57,7 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
     private String type;
 
     @JsonIgnore
-    @Column(name = "size", columnDefinition = "bigint", nullable = false)
+    @Column(name = "size", columnDefinition = "INT UNSIGNED", nullable = false)
     private long fileSize;
 
     @JsonIgnore

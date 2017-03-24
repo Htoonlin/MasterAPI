@@ -13,7 +13,6 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.util.GeoIPManager;
 import com.sdm.core.util.MyanmarFontManager;
 import com.sdm.master.dao.GeoIPCacheDAO;
-import com.sdm.master.dao.UserDAO;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;

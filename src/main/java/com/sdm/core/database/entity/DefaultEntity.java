@@ -26,15 +26,15 @@ public class DefaultEntity implements Serializable, ILogEntity, ITimestampEntity
     }
 
     @JsonProperty(value = "version", index = 1000)
-    @Column(name = "version", columnDefinition = "INT(11) UNSIGNED", nullable = false)
+    @Column(name = "version", columnDefinition = "INT UNSIGNED", nullable = false)
     private long version;
 
     @JsonProperty(value = "created_by", index = 1001)
-    @Column(name = "created_by", columnDefinition = "INT(11) UNSIGNED", nullable = false)
+    @Column(name = "created_by", columnDefinition = "INT UNSIGNED", nullable = false)
     private long createdBy;
 
     @JsonProperty(value = "modified_by", index = 1002)
-    @Column(name = "modified_by", columnDefinition = "INT(11) UNSIGNED", nullable = true)
+    @Column(name = "modified_by", columnDefinition = "INT UNSIGNED", nullable = true)
     private long modifiedBy;
 
     @JsonProperty(value = "created_at", index = 1003)
@@ -44,12 +44,12 @@ public class DefaultEntity implements Serializable, ILogEntity, ITimestampEntity
 
     @JsonProperty(value = "modified_at", index = 1004)
     @Temporal(TemporalType.DATE)
-    @Column(name = "modified_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", nullable = true, updatable = true, length = 19)
+    @Column(name = "modified_at", columnDefinition = "DATETIME on update CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true, updatable = true, length = 19)
     private Date modifiedAt;
 
     @JsonProperty(value = "deleted_at", index = 1005)
     @Temporal(TemporalType.DATE)
-    @Column(name = "deleted_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", nullable = true, updatable = true, length = 19)
+    @Column(name = "deleted_at", columnDefinition = "DATETIME", nullable = true, updatable = true, length = 19)
     private Date deletedAt;
 
     @Override

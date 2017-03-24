@@ -51,13 +51,13 @@ public class UserEntity extends RestEntity<Long> implements java.io.Serializable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @UIStructure(order = 0, label = "#", readOnly = true)
-    @Column(name = "id", unique = true, nullable = false, columnDefinition = "INT(11) UNSIGNED")
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "INT UNSIGNED")
     private long id;
 
     @UIStructure(order = 1, label = "E-mail")
     @Column(name = "email", nullable = false, length=255)
     private String email;
-
+    
     @UIStructure(order = 2, label = "Name")
     @Column(name = "displayName", nullable = false, length=255)
     private String displayName;
@@ -65,7 +65,7 @@ public class UserEntity extends RestEntity<Long> implements java.io.Serializable
     @UIStructure(order = 3, label = "Roles", hideInGrid = true)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tbl_user_role",
-            joinColumns = {@JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED")},
+            joinColumns = {@JoinColumn(name = "userId", columnDefinition = "INT UNSIGNED")},
             inverseJoinColumns = {@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<RoleEntity> roles;
@@ -83,7 +83,7 @@ public class UserEntity extends RestEntity<Long> implements java.io.Serializable
 
     @UIStructure(order = 6, label = "Image")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "profileImage", columnDefinition = "BIGINT(20) UNSIGNED", nullable = true)
+    @JoinColumn(name = "profileImage", columnDefinition = "BIGINT UNSIGNED", nullable = true)
     @NotFound(action = NotFoundAction.IGNORE)
     private FileEntity profileImage;
 
