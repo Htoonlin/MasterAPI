@@ -12,15 +12,15 @@
         
         <!--Hibernate DB Properties -->                        
         <property name="hibernate.transaction.auto_close_session">true</property>
-        <property name="hibernate.jdbc.batch_size">10</property>
+        <property name="hibernate.jdbc.batch_size">50</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
         
         <!-- Master Entities Mapping -->
         <mapping class="com.sdm.master.entity.UserEntity"/>
         <mapping class="com.sdm.master.entity.RoleEntity"/>
         <mapping class="com.sdm.master.entity.PermissionEntity"/>
         <mapping class="com.sdm.master.entity.TokenEntity"/>        
-        <mapping class="com.sdm.master.entity.FileEntity"/>
-        <mapping class="com.sdm.master.entity.CurrencyEntity"/>
+        <mapping class="com.sdm.master.entity.FileEntity"/>        
         
         <!-- Utilities Entities Mapping -->
         <mapping class="com.sdm.master.entity.GeoIPCacheEntity"/>
