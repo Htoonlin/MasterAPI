@@ -23,10 +23,10 @@ import org.apache.log4j.Logger;
 public class MySQLDAO {
 
     private final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final String PROP_HOST = "DB_SERVER";
-    private final String PROP_DB = "DB_NAME";
-    private final String PROP_USER = "DB_USER";
-    private final String PROP_PWD = "DB_PWD";
+    private final String PROP_HOST = "OBJECT_DB_SERVER";
+    private final String PROP_DB = "OBJECT_DB_NAME";
+    private final String PROP_USER = "OBJECT_DB_USER";
+    private final String PROP_PWD = "OBJECT_DB_PWD";
     private static final Logger LOG = Logger.getLogger(MySQLDAO.class.getName());
 
     private Connection connection;

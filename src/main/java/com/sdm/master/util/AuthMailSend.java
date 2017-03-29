@@ -29,8 +29,7 @@ public class AuthMailSend {
     public AuthMailSend(ITemplateManager manager) {
         this.manager = manager;
     }
-    
-    
+
     private UserEntity setToken(UserEntity user) {
         user.setOtpToken(Globalizer.generateToken(UserEntity.TOKEN_LENGTH));
         Calendar cal = Calendar.getInstance();
@@ -74,10 +73,24 @@ public class AuthMailSend {
         data.put("expire", Setting.getInstance().OTP_LIFE);
         data.put("user", user.getDisplayName());
         data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
-        data.put("current_year", Globalizer.getDateString("yyyy", new Date()));        
+        data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = manager.buildTemplate("mail/auth-activate.jsp", data);
         MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
                 user.getEmail(), "Activate your account on SUNDEW MASTER API.", mailBody);
+        MailgunService.getInstance().sendHTML(info);
+    }
+
+    public void welcomeUser(UserEntity user, String rawPassword) throws Exception {
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("email", user.getEmail());
+        data.put("name", user.getDisplayName());
+        data.put("password", rawPassword);
+        data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
+        String mailBody = manager.buildTemplate("mail/create-user.jsp", data);
+
+        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
+                user.getEmail(), "Welcome New User!", mailBody);
         MailgunService.getInstance().sendHTML(info);
     }
 

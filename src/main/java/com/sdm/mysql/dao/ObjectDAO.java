@@ -5,7 +5,7 @@
  */
 package com.sdm.mysql.dao;
 
-import com.sdm.mysql.request.ObjectRequest;
+import com.sdm.mysql.request.object.CreateRequest;
 import com.sdm.mysql.model.PropertyModel;
 import com.sdm.mysql.util.MySQLManager;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class ObjectDAO extends MySQLDAO {
         super(connection);
     }
 
-    public boolean create(ObjectRequest object) throws SQLException {
+    public boolean create(CreateRequest object) throws SQLException {
         String sql = "CREATE" + (object.isTemporary() ? " TEMPORARY TABLE" : " TABLE");
         sql += " IF NOT EXISTS";
 
@@ -76,7 +76,7 @@ public class ObjectDAO extends MySQLDAO {
         }
     }
 
-    private boolean clone(String source, String dest, boolean temporary, boolean dataCopy) throws SQLException {
+    public boolean clone(String source, String dest, boolean temporary, boolean dataCopy) throws SQLException {
         String sql = "CREATE" + (temporary ? " TEMPORARY TABLE" : " TABLE");
         sql += " IF NOT EXISTS";
         sql += " " + MySQLManager.quoteName(dest);
@@ -91,14 +91,6 @@ public class ObjectDAO extends MySQLDAO {
             LOG.error(ex);
             throw ex;
         }
-    }
-
-    public boolean cloneStructure(String source, String dest, boolean temp) throws SQLException {
-        return this.clone(source, dest, temp, false);
-    }
-
-    public boolean cloneWithData(String source, String dest, boolean temp) throws SQLException {
-        return this.clone(source, dest, temp, true);
     }
 
     public boolean remove(String objectName, boolean temp) throws SQLException {
@@ -142,7 +134,7 @@ public class ObjectDAO extends MySQLDAO {
         return this.addProperty(objectName, property, "", true);
     }
 
-    private boolean editProperty(String objectName, String oldName, PropertyModel property, String after, boolean isFirst) throws SQLException {
+    public boolean editProperty(String objectName, String oldName, PropertyModel property, String after, boolean isFirst) throws SQLException {
         String sql = "ALTER TABLE " + MySQLManager.quoteName(objectName) + " CHANGE ";
         sql += MySQLManager.quoteName(oldName);
         if (!oldName.equalsIgnoreCase(property.getName())) {

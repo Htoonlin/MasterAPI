@@ -24,7 +24,7 @@ public class JsonExceptionMapper implements ExceptionMapper<JsonProcessingExcept
 
     @Override
     public Response toResponse(JsonProcessingException exception) {
-        MessageResponse message = new MessageResponse(400, ResponseType.ERROR, "INVALID_ENTITY", exception.getOriginalMessage());
+        MessageResponse message = new MessageResponse(400, ResponseType.ERROR, "JSON_ERROR", exception.getOriginalMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());

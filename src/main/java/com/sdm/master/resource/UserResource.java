@@ -14,12 +14,15 @@ import com.sdm.core.response.MessageResponse;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.util.ITemplateManager;
 import com.sdm.core.util.SecurityInstance;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
+import com.sdm.master.util.AuthMailSend;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.ws.rs.Path;
 import org.apache.log4j.Logger;
 
@@ -33,25 +36,14 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
+    @Inject
+    ITemplateManager templateManager;
+
     private UserDAO userDAO;
 
     @PostConstruct
     public void onLoad() {
         userDAO = new UserDAO(getHttpSession());
-    }
-
-    private void sendWelcome(UserEntity user, String rawPassword) throws Exception {
-        StringBuilder mailContent = new StringBuilder();
-        mailContent.append("<h3 style=\"color:#5cb85c\">Welcome!</h3>")
-                .append("<p>Site admin created the account for you. <br />")
-                .append("e-mail: <b>" + user.getEmail() + "</b><br />")
-                .append("name : <b>" + user.getDisplayName() + "</b><br />")
-                .append("password : <b>" + rawPassword + "</b></p>")
-                .append("<p style=\"color:#d9534f\">Note: don't forget to delete this email or change to new password.</p>")
-                .append("<p>It is system generated mail.</p>");
-
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER, user.getEmail(), "Welcome!", mailContent.toString());
-        MailgunService.getInstance().sendHTML(info);
     }
 
     @Override
@@ -77,7 +69,10 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             request.setPassword(password);
             request.setStatus('A');
             userDAO.insert(request, true);
-            this.sendWelcome(request, rawPassword);
+
+            AuthMailSend mailSend = new AuthMailSend(templateManager);
+            mailSend.welcomeUser(user, rawPassword);
+
             MessageResponse message = new MessageResponse(201, ResponseType.SUCCESS,
                     "CREATED", "We created new record on your request successfully.");
             return new DefaultResponse(message);
@@ -95,7 +90,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
                 return new ErrorResponse(request.getErrors());
             }
             UserEntity entity = userDAO.fetchById(id);
-            if (entity == null || entity.getId() != request.getId()) {
+            if (entity == null || entity.getId().equals(request.getId())) {
                 return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your request."));
             }

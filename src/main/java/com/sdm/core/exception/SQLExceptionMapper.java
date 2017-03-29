@@ -5,34 +5,36 @@
  */
 package com.sdm.core.exception;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sdm.core.Setting;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.MessageResponse;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  *
  * @author Htoonlin
  */
-public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingException>{
+@Provider
+public class SQLExceptionMapper implements ExceptionMapper<SQLException> {
 
     @Override
-    public Response toResponse(JsonMappingException exception) {
-        MessageResponse message = new MessageResponse(400, ResponseType.ERROR, "JSON_MAPPING_ERROR", exception.getOriginalMessage());
+    public Response toResponse(SQLException exception) {
+        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, "MYSQL_ERROR", exception.getMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());
             debug.put("Suppressed", exception.getSuppressed());
             message.setDebug(debug);
-        } 
-        
-        return Response.status(400).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        return Response.serverError().entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
     }
-    
+
 }

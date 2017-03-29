@@ -93,8 +93,10 @@ public class ApplicationConfig extends Application {
         resources.add(com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider.class);
         resources.add(com.fasterxml.jackson.jaxrs.json.JsonMappingExceptionMapper.class);
         resources.add(com.fasterxml.jackson.jaxrs.json.JsonParseExceptionMapper.class);
+        resources.add(com.sdm.core.exception.ClassNotFoundExceptionMapper.class);
         resources.add(com.sdm.core.exception.GenericExceptionMapper.class);
         resources.add(com.sdm.core.exception.IllegalStateExceptionMapper.class);
+        resources.add(com.sdm.core.exception.SQLExceptionMapper.class);
         resources.add(com.sdm.core.exception.UnrecognizedPropertyExceptionMapper.class);
         resources.add(com.sdm.core.exception.WebApplicationExceptionMapper.class);
         resources.add(com.sdm.core.filter.AuthenticaionFilter.class);

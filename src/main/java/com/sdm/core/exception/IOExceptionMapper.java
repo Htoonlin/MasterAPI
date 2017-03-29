@@ -24,7 +24,7 @@ public class IOExceptionMapper implements ExceptionMapper<IOException>{
 
     @Override
     public Response toResponse(IOException exception) {
-        MessageResponse message = new MessageResponse(422, ResponseType.ERROR, "INVALID_ENTITY", exception.getLocalizedMessage());
+        MessageResponse message = new MessageResponse(422, ResponseType.ERROR, "IO_ERROR", exception.getLocalizedMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());

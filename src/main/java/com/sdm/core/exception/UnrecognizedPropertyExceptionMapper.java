@@ -26,7 +26,7 @@ public class UnrecognizedPropertyExceptionMapper implements ExceptionMapper<Unre
 
     @Override
     public Response toResponse(UnrecognizedPropertyException exception) {
-        MessageResponse message =  new MessageResponse(400, ResponseType.ERROR, "UNRECOGNIZED_PROPERTY", exception.getLocalizedMessage());
+        MessageResponse message =  new MessageResponse(400, ResponseType.ERROR, "UNRECOGNIZED_PROPERTY_ERROR", exception.getLocalizedMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());

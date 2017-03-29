@@ -3,23 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.mysql.request;
+package com.sdm.mysql.request.object;
 
-import com.sdm.mysql.model.SQLModel;
 import com.sdm.core.request.DefaultRequest;
 import com.sdm.mysql.model.PropertyModel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
- * Current Support SQL List : (CREATE TABLE => buildSQL), (RENAME TABLE => renameSQL), (CLOEN TABLE => cloneSQL), (DROP TABLE => dropSQL), (Add new property => insertPropertySQL,addPropertyLastSQL,
- * addPropertyFirstSQL), (Modified property => editPropertySQL), (Move property => movePropertyAfterSQL, movePropertyFirstSQL).
- *
  * @version 1.0
  * @author Htoonlin
  */
-public class ObjectRequest extends DefaultRequest implements Serializable {
+public class CreateRequest extends DefaultRequest implements Serializable {
     //name of MySQL Table
     private String name;
 
@@ -35,21 +33,21 @@ public class ObjectRequest extends DefaultRequest implements Serializable {
     //Define max row limits of table.
     private int maxRecords;
 
-    public ObjectRequest() {
+    public CreateRequest() {
     }
 
-    public ObjectRequest(String name, List<PropertyModel> properties) {
+    public CreateRequest(String name, List<PropertyModel> properties) {
         this.name = name;
         this.properties = properties;
     }
 
-    public ObjectRequest(String name, List<PropertyModel> properties, boolean temporary) {
+    public CreateRequest(String name, List<PropertyModel> properties, boolean temporary) {
         this.name = name;
         this.properties = properties;
         this.temporary = temporary;
     }
 
-    public ObjectRequest(String name, List<PropertyModel> properties, boolean temporary, String description, int maxRecords) {
+    public CreateRequest(String name, List<PropertyModel> properties, boolean temporary, String description, int maxRecords) {
         this.name = name;
         this.properties = properties;
         this.temporary = temporary;
@@ -57,6 +55,8 @@ public class ObjectRequest extends DefaultRequest implements Serializable {
         this.maxRecords = maxRecords;
     }
 
+    @NotNull
+    @Size(min = 6, max = 255)
     public String getName() {
         return name;
     }
@@ -65,6 +65,7 @@ public class ObjectRequest extends DefaultRequest implements Serializable {
         this.name = name;
     }
 
+    @NotNull    
     public List<PropertyModel> getProperties() {
         return properties;
     }
