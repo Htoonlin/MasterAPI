@@ -9,6 +9,7 @@ import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.util.ITemplateManager;
 import com.sdm.core.util.SecurityInstance;
+import com.sdm.core.util.mail.GmailService;
 import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.master.entity.UserEntity;
@@ -59,9 +60,13 @@ public class AuthMailSend {
         data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = manager.buildTemplate("mail/forget-password.jsp", data);
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
+        MailInfo info = new MailInfo(
                 user.getEmail(), "Forget password response", mailBody);
-        MailgunService.getInstance().sendHTML(info);
+        if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
+            MailgunService.getInstance().sendHTML(info);
+        } else {
+            GmailService.getInstance().sendHTML(info);
+        }
     }
 
     public void activateLink(UserEntity user, String deviceId) throws Exception {
@@ -75,9 +80,12 @@ public class AuthMailSend {
         data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = manager.buildTemplate("mail/auth-activate.jsp", data);
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "Activate your account on SUNDEW MASTER API.", mailBody);
-        MailgunService.getInstance().sendHTML(info);
+        MailInfo info = new MailInfo(user.getEmail(), "Activate your account on SUNDEW MASTER API.", mailBody);
+        if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
+            MailgunService.getInstance().sendHTML(info);
+        } else {
+            GmailService.getInstance().sendHTML(info);
+        }
     }
 
     public void welcomeUser(UserEntity user, String rawPassword) throws Exception {
@@ -89,9 +97,12 @@ public class AuthMailSend {
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = manager.buildTemplate("mail/create-user.jsp", data);
 
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "Welcome New User!", mailBody);
-        MailgunService.getInstance().sendHTML(info);
+        MailInfo info = new MailInfo(user.getEmail(), "Welcome New User!", mailBody);
+        if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
+            MailgunService.getInstance().sendHTML(info);
+        } else {
+            GmailService.getInstance().sendHTML(info);
+        }
     }
 
     /*

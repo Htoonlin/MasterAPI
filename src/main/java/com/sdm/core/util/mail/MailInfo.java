@@ -5,19 +5,24 @@
  */
 package com.sdm.core.util.mail;
 
-import java.io.File;
-
 /**
  *
  * @author Htoonlin
  */
 public class MailInfo {
+
     private String from;
     private String to;
     private String cc;
     private String bcc;
     private String subject;
     private String body;
+
+    public MailInfo(String to, String subject, String body) {
+        this.to = to;
+        this.subject = subject;
+        this.body = body;
+    }
 
     public MailInfo(String from, String to, String subject, String body) {
         this.from = from;
@@ -34,7 +39,7 @@ public class MailInfo {
         this.subject = subject;
         this.body = body;
     }
-    
+
     public String getFrom() {
         return from;
     }

@@ -6,7 +6,7 @@
     <groupId>com.sdm</groupId>
     <artifactId>MasterAPI</artifactId>
     <packaging>war</packaging>
-    <version>1.7.0-DEV</version>
+    <version>1.8.0-DEV</version>
     <name>MasterAPI</name>
     <properties>
         <output.dir>${project.build.directory}/output</output.dir>
@@ -20,9 +20,17 @@
         <hibernate.validator.version>5.3.4.Final</hibernate.validator.version>                
         <log4j.version>1.2.17</log4j.version>                
         <zxing.version>3.3.0</zxing.version>
+        <mail.version>1.4.7</mail.version>
     </properties>
     
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+        </dependency>
+
         <!-- Zxing BarCode Library -->
         <dependency>
             <groupId>com.google.zxing</groupId>
