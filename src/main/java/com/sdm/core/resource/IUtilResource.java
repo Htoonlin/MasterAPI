@@ -5,8 +5,7 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.database.entity.RestEntity;
-import com.sdm.core.request.QueryRequest;
+import com.sdm.core.hibernate.entity.RestEntity;
 import com.sdm.core.request.SyncRequest;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
@@ -24,11 +23,12 @@ import javax.ws.rs.core.MediaType;
  */
 public interface IUtilResource<T extends RestEntity> {
 
+    /*
     @POST
     @Path("query")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse queryData(QueryRequest request) throws Exception;
+    public IBaseResponse queryData(QueryRequest request) throws Exception; */
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

@@ -7,39 +7,54 @@ package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.sdm.core.request.query.Condition;
-import com.sdm.core.request.query.Sort;
+import com.sdm.core.mysql.model.query.Query;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "query", "sort", "data"})
+@JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "query", "data"})
 public class PaginationResponse implements IResponseContent, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private List data;
     private long total;
     private int currentPage;
     private int pageSize;
-    private List<Condition> query;
-    private Map<String, Sort> sort;
+    private Query query;
 
-    public PaginationResponse(long total, int currentPage, int pageSize, List<Condition> query, Map<String, Sort> sort, List data) {
+    public PaginationResponse() {
+    }
+
+    public PaginationResponse(List data, long total, int currentPage, int pageSize) {
+        this.data = data;
+        this.total = total;
+        this.currentPage = currentPage;
+        this.pageSize = pageSize;
+    }
+
+    public PaginationResponse(List data, long total, int currentPage, int pageSize, Query query) {
+        this.data = data;
         this.total = total;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
         this.query = query;
-        this.sort = sort;
-        this.data = data;
     }
 
-    public int getPageCount() {
-        return (int) Math.ceil((double) total / pageSize);
+    public double getPageCount() {
+        return Math.ceil((double) total / pageSize);
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
     public int getCount() {
@@ -62,31 +77,13 @@ public class PaginationResponse implements IResponseContent, Serializable {
         this.currentPage = currentPage;
     }
 
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public List<Condition> getQuery() {
+    public Query getQuery() {
         return query;
     }
 
-    public void setQuery(List<Condition> query) {
+    public void setQuery(Query query) {
         this.query = query;
     }
-
-    public Map<String, Sort> getSort() {
-        return sort;
-    }
-
-    public void setSort(Map<String, Sort> sort) {
-        this.sort = sort;
-    }
-
-    private List data;
 
     public List getData() {
         return this.data;

@@ -3,7 +3,7 @@
 <hibernate-configuration>
     <session-factory>
         <!-- Hibernate Connection Properties -->
-        <property name="hibernate.dialect">com.sdm.core.database.SundewMySQLDialect</property>
+        <property name="hibernate.dialect">com.sdm.core.hibernate.SundewMySQLDialect</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/sundew_api?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=UTF-8</property>
         <property name="hibernate.connection.username">root</property>
@@ -24,5 +24,8 @@
         
         <!-- Utilities Entities Mapping -->
         <mapping class="com.sdm.master.entity.GeoIPCacheEntity"/>
+        
+        <!--Sample Entities Mapping -->
+        <mapping class="com.sdm.sample.entity.CustomerEntity" />
     </session-factory>
 </hibernate-configuration>

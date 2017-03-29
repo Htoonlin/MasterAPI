@@ -6,7 +6,7 @@
 package com.sdm.master.dao;
 
 import com.sdm.core.Setting;
-import com.sdm.core.database.dao.RestDAO;
+import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.util.FileManager;
 import com.sdm.master.entity.FileEntity;
 import java.io.File;

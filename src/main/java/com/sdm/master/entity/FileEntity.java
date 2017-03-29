@@ -8,7 +8,7 @@ package com.sdm.master.entity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.hibernate.entity.RestEntity;
 import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.FileManager;
 import java.io.Serializable;

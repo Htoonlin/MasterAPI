@@ -5,15 +5,9 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.database.dao.RestDAO;
-import com.sdm.core.database.entity.RestEntity;
-import com.sdm.core.request.QueryRequest;
+import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.core.hibernate.entity.RestEntity;
 import com.sdm.core.request.SyncRequest;
-import com.sdm.core.request.query.Alias;
-import com.sdm.core.request.query.Condition;
-import com.sdm.core.request.query.Expression;
-import com.sdm.core.request.query.Logical;
-import com.sdm.core.request.query.Sort;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
@@ -32,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 
@@ -85,31 +78,50 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
     @Override
     public IBaseResponse getPaging(String filter, int pageId, int pageSize, String sortString) throws Exception {
         try {
-            //Build Global Search
-                List<Condition> conditions = new ArrayList<>();
-            //Skip Single Quote for SQL 
-            filter = "%" + filter + "%";
-            Condition searchCondition = new Condition(Logical.MUST, Expression.LIKE, "search", filter);
-            conditions.add(searchCondition);
+            //Init Query
+            String query = "FROM " + currentEntityClass.getSimpleName() + " WHERE deletedAt IS NULL";
+
+            //Build Filter
+            Map<String, Object> params = new HashMap<>();
+            if (filter != null && filter.length() > 0) {
+                query += " AND search LIKE :filter";
+                params.put("filter", "%" + filter + "%");
+            }
+
+            //Retrieve Record Count
+            String countQuery = "SELECT COUNT(*) " + query;
+            long total = (long) mainDAO.createQuery(countQuery, params).getSingleResult();
 
             //Build SortMap
-            Map<String, Sort> sortMaps = new HashMap<>();
             if (sortString.length() > 0) {
+                query += " ORDER BY ";
                 String[] sorts = sortString.split(",");
                 for (String sort : sorts) {
                     String[] sortParams = sort.trim().split(":", 2);
                     if (sortParams.length >= 2 && sortParams[1].equalsIgnoreCase("desc")) {
-                        sortMaps.put(sortParams[0], Sort.DESC);
+                        query += " " + sortParams[0] + " DESC";
                     } else {
-                        sortMaps.put(sortParams[0], Sort.ASC);
+                        query += " " + sortParams[0] + " ASC";
                     }
                 }
             }
 
-            //Build Query
-            QueryRequest request = new QueryRequest(conditions, sortMaps, pageId, pageSize);
-            request.setTimeStamp(new Date().getTime());
-            return this.queryData(request);
+            //Calculate Start Index
+            if (pageId <= 0) {
+                pageId = 1;
+            }
+            int start = pageSize * (pageId - 1);
+
+            //Retrieve Data
+            List<T> data = mainDAO.createQuery(query, params, pageSize, start).getResultList();
+            if (data == null) {
+                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
+                        "NO_DATA", "There is no data for your query string."));
+            }
+           
+            PaginationResponse response = new PaginationResponse(data, total, pageId, pageSize);
+
+            return new DefaultResponse(response);
         } catch (Exception e) {
             LOG.error(e);
             throw e;
@@ -269,6 +281,7 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
         }
     }
 
+    /*
     @Override
     public IBaseResponse queryData(QueryRequest request) throws Exception {
         try {
@@ -365,5 +378,5 @@ public class RestResource<T extends RestEntity, PK extends Serializable>
             LOG.error(e);
             throw e;
         }
-    }
+    }*/
 }

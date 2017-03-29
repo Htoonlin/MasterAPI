@@ -5,7 +5,7 @@
  */
 package com.sdm.core.request;
 
-import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.hibernate.entity.RestEntity;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotNull;

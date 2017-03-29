@@ -5,8 +5,6 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.core.Setting;
-import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.IBaseResponse;
@@ -32,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author Htoonlin
  */
 @Path("user")
-public class UserResource extends RestResource<UserEntity, Integer> {
+public class UserResource extends RestResource<UserEntity, Long> {
 
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
@@ -83,7 +81,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
     }
 
     @Override
-    public IBaseResponse update(UserEntity request, Integer id) throws Exception {
+    public IBaseResponse update(UserEntity request, Long id) throws Exception {
         try {
             request.setPassword("generate_secret");
             if (!request.isValid()) {

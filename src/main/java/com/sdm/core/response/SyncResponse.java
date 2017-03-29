@@ -5,7 +5,7 @@
  */
 package com.sdm.core.response;
 
-import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.hibernate.entity.RestEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;

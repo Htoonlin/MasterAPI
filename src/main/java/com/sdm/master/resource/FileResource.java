@@ -40,7 +40,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
  * @author Htoonlin
  */
 @Path("file")
-public class FileResource extends RestResource<FileEntity, Long> {
+public class FileResource extends RestResource<FileEntity, Double> {
 
     private static final Logger logger = Logger.getLogger(FileResource.class.getName());
     private FileDAO mainDAO;
@@ -113,7 +113,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 
     @GET
     @Path("{id:\\d+}/download")
-    public Response privateDownload(@PathParam("id") long id) throws Exception {
+    public Response privateDownload(@PathParam("id") double id) throws Exception {
         FileEntity entity = mainDAO.fetchById(id);
         if (entity == null) {
             return Response.ok(new DefaultResponse(

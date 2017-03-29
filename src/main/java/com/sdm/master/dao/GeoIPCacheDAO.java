@@ -5,7 +5,7 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.database.dao.DefaultDAO;
+import com.sdm.core.hibernate.dao.DefaultDAO;
 import com.sdm.core.response.MapResponse;
 import com.sdm.core.util.IGeoIPCache;
 import com.sdm.master.entity.GeoIPCacheEntity;

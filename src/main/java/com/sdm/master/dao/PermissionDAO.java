@@ -5,7 +5,7 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.database.dao.RestDAO;
+import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.PermissionEntity;
 import java.util.HashMap;
 import java.util.List;

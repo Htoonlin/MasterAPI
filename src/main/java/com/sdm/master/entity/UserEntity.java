@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.hibernate.entity.RestEntity;
 import com.sdm.core.ui.UIStructure;
 import java.util.Set;
 import javax.persistence.FetchType;

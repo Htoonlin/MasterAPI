@@ -7,7 +7,7 @@ package com.sdm.master.dao;
 
 import com.sdm.core.Globalizer;
 import com.sdm.master.entity.TokenEntity;
-import com.sdm.core.database.dao.RestDAO;
+import com.sdm.core.hibernate.dao.RestDAO;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;

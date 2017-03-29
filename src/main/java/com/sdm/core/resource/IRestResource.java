@@ -5,7 +5,7 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.database.entity.RestEntity;
+import com.sdm.core.hibernate.entity.RestEntity;
 import com.sdm.core.response.IBaseResponse;
 import java.io.Serializable;
 import javax.ws.rs.Consumes;
