@@ -23,8 +23,8 @@ import java.util.Map;
  *
  * @author Htoonlin
  */
-public class RestDAO extends MySQLDAO {    
-    
+public class RestDAO extends MySQLDAO {
+
     public RestDAO() throws SQLException, IOException, ClassNotFoundException {
         super();
     }
@@ -92,24 +92,6 @@ public class RestDAO extends MySQLDAO {
             }
         }
         return executeUpdate(query, values);
-    }
-
-    public int softDelete(String objectName, List<Condition> conditions) throws SQLException {
-        /*String query = "UPDATE " + MySQLManager.quoteName(objectName) + " SET ";
-        query += "`deleted_at` = ?";
-        query += " WHERE 1 = 1";
-        List<Object> values = new ArrayList<>();
-        values.add(new Date());
-
-        //Build WHERE Conditions
-        if (conditions != null && conditions.size() > 0) {
-            for (Condition condition : conditions) {
-                query += " " + condition.defaultSQL();
-                values.add(condition.getValue());
-            }
-        }
-        return executeUpdate(query, values);*/
-        return -1;
     }
 
     public int remove(String objectName, List<Condition> conditions) throws SQLException {

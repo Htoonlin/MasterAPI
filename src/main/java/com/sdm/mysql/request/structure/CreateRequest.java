@@ -34,8 +34,6 @@ public class CreateRequest extends DefaultRequest implements Serializable {
     //Define max row limits of table.
     private int maxRecords;
 
-    private boolean softDelete;
-
     public CreateRequest() {
     }
 

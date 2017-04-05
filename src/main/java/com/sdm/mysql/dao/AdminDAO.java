@@ -5,19 +5,21 @@
  */
 package com.sdm.mysql.dao;
 
-import com.sdm.mysql.model.ObjectModel;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author Htoonlin
  */
 public class AdminDAO extends MySQLDAO {
-    
+
     public AdminDAO() throws SQLException, IOException, ClassNotFoundException {
     }
 
@@ -26,18 +28,15 @@ public class AdminDAO extends MySQLDAO {
     }
 
     public List fetchObjects() throws SQLException {
-        List<ObjectModel> dataList = new ArrayList<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
 
-        try (ResultSet resultSet = executeQuery("SHOW TABLE STATUS")) {            
+        try (ResultSet resultSet = executeQuery("SHOW TABLE STATUS")) {
             while (resultSet.next()) {
-                ObjectModel model = new ObjectModel();
-                model.setName(resultSet.getString("Name"));
-                model.setEngine(resultSet.getString("Engine"));
-                model.setVersion(resultSet.getInt("Version"));
-                model.setDataCount(resultSet.getLong("Rows"));                
-                model.setCurrentSerial(resultSet.getLong("Auto_increment"));
-                model.setCreatedDate(resultSet.getDate("Create_Time"));    
-                dataList.add(model);
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", resultSet.getString("Name"));
+                data.put("data_count", resultSet.getLong("Rows"));
+                data.put("created_at", resultSet.getDate("Create_Time"));
+                dataList.add(data);
             }
         }
 

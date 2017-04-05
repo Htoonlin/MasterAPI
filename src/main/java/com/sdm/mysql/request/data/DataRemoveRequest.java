@@ -16,15 +16,9 @@ import java.util.List;
 public class DataRemoveRequest extends DefaultRequest {
 
     private boolean truncate;
-    private boolean hardDelete;
     private List<Condition> conditions;
 
     public DataRemoveRequest() {
-    }
-
-    public DataRemoveRequest(boolean hardDelete, List<Condition> conditions) {
-        this.hardDelete = hardDelete;
-        this.conditions = conditions;
     }
 
     public boolean isTruncate() {
@@ -33,14 +27,6 @@ public class DataRemoveRequest extends DefaultRequest {
 
     public void setTruncate(boolean truncate) {
         this.truncate = truncate;
-    }
-
-    public boolean isHardDelete() {
-        return hardDelete;
-    }
-
-    public void setHardDelete(boolean hardDelete) {
-        this.hardDelete = hardDelete;
     }
 
     public List<Condition> getConditions() {

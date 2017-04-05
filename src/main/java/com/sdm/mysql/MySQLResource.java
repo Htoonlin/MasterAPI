@@ -14,7 +14,6 @@ import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.mysql.dao.ObjectDAO;
 import com.sdm.mysql.dao.RestDAO;
-import com.sdm.mysql.model.ObjectModel;
 import com.sdm.core.response.ListResponse;
 import com.sdm.core.response.MapResponse;
 import com.sdm.core.response.PaginationResponse;
@@ -47,7 +46,7 @@ import org.apache.log4j.Logger;
  *
  * @author Htoonlin
  */
-@Path("mysql/object")
+@Path("mysql")
 public class MySQLResource extends DefaultResource {
 
     private static final Logger LOG = Logger.getLogger(MySQLResource.class.getName());
@@ -57,7 +56,7 @@ public class MySQLResource extends DefaultResource {
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getPaging() throws SQLException, IOException, ClassNotFoundException {
         AdminDAO dao = new AdminDAO();
-        List<ObjectModel> objects = dao.fetchObjects();
+        List<Map<String, Object>> objects = dao.fetchObjects();
         return new DefaultResponse(new ListResponse(objects));
     }
 
@@ -117,10 +116,8 @@ public class MySQLResource extends DefaultResource {
         int effected = 0;
         if (request.isTruncate()) {
             dao.truncate(table);
-        } else if (request.isHardDelete()) {
-            effected = dao.remove(table, request.getConditions());
         } else {
-            effected = dao.softDelete(table, request.getConditions());
+            effected = dao.remove(table, request.getConditions());
         }
 
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
