@@ -5,22 +5,19 @@
  */
 package com.sdm.core.mysql.model.type;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.Serializable;
 
 /**
  *
  * @author Htoonlin
  */
+@JsonTypeName("boolean")
 public class Boolean implements PropertyType, Serializable {
 
     @Override
     public String defaultSQL() {
         return "BIT(1)";
-    }
-
-    @Override
-    public String getName() {
-        return "boolean";
     }
 
     @Override

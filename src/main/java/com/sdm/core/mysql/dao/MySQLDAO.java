@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class MySQLDAO {
 
-    private final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    private final String DRIVER = "com.mysql.jdbc.Driver";
     private final String PROP_HOST = "MYSQL_DB_SERVER";
     private final String PROP_DB = "MYSQL_DB_NAME";
     private final String PROP_USER = "MYSQL_DB_USER";
@@ -30,9 +30,18 @@ public class MySQLDAO {
     private static final Logger LOG = Logger.getLogger(MySQLDAO.class.getName());
 
     private Connection connection;
+    private Object lastInsertedId;
 
     public Connection getConnection() {
         return connection;
+    }
+
+    public Object getLastInsertedId() {
+        return lastInsertedId;
+    }
+
+    public void setLastInsertedId(double lastInsertedId) {
+        this.lastInsertedId = lastInsertedId;
     }
 
     public void closeConnection() throws SQLException {
@@ -107,6 +116,28 @@ public class MySQLDAO {
             LOG.error(ex);
             throw ex;
         }
+    }
+
+    public int executeUpdateWithAI(String sql, List<Object> values) throws SQLException {
+        int effected = 0;
+        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            for (int i = 0; i < values.size(); i++) {
+                statement.setObject(i + 1, values.get(i));
+            }
+            effected = statement.executeUpdate();
+            if (effected > 0) {
+                try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                    if (resultSet.first()) {
+                        lastInsertedId = resultSet.getObject(1);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            LOG.error(ex);
+            throw ex;
+        }
+
+        return effected;
     }
 
     public ResultSet executeQuery(String sql) throws SQLException {

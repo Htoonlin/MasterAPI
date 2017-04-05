@@ -3,21 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.mysql.model.query;
+package com.sdm.master.request.object;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sdm.core.mysql.model.query.Aggregate;
+import com.sdm.core.mysql.model.query.Column;
+import com.sdm.core.mysql.model.query.Condition;
+import com.sdm.core.mysql.model.query.Join;
+import com.sdm.core.mysql.model.query.Sort;
 import com.sdm.core.mysql.util.MySQLManager;
+import com.sdm.core.request.DefaultRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonIgnoreProperties(value = {"row_counts_col", "all_columns", "group_by_column", "hasAggregate"})
-public class Query implements Serializable {
+public class QueryRequest extends DefaultRequest implements Serializable {
 
     public final String ROW_COUNTS_COL = "total_rows";
     private String table;
@@ -152,13 +160,13 @@ public class Query implements Serializable {
         return sql;
     }
 
-    public Query() {
+    public QueryRequest() {
         paramValues = new ArrayList<>();
         this.page = 1;
         this.size = 10;
     }
 
-    public Query(String table) {
+    public QueryRequest(String table) {
         this();
         this.table = table;
     }
@@ -175,6 +183,8 @@ public class Query implements Serializable {
         this.alias = alias;
     }
 
+    @NotNull
+    @Size(min = 1, max = 255)
     public String getTable() {
         return table;
     }

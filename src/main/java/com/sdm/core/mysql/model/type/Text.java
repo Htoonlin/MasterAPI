@@ -5,12 +5,14 @@
  */
 package com.sdm.core.mysql.model.type;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.Serializable;
 
 /**
  *
  * @author Htoonlin
  */
+@JsonTypeName("text")
 public class Text implements PropertyType, Serializable {
 
     public static final String ALPHA_NUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
@@ -30,32 +32,23 @@ public class Text implements PropertyType, Serializable {
     private String regex;
     private int maxLength;
     private boolean fixed;
-    private String name;
+
     private boolean uniqueId;
 
     public Text() {
-        this.name = "text";
+
     }
 
     public Text(int maxLength, String name) {
         this.maxLength = maxLength;
-        this.name = name;
+
     }
 
     public Text(String regex, int maxLength, int minLength, boolean fixed, String name) {
         this.regex = regex;
         this.maxLength = maxLength;
         this.fixed = fixed;
-        this.name = name;
-    }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

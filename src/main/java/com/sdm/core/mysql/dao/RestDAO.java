@@ -6,7 +6,7 @@
 package com.sdm.core.mysql.dao;
 
 import com.sdm.core.mysql.model.query.Condition;
-import com.sdm.core.mysql.model.query.Query;
+import com.sdm.master.request.object.QueryRequest;
 import com.sdm.core.mysql.util.MySQLManager;
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,17 +32,17 @@ public class RestDAO extends MySQLDAO {
         super(connection);
     }
 
-    public int fetchTotal(Query query) throws SQLException {
-        int totalRows = 0;
+    public long fetchTotal(QueryRequest query) throws SQLException {
+        long totalRows = 0;
         try (ResultSet resultSet = executeQuery(query.rowCountSQL(), query.getParamValues())) {
             if (resultSet.first()) {
-                totalRows = resultSet.getInt(query.ROW_COUNTS_COL);
+                totalRows = resultSet.getLong(query.ROW_COUNTS_COL);
             }
         }
         return totalRows;
     }
 
-    public List fetch(Query query) throws SQLException {
+    public List fetch(QueryRequest query) throws SQLException {
         List<Map<String, Object>> dataList = new ArrayList<>();
 
         try (ResultSet resultSet = executeQuery(query.defaultSQL(), query.getParamValues())) {
@@ -59,7 +59,7 @@ public class RestDAO extends MySQLDAO {
         return dataList;
     }
 
-    public int insert(String objectName, Map<String, Object> entity) throws SQLException {
+    public int insert(String objectName, Map<String, Object> entity, boolean isAutoGenerateID) throws SQLException {
         String query = "INSERT INTO " + MySQLManager.quoteName(objectName);
         query += " (`" + String.join("`,`", entity.keySet()) + "`) VALUES(";
         List<Object> values = new ArrayList<>(entity.values());
@@ -67,7 +67,14 @@ public class RestDAO extends MySQLDAO {
             query += "?,";
         }
         query = MySQLManager.cleanLastChar(query, ",") + ")";
-        return executeUpdate(query, values);
+        if (isAutoGenerateID) {
+            int effected = executeUpdateWithAI(query, values);
+            entity.put("GeneratedID", getLastInsertedId());
+            return effected;
+        } else {
+            return executeUpdate(query, values);
+        }
+
     }
 
     public int update(String objectName, Map<String, Object> entity, List<Condition> conditions) throws SQLException {

@@ -16,7 +16,7 @@
             <div style="color: #c35a00;background-color: #fbf2db;border-bottom: 1px solid #c5a456;padding: 20px 50px;text-align: center;">
                 <h1 style="margin: 20px 50px 10px;font-size: 21px;border-bottom: 3px solid #c97800;padding-bottom: 20px;font-weight: 500;">Welcome</h1>  
             </div>
-            <div style="margin:20px 50px;padding: 28px 50px;background: #FFF;font-size: 11pt;">     
+            <div style="margin:20px 50px;padding: 28px 50px;background: #FFF;font-size: 11pt;">                     
                 <p>Hi <i>${name}</i>, </p>
                 <p>Site admin created the account for you.</p>
                 <p style="margin:25px 0px;">

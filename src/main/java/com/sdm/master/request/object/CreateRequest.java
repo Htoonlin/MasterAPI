@@ -18,6 +18,7 @@ import javax.validation.constraints.Size;
  * @author Htoonlin
  */
 public class CreateRequest extends DefaultRequest implements Serializable {
+
     //name of MySQL Table
     private String name;
 
@@ -56,7 +57,7 @@ public class CreateRequest extends DefaultRequest implements Serializable {
     }
 
     @NotNull
-    @Size(min = 6, max = 255)
+    @Size(min = 3, max = 255)
     public String getName() {
         return name;
     }
@@ -65,7 +66,7 @@ public class CreateRequest extends DefaultRequest implements Serializable {
         this.name = name;
     }
 
-    @NotNull    
+    @NotNull
     public List<PropertyModel> getProperties() {
         return properties;
     }
@@ -103,6 +104,20 @@ public class CreateRequest extends DefaultRequest implements Serializable {
 
     public void setMaxRecords(int maxRecords) {
         this.maxRecords = maxRecords;
+    }
+
+    @Override
+    public boolean isValid() {
+        if (!super.isValid()) {
+            return false;
+        }
+
+        if (properties == null || properties.size() <= 0) {
+            addError("properties", "Require one property at least.");
+            return false;
+        }
+
+        return true;
     }
 
 }

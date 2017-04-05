@@ -96,8 +96,7 @@ public class AccessManager implements IAccessManager {
         //Skip Permission for User Methods => user
         RolesAllowed roles = method.getAnnotation(RolesAllowed.class);
         if (roles != null) {
-            for (int i = 0; i < roles.value().length; i++) {
-                String role = roles.value()[i];
+            for (String role : roles.value()) {
                 if (role.equalsIgnoreCase("user")) {
                     return true;
                 }

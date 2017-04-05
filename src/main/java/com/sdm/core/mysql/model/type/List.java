@@ -5,6 +5,7 @@
  */
 package com.sdm.core.mysql.model.type;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.Arrays;
  *
  * @author Htoonlin
  */
+@JsonTypeName("list")
 public class List implements PropertyType, Serializable {
 
     private java.util.List<String> values;
@@ -37,11 +39,6 @@ public class List implements PropertyType, Serializable {
             this.values = new ArrayList<>();
         }
         this.values.add(value);
-    }
-
-    @Override
-    public String getName() {
-        return "list";
     }
 
     @Deprecated

@@ -5,12 +5,14 @@
  */
 package com.sdm.core.mysql.model.type;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.Serializable;
 
 /**
  *
  * @author Htoonlin
  */
+@JsonTypeName("float")
 public class Float implements PropertyType, Serializable {
 
     public enum FloatType implements Serializable {
@@ -51,11 +53,6 @@ public class Float implements PropertyType, Serializable {
 
     public void setPoint(int point) {
         this.point = point;
-    }
-
-    @Override
-    public String getName() {
-        return this.type.toString();
     }
 
     @Override

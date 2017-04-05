@@ -5,6 +5,7 @@
  */
 package com.sdm.core.mysql.model.type;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import java.util.Date;
  *
  * @author Htoonlin
  */
+@JsonTypeName("datetime")
 public class DateTime implements PropertyType, Serializable {
 
     public enum DateTimeType implements Serializable {
@@ -47,11 +49,6 @@ public class DateTime implements PropertyType, Serializable {
 
     public void setType(DateTimeType type) {
         this.type = type;
-    }
-
-    @Override
-    public String getName() {
-        return this.type.toString();
     }
 
     @Deprecated

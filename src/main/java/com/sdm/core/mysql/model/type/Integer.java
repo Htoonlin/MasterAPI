@@ -5,12 +5,14 @@
  */
 package com.sdm.core.mysql.model.type;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.Serializable;
 
 /**
  *
  * @author Htoonlin
  */
+@JsonTypeName("integer")
 public class Integer implements PropertyType, Serializable {
 
     private boolean serial;
@@ -79,11 +81,6 @@ public class Integer implements PropertyType, Serializable {
             }
             return false;
         }
-    }
-
-    @Override
-    public String getName() {
-        return this.type.toString();
     }
 
     @Deprecated

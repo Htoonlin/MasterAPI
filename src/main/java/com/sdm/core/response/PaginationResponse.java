@@ -7,7 +7,7 @@ package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.sdm.core.mysql.model.query.Query;
+import com.sdm.master.request.object.QueryRequest;
 import java.io.Serializable;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class PaginationResponse implements IResponseContent, Serializable {
     private long total;
     private int currentPage;
     private int pageSize;
-    private Query query;
+    private QueryRequest query;
 
     public PaginationResponse() {
     }
@@ -37,7 +37,7 @@ public class PaginationResponse implements IResponseContent, Serializable {
         this.pageSize = pageSize;
     }
 
-    public PaginationResponse(List data, long total, int currentPage, int pageSize, Query query) {
+    public PaginationResponse(List data, long total, int currentPage, int pageSize, QueryRequest query) {
         this.data = data;
         this.total = total;
         this.currentPage = currentPage;
@@ -77,11 +77,11 @@ public class PaginationResponse implements IResponseContent, Serializable {
         this.currentPage = currentPage;
     }
 
-    public Query getQuery() {
+    public QueryRequest getQuery() {
         return query;
     }
 
-    public void setQuery(Query query) {
+    public void setQuery(QueryRequest query) {
         this.query = query;
     }
 

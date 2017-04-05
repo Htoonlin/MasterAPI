@@ -55,7 +55,7 @@ public class PropertyModel implements Serializable {
             }
         }
 
-        if (!this.description.isEmpty()) {
+        if (this.description != null && !this.description.isEmpty()) {
             sql += " COMMENT '" + MySQLManager.escapeQuery(this.description) + "'";
         }
 
@@ -63,6 +63,9 @@ public class PropertyModel implements Serializable {
     }
 
     public PropertyModel() {
+        this.primary = false;
+        this.serial = false;
+        this.description = "";
     }
 
     public PropertyModel(String name, PropertyType type, int index, String label, boolean require) {

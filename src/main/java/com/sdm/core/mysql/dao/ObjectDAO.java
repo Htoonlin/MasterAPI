@@ -40,7 +40,7 @@ public class ObjectDAO extends MySQLDAO {
         for (PropertyModel property : object.getProperties()) {
             sql += property.defaultSQL() + ",";
             if (property.isPrimary()) {
-                primary += MySQLManager.quoteName(property.getName());
+                primary += MySQLManager.quoteName(property.getName()) + ",";
             }
         }
         if (primary.length() > 1) {

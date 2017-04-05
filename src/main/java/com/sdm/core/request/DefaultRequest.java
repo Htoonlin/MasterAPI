@@ -21,7 +21,8 @@ import javax.validation.Validator;
  *
  * @author Htoonlin
  */
-public class DefaultRequest implements Serializable, IBaseRequest{
+public class DefaultRequest implements Serializable, IBaseRequest {
+
     private static final long serialVersionUID = 1L;
 
     private Date timestamp;
@@ -34,7 +35,7 @@ public class DefaultRequest implements Serializable, IBaseRequest{
     public void setTimeStamp(long date) {
         this.timestamp = new Date(date);
     }
-    
+
     private Map<String, Object> extra;
 
     public Map<String, Object> getExtra() {
@@ -64,6 +65,13 @@ public class DefaultRequest implements Serializable, IBaseRequest{
 
     private Map<String, String> errors;
 
+    protected void addError(String key, String value) {
+        if (errors == null) {
+            errors = new HashMap<>();
+        }
+        errors.put(key, value);
+    }
+
     @Override
     public Map<String, String> getErrors() {
         return errors;
@@ -71,10 +79,9 @@ public class DefaultRequest implements Serializable, IBaseRequest{
 
     @Override
     public boolean isValid() {
-        errors = new HashMap<>();
         if (!Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
-                errors.put("timestamp", "Invalid timestamp.");
+                addError("timestamp", "Invalid timestamp.");
                 return false;
             }
         }
@@ -82,9 +89,9 @@ public class DefaultRequest implements Serializable, IBaseRequest{
         Set<ConstraintViolation<DefaultRequest>> violoationSet = validator.validate(this);
         for (ConstraintViolation<DefaultRequest> v : violoationSet) {
             String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
-            errors.put(propertyName, v.getMessage());
+            addError(propertyName, v.getMessage());
         }
-        
-        return violoationSet.isEmpty();        
+
+        return violoationSet.isEmpty();
     }
 }
