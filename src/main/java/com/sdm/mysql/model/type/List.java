@@ -22,6 +22,12 @@ public class List implements PropertyType, Serializable {
     public List() {
     }
 
+    public List(String sql) {
+        String sqlValues = sql.substring(sql.indexOf('('));
+        sqlValues = sqlValues.replaceAll("', '", ",");
+        this.values = Arrays.asList(sqlValues.substring(2, sqlValues.length() - 3).split(","));
+    }
+
     public List(java.util.List<String> values) {
         this.values = values;
     }
@@ -41,13 +47,6 @@ public class List implements PropertyType, Serializable {
         this.values.add(value);
     }
 
-    @Deprecated
-    public void setSQL(String sql) {
-        String sqlValues = sql.substring(sql.indexOf('('));
-        sqlValues = sqlValues.replaceAll("', '", ",");
-        this.values = Arrays.asList(sqlValues.substring(2, sqlValues.length() - 3).split(","));
-    }
-
     @Override
     public String defaultSQL() {
         return "ENUM('" + String.join("', '", values) + "')";
@@ -55,6 +54,6 @@ public class List implements PropertyType, Serializable {
 
     @Override
     public boolean validType(Object value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.values.contains(String.valueOf(value));
     }
 }

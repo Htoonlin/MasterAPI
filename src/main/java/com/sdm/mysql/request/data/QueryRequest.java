@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.mysql.request.structure;
+package com.sdm.mysql.request.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sdm.mysql.model.query.Aggregate;

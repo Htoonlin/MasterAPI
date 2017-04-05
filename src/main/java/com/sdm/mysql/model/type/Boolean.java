@@ -15,6 +15,9 @@ import java.io.Serializable;
 @JsonTypeName("boolean")
 public class Boolean implements PropertyType, Serializable {
 
+    public Boolean() {
+    }
+    
     @Override
     public String defaultSQL() {
         return "BIT(1)";

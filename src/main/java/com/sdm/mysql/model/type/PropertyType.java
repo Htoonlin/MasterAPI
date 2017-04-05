@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = Relation.class, name = "relation")
 })
 public interface PropertyType {
+
     @JsonIgnore
     public String defaultSQL();
 

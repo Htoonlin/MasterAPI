@@ -22,6 +22,27 @@ public class Integer implements PropertyType, Serializable {
     public Integer() {
     }
 
+    public Integer(String sql) {
+        
+        if(sql.toUpperCase().contains("UNSIGNED")){
+            this.unsigned = true;
+        }
+        
+        if(sql.toUpperCase().contains("AUTO_INCREMENT")){
+            this.serial = true;
+        }
+        
+        int i = sql.indexOf('(');
+        if (i > 0) {
+            sql = sql.substring(0, i);
+        }
+        if (sql.trim().equalsIgnoreCase("integer")) {
+            this.type = IntegerType.INT;
+        } else {
+            this.type = IntegerType.valueOf(sql.trim().toUpperCase());
+        }
+    }
+
     public Integer(IntegerType type) {
         this.type = type;
     }
@@ -83,19 +104,6 @@ public class Integer implements PropertyType, Serializable {
         }
     }
 
-    @Deprecated
-    public void setSQL(String sql) {
-        int i = sql.indexOf('(');
-        if (i > 0) {
-            sql = sql.substring(0, i);
-        }
-        if (sql.trim().equalsIgnoreCase("integer")) {
-            this.type = IntegerType.INT;
-        } else {
-            this.type = IntegerType.valueOf(sql.trim().toUpperCase());
-        }
-    }
-
     @Override
     public String defaultSQL() {
         String sql = this.type.toString();
@@ -110,7 +118,7 @@ public class Integer implements PropertyType, Serializable {
     @Override
     public boolean validType(Object value) {
         String strValue = String.valueOf(value);
-        if (strValue.matches("-?\\\\d+")) {
+        if (strValue.matches("-?\\d+")) {
             return this.type.checkValue(Double.parseDouble(strValue), this.unsigned);
         }
 

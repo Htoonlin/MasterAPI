@@ -14,30 +14,21 @@ import javax.validation.constraints.NotNull;
  * @author Htoonlin
  */
 public class CloneRequest extends DefaultRequest implements Serializable {
-    private String source;
-    private String destination;
+
+    private String destName;
     private boolean temporary;
     private boolean dataInclude;
 
     public CloneRequest() {
     }
-    
-    @NotNull
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
 
     @NotNull
-    public String getDestination() {
-        return destination;
+    public String getDestName() {
+        return destName;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setDestName(String destName) {
+        this.destName = destName;
     }
 
     public boolean isTemporary() {

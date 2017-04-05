@@ -39,6 +39,15 @@ public class Text implements PropertyType, Serializable {
 
     }
 
+    public Text(String sql) {
+        if (sql.toUpperCase().startsWith("CHAR")) {
+            this.fixed = true;
+        }
+        int i = sql.indexOf('(');
+        String lengthString = sql.substring(i + 1, sql.length() - 1);
+        this.maxLength = java.lang.Integer.parseInt(lengthString);
+    }
+
     public Text(int maxLength, String name) {
         this.maxLength = maxLength;
 

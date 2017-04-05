@@ -6,7 +6,7 @@
 package com.sdm.mysql.dao;
 
 import com.sdm.mysql.model.query.Condition;
-import com.sdm.mysql.request.structure.QueryRequest;
+import com.sdm.mysql.request.data.QueryRequest;
 import com.sdm.mysql.util.MySQLManager;
 import java.io.IOException;
 import java.sql.Connection;

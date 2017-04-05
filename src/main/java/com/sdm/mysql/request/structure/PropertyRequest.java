@@ -7,7 +7,6 @@ package com.sdm.mysql.request.structure;
 
 import com.sdm.core.request.DefaultRequest;
 import com.sdm.mysql.model.PropertyModel;
-import com.sdm.mysql.model.type.PropertyType;
 import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 
@@ -15,23 +14,13 @@ import javax.validation.constraints.NotNull;
  *
  * @author Htoonlin
  */
-public class AddPropertyRequest extends DefaultRequest implements Serializable {
+public class PropertyRequest extends DefaultRequest implements Serializable {
 
-    private String objectName;
     private PropertyModel property;
     private String after;
     private boolean first;
 
-    public AddPropertyRequest() {
-    }
-
-    @NotNull
-    public String getObjectName() {
-        return objectName;
-    }
-
-    public void setObjectName(String objectName) {
-        this.objectName = objectName;
+    public PropertyRequest() {
     }
 
     @NotNull

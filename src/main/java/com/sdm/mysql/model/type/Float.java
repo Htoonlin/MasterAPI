@@ -7,6 +7,7 @@ package com.sdm.mysql.model.type;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  *
@@ -16,20 +17,50 @@ import java.io.Serializable;
 public class Float implements PropertyType, Serializable {
 
     public enum FloatType implements Serializable {
-        FLOAT(""),
-        DOUBLE(""),
-        DECIMAL("");
+        FLOAT("^[+-]?(\\d+([.]\\d*)?|[.]\\d+){0,24}$"),
+        DOUBLE("^[+-]?(\\d+([.]\\d*)?|[.]\\d+){0,55}$"),
+        DECIMAL("^[+-]?(\\d+([.]\\d*)?|[.]\\d+){0,65}$");
 
         private final String pattern;
 
         private FloatType(String pattern) {
             this.pattern = pattern;
         }
+
+        public boolean checkValue(String value) {
+            return value.matches(pattern);
+        }
     }
 
     private FloatType type;
     private int length;
     private int point;
+
+    public Float() {
+    }
+
+    public Float(String sql) {
+        String typeString = sql;
+        String[] infoString = null;
+        int i = sql.indexOf('(');
+        if (i > 0) {
+            typeString = sql.substring(0, i);
+            infoString = sql.substring(i + 1, sql.length() - 1).split(",");
+        }
+
+        if (infoString != null && infoString.length == 2) {
+            this.length = java.lang.Integer.parseInt(infoString[0]);
+            this.point = java.lang.Integer.parseInt(infoString[1]);
+        }
+
+        this.type = FloatType.valueOf(typeString);
+    }
+
+    public Float(FloatType type, int length, int point) {
+        this.type = type;
+        this.length = length;
+        this.point = point;
+    }
 
     public FloatType getType() {
         return type;
@@ -73,6 +104,14 @@ public class Float implements PropertyType, Serializable {
 
     @Override
     public boolean validType(Object value) {
-        return false;
+        if (value instanceof Float && type.equals(FloatType.FLOAT)) {
+            return true;
+        } else if (value instanceof Double && type.equals(FloatType.DOUBLE)) {
+            return true;
+        } else if (value instanceof BigDecimal && type.equals(FloatType.DECIMAL)) {
+            return true;
+        } else {
+            return type.checkValue(String.valueOf(value));
+        }
     }
 }

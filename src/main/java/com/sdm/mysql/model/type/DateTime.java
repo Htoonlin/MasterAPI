@@ -37,6 +37,14 @@ public class DateTime implements PropertyType, Serializable {
     public DateTime() {
     }
 
+    public DateTime(String sql) {
+        int i = sql.indexOf('(');
+        if (i > 0) {
+            sql = sql.substring(0, i);
+        }
+        this.type = DateTimeType.valueOf(sql.trim().toLowerCase());
+    }
+
     public DateTime(DateTimeType type) {
         this.type = type;
     }
@@ -49,15 +57,6 @@ public class DateTime implements PropertyType, Serializable {
 
     public void setType(DateTimeType type) {
         this.type = type;
-    }
-
-    @Deprecated
-    public void setSQL(String sql) {
-        int i = sql.indexOf('(');
-        if (i > 0) {
-            sql = sql.substring(0, i);
-        }
-        this.type = DateTimeType.valueOf(sql.trim().toLowerCase());
     }
 
     @Override

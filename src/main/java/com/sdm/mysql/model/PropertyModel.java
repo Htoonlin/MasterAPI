@@ -28,7 +28,6 @@ public class PropertyModel implements Serializable {
     private boolean readOnly;
     private boolean showInGrid;
     private boolean require;
-    private boolean searchable;
 
     public String defaultSQL() {
         String sql = MySQLManager.quoteName(this.name) + " " + this.type.defaultSQL();
@@ -65,6 +64,7 @@ public class PropertyModel implements Serializable {
     public PropertyModel() {
         this.primary = false;
         this.serial = false;
+        this.showInGrid = true;
         this.description = "";
     }
 
@@ -171,14 +171,6 @@ public class PropertyModel implements Serializable {
 
     public void setRequire(boolean require) {
         this.require = require;
-    }
-
-    public boolean isSearchable() {
-        return searchable;
-    }
-
-    public void setSearchable(boolean searchable) {
-        this.searchable = searchable;
     }
 
 }
