@@ -14,7 +14,7 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.util.SecurityInstance;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
-import com.sdm.master.request.auth.ChangePasswordRequest;
+import com.sdm.master.request.ChangePasswordRequest;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;

@@ -13,7 +13,7 @@ import com.sdm.core.util.mail.GmailService;
 import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.master.entity.UserEntity;
-import com.sdm.master.request.auth.ActivateRequest;
+import com.sdm.master.request.ActivateRequest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
