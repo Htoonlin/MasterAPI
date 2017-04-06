@@ -35,7 +35,7 @@ public class ObjectDAO extends MySQLDAO {
         String sql = "CREATE" + (object.isTemporary() ? " TEMPORARY TABLE" : " TABLE");
         sql += " IF NOT EXISTS";
 
-        String primary = "";        
+        String primary = "";
         sql += " " + MySQLManager.quoteName(object.getName()) + " (";
         for (PropertyModel property : object.getProperties()) {
             sql += property.defaultSQL() + ",";
@@ -110,7 +110,7 @@ public class ObjectDAO extends MySQLDAO {
         sql += " ADD COLUMN " + property.defaultSQL();
         if (isFirst) {
             sql += " FIRST";
-        } else if (!after.isEmpty()) {
+        } else if (after != null && !after.isEmpty()) {
             sql += " AFTER " + MySQLManager.quoteName(after);
         }
 
@@ -135,13 +135,9 @@ public class ObjectDAO extends MySQLDAO {
     }
 
     public boolean editProperty(String objectName, String oldName, PropertyModel property, String after, boolean isFirst) throws SQLException {
-        String sql = "ALTER TABLE " + MySQLManager.quoteName(objectName) + " CHANGE ";
+        String sql = "ALTER TABLE " + MySQLManager.quoteName(objectName) + " CHANGE COLUMN ";
         sql += MySQLManager.quoteName(oldName);
-        if (!oldName.equalsIgnoreCase(property.getName())) {
-            sql += " " + MySQLManager.quoteName(property.getName());
-        } else {
-            sql += " " + property.defaultSQL();
-        }
+        sql += " " + property.defaultSQL();
         if (isFirst) {
             sql += " FIRST";
         } else if (after != null && !after.isEmpty()) {

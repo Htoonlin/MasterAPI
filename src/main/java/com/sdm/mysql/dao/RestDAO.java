@@ -70,7 +70,7 @@ public class RestDAO extends MySQLDAO {
         query = MySQLManager.cleanLastChar(query, ",") + ")";
         if (isAutoGenerateID) {
             int effected = executeUpdateWithAI(query, values);
-            entity.put("GeneratedID", getLastInsertedId());
+            entity.put("@generated_id", getLastInsertedId());
             return effected;
         } else {
             return executeUpdate(query, values);

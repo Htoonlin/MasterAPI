@@ -143,6 +143,7 @@ public class QueryRequest extends DefaultRequest implements Serializable {
     }
 
     public String defaultSQL() {
+        paramValues = new ArrayList<>();
         String sql = "SELECT " + buildColumn() + " " + buildFrom();
         sql += buildJoins();
         sql += buildWhere();
@@ -153,6 +154,7 @@ public class QueryRequest extends DefaultRequest implements Serializable {
     }
 
     public String rowCountSQL() {
+        paramValues = new ArrayList<>();
         String sql = "SELECT COUNT(*) AS " + MySQLManager.quoteName(ROW_COUNTS_COL) + " " + buildFrom();
         sql += buildJoins();
         sql += buildWhere();
@@ -161,7 +163,6 @@ public class QueryRequest extends DefaultRequest implements Serializable {
     }
 
     public QueryRequest() {
-        paramValues = new ArrayList<>();
         this.page = 1;
         this.size = 10;
     }
