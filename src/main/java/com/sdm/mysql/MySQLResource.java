@@ -68,6 +68,7 @@ public class MySQLResource extends DefaultResource {
     public IBaseResponse getObjects() throws SQLException, IOException, ClassNotFoundException {
         AdminDAO dao = new AdminDAO();
         List<Map<String, Object>> objects = dao.fetchObjects();
+        dao.closeConnection();
         return new DefaultResponse(new ListResponse(objects));
     }
 
@@ -92,6 +93,7 @@ public class MySQLResource extends DefaultResource {
         RestDAO dao = new RestDAO();
         long total = dao.fetchTotal(request);
         List data = dao.fetch(request);
+        dao.closeConnection();
         PaginationResponse response = new PaginationResponse(data, total, request.getPage(), request.getSize(), request);
         return new DefaultResponse(response);
     }
@@ -137,6 +139,7 @@ public class MySQLResource extends DefaultResource {
         }
         RestDAO dao = new RestDAO();
         dao.insert(table, request.getData(), request.isGeneratedId());
+        dao.closeConnection();
         MapResponse<String, Object> response = new MapResponse<>();
         response.putAll(request.getData());
         return new DefaultResponse(response);
@@ -161,6 +164,7 @@ public class MySQLResource extends DefaultResource {
         }
         RestDAO dao = new RestDAO();
         int effected = dao.update(table, request.getData(), request.getConditions());
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Effected " + effected + " rows.");
         return new DefaultResponse(message);
@@ -190,7 +194,8 @@ public class MySQLResource extends DefaultResource {
         } else {
             effected = dao.remove(table, request.getConditions());
         }
-
+        dao.closeConnection();
+        
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Effected " + effected + " rows.");
         return new DefaultResponse(message);
@@ -216,6 +221,7 @@ public class MySQLResource extends DefaultResource {
 
         ObjectDAO dao = new ObjectDAO();
         dao.create(request);
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Create a new object <" + request.getName() + "> successful.");
         return new DefaultResponse(message);
@@ -237,6 +243,7 @@ public class MySQLResource extends DefaultResource {
     public IBaseResponse rename(@PathParam("newName") String newName) throws SQLException, IOException, ClassNotFoundException {
         ObjectDAO dao = new ObjectDAO();
         dao.rename(table, newName);
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", table + " object changed to new name " + newName + ".");
         return new DefaultResponse(message);
@@ -261,6 +268,7 @@ public class MySQLResource extends DefaultResource {
         }
         ObjectDAO dao = new ObjectDAO();
         dao.clone(table, request.getDestName(), request.isTemporary(), request.isDataInclude());
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Cloned object to " + request.getDestName()
                 + " from " + table + ".");
@@ -283,7 +291,7 @@ public class MySQLResource extends DefaultResource {
     public IBaseResponse remove(@DefaultValue("false") @QueryParam("temp") boolean isTemporary) throws SQLException, IOException, ClassNotFoundException {
         ObjectDAO dao = new ObjectDAO();
         dao.remove(table, isTemporary);
-
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Remove object <" + table + "> successful.");
         return new DefaultResponse(message);
@@ -303,7 +311,9 @@ public class MySQLResource extends DefaultResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse descObject() throws SQLException, IOException, ClassNotFoundException {
         AdminDAO dao = new AdminDAO();
-        return new DefaultResponse(new ListResponse(dao.descObject(table)));
+        List properties = dao.descObject(table);
+        dao.closeConnection();
+        return new DefaultResponse(new ListResponse(properties));
     }
 
     /**
@@ -326,7 +336,7 @@ public class MySQLResource extends DefaultResource {
 
         ObjectDAO dao = new ObjectDAO();
         dao.addProperty(table, request.getProperty(), request.getAfter(), request.isFirst());
-
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Add new property in " + table + " has been successful.");
         return new DefaultResponse(message);
@@ -356,7 +366,7 @@ public class MySQLResource extends DefaultResource {
         ObjectDAO dao = new ObjectDAO();
         dao.editProperty(table, property,
                 request.getProperty(), request.getAfter(), request.isFirst());
-
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Edit property in " + table + " has been successful.");
         return new DefaultResponse(message);
@@ -378,9 +388,9 @@ public class MySQLResource extends DefaultResource {
     public IBaseResponse editProperty(@PathParam("property") String property) throws SQLException, IOException, ClassNotFoundException {
         ObjectDAO dao = new ObjectDAO();
         dao.dropProperty(table, property);
-
+        dao.closeConnection();
         MessageResponse message = new MessageResponse(200, ResponseType.SUCCESS,
                 "MYSQL_SUCCESS", "Remove property in " + table + " has been successful.");
         return new DefaultResponse(message);
-    }
+    }    
 }
