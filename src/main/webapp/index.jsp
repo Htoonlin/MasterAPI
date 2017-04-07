@@ -138,8 +138,8 @@
                     $("div#messageBox").attr('class', 'alert alert-' + type).html(html);
                 }
                 function call_api(url_suffix, method, data, callback) {
-                    var url = window.location.href;
-                    url += "api" + $('input#txtAPIURL').val() + url_suffix;
+                    var url = "<%= request.getContextPath() %>/api/";
+                    url += $('input#txtAPIURL').val() + url_suffix;
                     $('label#lblWaiting').html("CONNECTING:" + url);
                     var request = {
                         url: url,
