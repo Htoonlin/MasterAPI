@@ -18,6 +18,9 @@ public class MailInfo {
     private String subject;
     private String body;
 
+    public MailInfo() {
+    }
+
     public MailInfo(String to, String subject, String body) {
         this.to = to;
         this.subject = subject;

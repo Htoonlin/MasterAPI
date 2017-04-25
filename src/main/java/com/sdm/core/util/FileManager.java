@@ -8,7 +8,6 @@ package com.sdm.core.util;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.ws.rs.core.UriBuilder;
 

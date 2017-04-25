@@ -214,7 +214,7 @@ public class MySQLResource extends DefaultResource {
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public IBaseResponse create(CreateRequest request) throws SQLException, IOException, ClassNotFoundException {
+        public IBaseResponse create(CreateRequest request) throws SQLException, IOException, ClassNotFoundException {
         if (!request.isValid()) {
             return new ErrorResponse(request.getErrors());
         }
