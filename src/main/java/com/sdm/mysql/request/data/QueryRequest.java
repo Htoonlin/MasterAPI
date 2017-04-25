@@ -249,4 +249,14 @@ public class QueryRequest extends DefaultRequest implements Serializable {
     public void setSize(int size) {
         this.size = size;
     }
+
+    public List<Join> getJoins() {
+        return joins;
+    }
+
+    public void setJoins(List<Join> joins) {
+        this.joins = joins;
+    }
+    
+    
 }

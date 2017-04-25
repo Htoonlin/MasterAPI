@@ -31,7 +31,10 @@ public class Join implements Serializable {
             //Sql Inject for conditions
             sql += " ON 1 = 1";
             for (Condition condition : conditions) {
-                sql += " " + condition.defaultSQL();
+                sql += " " + condition.getLogic().getValue() + " "
+                        + condition.getColumn() + " "
+                        + condition.getOperator().getValue()
+                        + condition.getValue().toString();
             }
         }
 
