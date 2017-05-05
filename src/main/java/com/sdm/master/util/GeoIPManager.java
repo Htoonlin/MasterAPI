@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.util;
+package com.sdm.master.util;
 
 import com.sdm.core.Globalizer;
 import com.sdm.core.response.MapResponse;
+import com.sdm.master.dao.GeoIPCacheDAO;
 import java.io.IOException;
 import org.apache.log4j.Logger;
 import javax.ws.rs.client.Client;
@@ -25,16 +26,12 @@ public class GeoIPManager {
 
     private static String callAPI = "http://ip-api.com/json/";
 
-    private IGeoIPCache cacheDAO;
+    private GeoIPCacheDAO cacheDAO;
 
-    public GeoIPManager(IGeoIPCache cacheDAO) {
-        this.cacheDAO = cacheDAO;
+    public GeoIPManager(GeoIPCacheDAO dao) {
+        this.cacheDAO = dao;
     }
 
-    public GeoIPManager() {
-
-    }
-    
     private MapResponse<String, Object> requestInfo(String ipAddress) throws IOException {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(callAPI + ipAddress);

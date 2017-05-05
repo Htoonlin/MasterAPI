@@ -10,11 +10,12 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
-import com.sdm.core.util.GeoIPManager;
+import com.sdm.master.util.GeoIPManager;
 import com.sdm.core.util.MyanmarFontManager;
 import com.sdm.master.dao.GeoIPCacheDAO;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -32,8 +33,11 @@ import org.apache.log4j.Logger;
 public class GeneralResource extends DefaultResource {
 
     private static final Logger LOG = Logger.getLogger(ProfileResource.class.getName());
+
+    @Inject
+    GeoIPManager ipManager;
     
-     @PostConstruct
+    @PostConstruct
     public void onLoad() {
         LOG.info("Welcome...");
     }
@@ -51,8 +55,7 @@ public class GeneralResource extends DefaultResource {
     @GET
     @Path("ip")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {   
-        GeoIPManager ipManager = new GeoIPManager(new GeoIPCacheDAO());
+    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {        
         return new DefaultResponse(ipManager.lookupInfo(request.getRemoteAddr()));
     }
 
@@ -64,9 +67,9 @@ public class GeneralResource extends DefaultResource {
         MessageResponse message = new MessageResponse(200, ResponseType.INFO, "IS_MYANMAR", "No! It is not myanmar font.");
         if (MyanmarFontManager.isMyanmar(input)) {
             String msgString = "Yes! It is myanmar";
-            if(MyanmarFontManager.isUnicode(input)){
+            if (MyanmarFontManager.isUnicode(input)) {
                 msgString += " unicode font.";
-            }else if(MyanmarFontManager.isZawgyi(input)){
+            } else if (MyanmarFontManager.isZawgyi(input)) {
                 msgString += " zawgyi font.";
             }
             message = new MessageResponse(200, ResponseType.INFO, "IS_MYANMAR", msgString);

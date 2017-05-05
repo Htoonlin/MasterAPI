@@ -11,11 +11,15 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.ListResponse;
 import com.sdm.core.util.SecurityInstance;
+import com.sdm.master.dao.NotificationDAO;
 import com.sdm.master.dao.UserDAO;
+import com.sdm.master.entity.NotifyEntity;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.ChangePasswordRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -41,7 +45,7 @@ public class ProfileResource extends DefaultResource {
     }
 
     @RolesAllowed("user")
-    @GET    
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getProfile() throws Exception {
         UserEntity user = userDAO.fetchById(getUserId());
@@ -53,7 +57,7 @@ public class ProfileResource extends DefaultResource {
     }
 
     @RolesAllowed("user")
-    @POST    
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse setProfile(UserEntity request) throws Exception {
@@ -98,7 +102,7 @@ public class ProfileResource extends DefaultResource {
             String oldPassword = SecurityInstance.md5String(request.getEmail(), request.getOldPassword());
             UserEntity user = userDAO.userAuth(request.getEmail(), oldPassword);
 
-            if (user == null || user.getId().equals(getUserId())) {
+            if (user == null || !user.getId().equals(getUserId())) {
                 return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your request."));
             }
@@ -116,6 +120,27 @@ public class ProfileResource extends DefaultResource {
             MessageResponse message = new MessageResponse(202, ResponseType.SUCCESS,
                     "UPDATED", "We updated the new password on your request successfully.");
             return new DefaultResponse(message);
+        } catch (Exception e) {
+            logger.error(e);
+            throw e;
+        }
+    }
+
+    @RolesAllowed("user")
+    @GET
+    @Path("alerts")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getAlerts() throws Exception {
+        try {
+            UserEntity user = userDAO.fetchById(getUserId());
+            if (user == null) {
+                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
+                        "NO_DATA", "There is no data for your request."));
+            }
+            NotificationDAO notifyDAO = new NotificationDAO();
+            List<NotifyEntity> alerts = notifyDAO.getNotificationsByUserId(getUserId());
+            return new DefaultResponse(new ListResponse(alerts));
         } catch (Exception e) {
             logger.error(e);
             throw e;

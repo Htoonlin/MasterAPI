@@ -34,8 +34,9 @@ import org.glassfish.jersey.server.ServerProperties;
  */
 @javax.ws.rs.ApplicationPath("/api")
 public class ApplicationConfig extends Application {
+
     private static final Logger logger = Logger.getLogger(ApplicationConfig.class.getName());
-    
+
     @Inject
     public ApplicationConfig(ServiceLocator serviceLocator) {
         logger.info("System is starting ....");
@@ -47,10 +48,10 @@ public class ApplicationConfig extends Application {
 
         //Inject AccessManager
         Injections.addBinding(Injections.newBinder(AccessManager.class).to(IAccessManager.class), dc);
-        
+
         //Inject TemplateManager
         Injections.addBinding(Injections.newBinder(JSPTemplateManager.class).to(ITemplateManager.class), dc);
-        
+
         dc.commit();
     }
 
@@ -59,8 +60,8 @@ public class ApplicationConfig extends Application {
         Set<Class<?>> resources = new java.util.HashSet<>();
         resources.add(MultiPartFeature.class);
         resources.add(JacksonJaxbJsonProvider.class);
-        resources.add(JacksonObjectMapper.class);   
-        resources.add(LoggingFeature.class);        
+        resources.add(JacksonObjectMapper.class);
+        resources.add(LoggingFeature.class);
         addRestResourceClasses(resources);
         return resources;
     }
@@ -77,14 +78,14 @@ public class ApplicationConfig extends Application {
         properties.put(ServerProperties.BV_FEATURE_DISABLE, true);
         properties.put(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
         properties.put(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
-        properties.put(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);            
+        properties.put(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);
         return properties;
     }
 
     /**
-     * Do not modify addRestResourceClasses() method. 
-     * It is automatically populated with all resources defined in the project. 
-     * If required, comment out calling this method in getClasses().
+     * Do not modify addRestResourceClasses() method. It is automatically
+     * populated with all resources defined in the project. If required, comment
+     * out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(com.sdm.core.exception.ClassNotFoundExceptionMapper.class);
