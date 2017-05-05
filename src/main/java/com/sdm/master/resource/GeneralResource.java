@@ -34,9 +34,6 @@ public class GeneralResource extends DefaultResource {
 
     private static final Logger LOG = Logger.getLogger(ProfileResource.class.getName());
 
-    @Inject
-    GeoIPManager ipManager;
-    
     @PostConstruct
     public void onLoad() {
         LOG.info("Welcome...");
@@ -55,7 +52,8 @@ public class GeneralResource extends DefaultResource {
     @GET
     @Path("ip")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {        
+    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {
+        GeoIPManager ipManager = new GeoIPManager();
         return new DefaultResponse(ipManager.lookupInfo(request.getRemoteAddr()));
     }
 

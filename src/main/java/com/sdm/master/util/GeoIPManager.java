@@ -28,8 +28,8 @@ public class GeoIPManager {
 
     private GeoIPCacheDAO cacheDAO;
 
-    public GeoIPManager(GeoIPCacheDAO dao) {
-        this.cacheDAO = dao;
+    public GeoIPManager() {
+        this.cacheDAO = new GeoIPCacheDAO();
     }
 
     private MapResponse<String, Object> requestInfo(String ipAddress) throws IOException {
