@@ -18,7 +18,6 @@ import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.NotifyEntity;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.ChangePasswordRequest;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -93,9 +92,8 @@ public class ProfileResource extends DefaultResource {
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse changePassword(ChangePasswordRequest request) throws Exception {
         try {
-            Map<String, String> errors = new HashMap<>();
             if (!request.isValid()) {
-                errors = request.getErrors();
+                Map<String, String> errors = request.getErrors();
                 return new ErrorResponse(errors);
             }
 
