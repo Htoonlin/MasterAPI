@@ -12,6 +12,8 @@ import com.sdm.core.hibernate.entity.RestEntity;
 import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.FileManager;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,7 +28,7 @@ import org.hibernate.annotations.Formula;
  */
 @Entity
 @Table(name = "tbl_file")
-public class FileEntity extends RestEntity<Double> implements Serializable {
+public class FileEntity extends RestEntity<BigInteger> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,7 +44,7 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false, columnDefinition = "BIGINT UNSIGNED")
     @UIStructure(order = 0, label = "#", readOnly = true)
-    private double id;
+    private BigInteger id;
 
     @UIStructure(order = 1, label = "Name")
     @Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
@@ -61,15 +63,15 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
     private long fileSize;
 
     @JsonIgnore
-    @Column(name = "storagePath", columnDefinition = "varchar(1000)", length = 1000, nullable = false)
+    @Column(name = "storagePath", columnDefinition = "varchar(1000)", length = 1000, nullable = true)
     private String storagePath;
 
     @UIStructure(order = 4, label = "External URL")
-    @Column(name = "externalURL", columnDefinition = "varchar(1000)", length = 1000, nullable = false)
+    @Column(name = "externalURL", columnDefinition = "varchar(1000)", length = 1000, nullable = true)
     private String externalURL;
 
     @JsonIgnore
-    @Column(name = "publicToken", columnDefinition = "char(12)", length = 12, nullable = false)
+    @Column(name = "publicToken", columnDefinition = "char(25)", length = 25, nullable = false)
     private String publicToken;
 
     @UIStructure(order = 5, label = "Status")
@@ -80,7 +82,7 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
         this.status = STORAGE;
     }
 
-    public FileEntity(int id, String name, String extension, String type, long fileSize, String storagePath, String externalURL) {
+    public FileEntity(BigInteger id, String name, String extension, String type, long fileSize, String storagePath, String externalURL) {
         if (externalURL == null || externalURL.length() <= 0) {
             this.status = STORAGE;
         } else {
@@ -103,12 +105,12 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
     }
 
     @Override
-    public Double getId() {
+    public BigInteger getId() {
         return id;
     }
 
     @Override
-    public void setId(Double id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 
@@ -196,13 +198,6 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + (int) (Double.doubleToLongBits(this.id) ^ (Double.doubleToLongBits(this.id) >>> 32));
-        return hash;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -215,6 +210,13 @@ public class FileEntity extends RestEntity<Double> implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(this.id);
+        return hash;
     }
 
 }
