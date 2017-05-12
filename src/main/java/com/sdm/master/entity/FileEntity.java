@@ -71,7 +71,7 @@ public class FileEntity extends RestEntity<BigInteger> implements Serializable {
     private String externalURL;
 
     @JsonIgnore
-    @Column(name = "publicToken", columnDefinition = "char(25)", length = 25, nullable = false)
+    @Column(name = "publicToken", columnDefinition = "char(25)", length = 25, nullable = true)
     private String publicToken;
 
     @UIStructure(order = 5, label = "Status")
