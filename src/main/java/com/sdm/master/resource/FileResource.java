@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -40,7 +41,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
  * @author Htoonlin
  */
 @Path("file")
-public class FileResource extends RestResource<FileEntity, Double> {
+public class FileResource extends RestResource<FileEntity, BigInteger> {
 
     private static final Logger logger = Logger.getLogger(FileResource.class.getName());
     private FileDAO mainDAO;
