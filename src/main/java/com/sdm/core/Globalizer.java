@@ -84,8 +84,7 @@ public class Globalizer {
         return checkDate.after(new Date());
     }
 
-    public static String generateToken(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static String generateToken(String chars, int length) {        
         SecureRandom rnd = new SecureRandom();
         StringBuilder pass = new StringBuilder();
         for (int i = 0; i < length; i++) {
