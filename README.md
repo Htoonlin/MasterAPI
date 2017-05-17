@@ -1,8 +1,9 @@
 # MasterAPI
-### Table Standard
+### DATABASE Standard
 - Table => tbl_{name_with_snake_case}
 - View => vw_{name_with_snake_case}
-- Column Name => {nameWithCamelCase}
+- Procedure => proc_{name_with_snake_case}
+- User Columns => {nameWithCamelCase}
 - Default Columns => {name_with_snake_case}
 	- version	int(11)	No		
 	- created_by	int(11)	No	FK(tbl_user)	
