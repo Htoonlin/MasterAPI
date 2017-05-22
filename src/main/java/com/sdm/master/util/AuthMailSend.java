@@ -9,7 +9,7 @@ import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.util.ITemplateManager;
 import com.sdm.core.util.SecurityInstance;
-import com.sdm.core.util.mail.GmailService;
+import com.sdm.core.util.mail.WebMailService;
 import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.master.entity.UserEntity;
@@ -66,7 +66,7 @@ public class AuthMailSend {
         if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
             MailgunService.getInstance().sendHTML(info);
         } else {
-            GmailService.getInstance().sendHTML(info);
+            WebMailService.getInstance().sendHTML(info);
         }
     }
 
@@ -85,7 +85,7 @@ public class AuthMailSend {
         if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
             MailgunService.getInstance().sendHTML(info);
         } else {
-            GmailService.getInstance().sendHTML(info);
+            WebMailService.getInstance().sendHTML(info);
         }
     }
 
@@ -102,7 +102,7 @@ public class AuthMailSend {
         if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
             MailgunService.getInstance().sendHTML(info);
         } else {
-            GmailService.getInstance().sendHTML(info);
+            WebMailService.getInstance().sendHTML(info);
         }
     }
 
