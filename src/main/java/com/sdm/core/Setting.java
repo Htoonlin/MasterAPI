@@ -49,6 +49,11 @@ public final class Setting {
     
     /* Mail Setting */
     public String MAIL_SERVICE;
+    public String MAIL_HOST;
+    public String MAIL_PORT;
+    public String MAIL_NEED_AUTH;
+    public String MAIL_USER;
+    public String MAIL_PASSWORD;
 
     private final Properties settingProps;
 
@@ -94,7 +99,12 @@ public final class Setting {
                 ACCESS_CONTROL_ALLOW_HEADERS = settingProps.getProperty("ACCESS_CONTROL_ALLOW_HEADERS", "authorization, content-type, xsrf-token");
                 ACCESS_CONTROL_MAX_AGE = settingProps.getProperty("ACCESS_CONTROL_MAX_AGE", "0");
                 
-                MAIL_SERVICE = settingProps.getProperty("MAIL_SERVICE", "gmail");
+                MAIL_SERVICE = settingProps.getProperty("MAIL_SERVICE", "webmail");
+                MAIL_HOST = settingProps.getProperty("MAIL_HOST", "smtp.gmail.com");
+                MAIL_PORT = settingProps.getProperty("MAIL_PORT", "465");
+                MAIL_NEED_AUTH = settingProps.getProperty("MAIL_NEED_AUTH", "true");
+                MAIL_USER = settingProps.getProperty("MAIL_USER", "example@gmail.com");
+                MAIL_PASSWORD = settingProps.getProperty("MAIL_PASSWORD", "3x@mp13");
             } catch (IOException ex) {
                 Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
             }

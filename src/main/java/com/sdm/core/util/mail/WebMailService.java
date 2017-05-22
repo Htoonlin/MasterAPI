@@ -5,6 +5,7 @@
  */
 package com.sdm.core.util.mail;
 
+import com.sdm.core.Setting;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -29,44 +30,38 @@ import org.apache.log4j.Logger;
  *
  * @author Htoonlin
  */
-public class GmailService implements IBaseMailService {
+public class WebMailService implements IBaseMailService {
 
-    private static final Logger LOG = Logger.getLogger(GmailService.class.getName());
+    private static final Logger LOG = Logger.getLogger(WebMailService.class.getName());
 
-    private static GmailService instance;
+    private static WebMailService instance;
 
-    private final String GMAIL_HOST = "smtp.gmail.com";
-    private final String GMAIL_PORT = "465";
-    private final String GMAIL_SOCKET_FACTORY = "javax.net.ssl.SSLSocketFactory";
-    private final String GMAIL_NEED_AUTH = "true";
-    private final String GMAIL_USER;
+    private final String MAIL_SOCKET_FACTORY = "javax.net.ssl.SSLSocketFactory";
 
     private Session mailSession;
 
-    public GmailService() throws IOException {
+    public WebMailService() throws IOException {
         Properties settingProps = new Properties();
-        settingProps.load(getClass().getClassLoader().getResourceAsStream("setting.properties"));
-        GMAIL_USER = settingProps.getProperty("GMAIL_USER", "");
-        final String password = settingProps.getProperty("GMAIL_PASSWORD", "");
-        settingProps.put("mail.smtp.host", GMAIL_HOST);
-        settingProps.put("mail.smtp.socketFactory.port", GMAIL_PORT);
-        settingProps.put("mail.smtp.socketFactory.class", GMAIL_SOCKET_FACTORY);
-        settingProps.put("mail.smtp.auth", GMAIL_NEED_AUTH);
-        settingProps.put("mail.smtp.port", GMAIL_PORT);
+        settingProps.put("mail.smtp.host", Setting.getInstance().MAIL_HOST);
+        settingProps.put("mail.smtp.socketFactory.port", Setting.getInstance().MAIL_PORT);
+        settingProps.put("mail.smtp.socketFactory.class", MAIL_SOCKET_FACTORY);
+        settingProps.put("mail.smtp.auth", Setting.getInstance().MAIL_NEED_AUTH);
+        settingProps.put("mail.smtp.port", Setting.getInstance().MAIL_PORT);
 
         mailSession = Session.getDefaultInstance(settingProps,
                 new javax.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(GMAIL_USER, password);
+                return new PasswordAuthentication(Setting.getInstance().MAIL_USER,
+                        Setting.getInstance().MAIL_PASSWORD);
             }
         });
     }
 
-    public static synchronized GmailService getInstance() {
+    public static synchronized WebMailService getInstance() {
         if (instance == null) {
             try {
-                instance = new GmailService();
+                instance = new WebMailService();
             } catch (IOException e) {
                 LOG.error(e);
             }
@@ -79,7 +74,7 @@ public class GmailService implements IBaseMailService {
             Message message = new MimeMessage(mailSession);
             message.setHeader("X-Priority", "1");
             if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
-                mailInfo.setFrom(GMAIL_USER);
+                mailInfo.setFrom(Setting.getInstance().MAIL_USER);
             }
             message.setFrom(new InternetAddress(mailInfo.getFrom()));
             message.setRecipients(Message.RecipientType.TO,
