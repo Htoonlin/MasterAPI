@@ -7,7 +7,7 @@ package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.sdm.mysql.request.data.QueryRequest;
+import com.sdm.core.request.QueryRequest;
 import java.io.Serializable;
 import java.util.List;
 
