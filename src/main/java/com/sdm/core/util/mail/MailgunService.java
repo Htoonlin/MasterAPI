@@ -10,6 +10,8 @@ import com.sdm.core.Setting;
 import com.sdm.core.util.mail.response.ValidateResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -116,7 +118,7 @@ public class MailgunService implements IBaseMailService {
     }
 
     @Override
-    public Response sendAttachment(MailInfo mailInfo, File attachment, MediaType attachmentType) {
+    public Response sendAttachments(MailInfo mailInfo, List<File> attachments) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(MAILGUN_URL).path(MAILGUN_DOMAIN + "/messages");
         target.register(MultiPartFeature.class);
@@ -141,7 +143,9 @@ public class MailgunService implements IBaseMailService {
         formData.field("subject", mailInfo.getSubject());
         formData.field("html", mailInfo.getBody());
 
-        formData.bodyPart(new FileDataBodyPart("attachment", attachment, attachmentType));
+        for (File attachment : attachments) {
+            formData.bodyPart(new FileDataBodyPart("attachment", attachment));
+        }
         Response response = target.request(MediaType.MULTIPART_FORM_DATA_TYPE)
                 .post(Entity.entity(formData, MediaType.MULTIPART_FORM_DATA));
         if (response.getStatus() == 200) {
@@ -149,6 +153,13 @@ public class MailgunService implements IBaseMailService {
         }
 
         return null;
+    }
+
+    @Override
+    public Response sendAttachment(MailInfo mailInfo, File attachment) {
+        List<File> files = new ArrayList<>();
+        files.add(attachment);
+        return this.sendAttachments(mailInfo, files);
     }
 
     @Override

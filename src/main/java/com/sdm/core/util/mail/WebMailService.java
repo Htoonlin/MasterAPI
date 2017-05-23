@@ -8,6 +8,8 @@ package com.sdm.core.util.mail;
 import com.sdm.core.Setting;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -100,31 +102,39 @@ public class WebMailService implements IBaseMailService {
     }
 
     @Override
-    public Response sendAttachment(MailInfo mailInfo, File attachment, MediaType attachmentType) throws Exception {
+    public Response sendAttachments(MailInfo mailInfo, List<File> attachments) {
         Response response = Response.ok().build();
         try {
             Message message = buildMessage(mailInfo);
             MimeBodyPart textBody = new MimeBodyPart();
             textBody.setContent(mailInfo.getBody(), "text/html; charset=utf-8");
 
-            MimeBodyPart attachmentBody = new MimeBodyPart();
-            DataSource dataSource = new FileDataSource(attachment);
-            attachmentBody.setDataHandler(new DataHandler(dataSource));
-            attachmentBody.setFileName(attachment.getName());
-
             Multipart bodyPart = new MimeMultipart();
             bodyPart.addBodyPart(textBody);
-            bodyPart.addBodyPart(attachmentBody);
+
+            for (File attachment : attachments) {
+                MimeBodyPart attachmentBody = new MimeBodyPart();
+                DataSource dataSource = new FileDataSource(attachment);
+                attachmentBody.setDataHandler(new DataHandler(dataSource));
+                attachmentBody.setFileName(attachment.getName());
+                bodyPart.addBodyPart(attachmentBody);
+            }
 
             message.setContent(bodyPart);
 
             Transport.send(message);
         } catch (MessagingException ex) {
             response = Response.serverError().build();
-            throw ex;
+            LOG.error(ex);
         }
 
         return response;
+    }
+
+    @Override
+    public Response sendAttachment(MailInfo mailInfo, File attachment) {
+        List<File> files = new ArrayList<>();
+        return this.sendAttachments(mailInfo, files);
     }
 
     @Override
