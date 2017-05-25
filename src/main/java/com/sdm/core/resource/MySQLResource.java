@@ -6,7 +6,6 @@
 package com.sdm.core.resource;
 
 import com.sdm.core.mysql.dao.AdminDAO;
-import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;

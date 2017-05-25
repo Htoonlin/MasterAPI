@@ -7,7 +7,7 @@ package com.sdm.sample.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.RestEntity;
-import com.sdm.core.ui.UIStructure;
+import com.sdm.core.hibernate.entity.UIStructure;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;

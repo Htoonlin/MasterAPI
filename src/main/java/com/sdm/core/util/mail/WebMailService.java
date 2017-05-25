@@ -133,6 +133,7 @@ public class WebMailService implements IBaseMailService {
     @Override
     public Response sendAttachment(MailInfo mailInfo, File attachment) {
         List<File> files = new ArrayList<>();
+        files.add(attachment);
         return this.sendAttachments(mailInfo, files);
     }
 

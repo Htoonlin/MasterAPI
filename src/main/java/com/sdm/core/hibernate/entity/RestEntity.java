@@ -14,7 +14,6 @@ import com.sdm.core.request.IBaseRequest;
 import com.sdm.core.response.IResponseContent;
 import com.sdm.core.response.PropertiesResponse;
 import com.sdm.core.response.ResponseType;
-import com.sdm.core.ui.UIStructure;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
