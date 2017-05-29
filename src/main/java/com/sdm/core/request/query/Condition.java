@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.mysql.model.query;
+package com.sdm.core.request.query;
 
-import com.sdm.core.mysql.util.MySQLManager;
+import com.sdm.core.util.MySQLManager;
 import java.io.Serializable;
 
 /**

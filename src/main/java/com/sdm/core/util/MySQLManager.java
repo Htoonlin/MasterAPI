@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.mysql.util;
+package com.sdm.core.util;
 
 /**
  *

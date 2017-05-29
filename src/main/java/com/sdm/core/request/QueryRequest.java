@@ -6,12 +6,12 @@
 package com.sdm.core.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sdm.core.mysql.model.query.Aggregate;
-import com.sdm.core.mysql.model.query.Column;
-import com.sdm.core.mysql.model.query.Condition;
-import com.sdm.core.mysql.model.query.Join;
-import com.sdm.core.mysql.model.query.Sort;
-import com.sdm.core.mysql.util.MySQLManager;
+import com.sdm.core.request.query.Aggregate;
+import com.sdm.core.request.query.Column;
+import com.sdm.core.request.query.Condition;
+import com.sdm.core.request.query.Join;
+import com.sdm.core.request.query.Sort;
+import com.sdm.core.util.MySQLManager;
 import com.sdm.core.request.DefaultRequest;
 import java.io.Serializable;
 import java.util.ArrayList;

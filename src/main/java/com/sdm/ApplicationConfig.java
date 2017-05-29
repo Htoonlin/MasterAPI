@@ -97,7 +97,6 @@ public class ApplicationConfig extends Application {
         resources.add(com.sdm.core.filter.AuthenticaionFilter.class);
         resources.add(com.sdm.core.filter.CORSFilter.class);
         resources.add(com.sdm.core.filter.ResponseFilter.class);
-        resources.add(com.sdm.core.resource.MySQLResource.class);
         resources.add(com.sdm.master.resource.AuthResource.class);
         resources.add(com.sdm.master.resource.FileResource.class);
         resources.add(com.sdm.master.resource.GeneralResource.class);
