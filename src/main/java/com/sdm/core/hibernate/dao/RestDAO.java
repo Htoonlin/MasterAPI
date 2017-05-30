@@ -124,10 +124,13 @@ public class RestDAO<T extends Serializable> extends DefaultDAO<T> {
         try {
             if (useLog) {
                 ((ILogEntity) entity).setCreatedBy(getUserId());
+                ((ILogEntity) entity).setModifiedBy(getUserId());
                 ((ILogEntity) entity).setVersion(1);
             }
             if (useTimeStamp) {
-                ((ITimestampEntity) entity).setCreatedAt(new Date());
+                Date currentDate = new Date();
+                ((ITimestampEntity) entity).setCreatedAt(currentDate);
+                ((ITimestampEntity) entity).setModifiedAt(currentDate);
             }
             if (autoCommit) {
                 beginTransaction();
