@@ -5,9 +5,9 @@
  */
 package com.sdm.core.util.security;
 
-import com.sdm.core.Setting;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import org.apache.log4j.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -20,20 +20,21 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class AESManager {
 
+    private static final Logger LOG = Logger.getLogger(AESManager.class.getName());
+
     private final String CRYPTO_METHOD = "AES";
     private final String CRYPTO_PAIR = "AES/CBC/PKCS5Padding";
-    private final int KEY_SIZE = 256;    
+    private final int KEY_SIZE = 256;
 
     Cipher AESCipher;
-    
-    public static AESManager getInstance() {
-        return new AESManager();
+
+    public AESManager() {
     }
 
-    private void initCipher(int mode) throws Exception {
+    private void initCipher(int mode, String key) throws Exception {
         AESCipher = Cipher.getInstance(CRYPTO_PAIR);
         byte[] keyBytes = new byte[16];
-        byte[] b = Setting.getInstance().AES_KEY.getBytes("UTF-8");
+        byte[] b = key.getBytes("UTF-8");
         int len = b.length;
         if (len > keyBytes.length) {
             len = keyBytes.length;
@@ -51,16 +52,16 @@ public class AESManager {
         return Base64.getEncoder().encodeToString(secKey.getEncoded());
     }
 
-    public String encrypt(String plainText) throws Exception {
+    public String encrypt(String plainText, String key) throws Exception {
         byte[] encryptBytes = plainText.getBytes();
-        this.initCipher(Cipher.ENCRYPT_MODE);
+        this.initCipher(Cipher.ENCRYPT_MODE, key);
         byte[] byteCipher = AESCipher.doFinal(encryptBytes);
         return Base64.getEncoder().encodeToString(byteCipher);
     }
 
-    public String decrypt(String cipherText) throws Exception {
+    public String decrypt(String cipherText, String key) throws Exception {
         byte[] decryptBytes = Base64.getDecoder().decode(cipherText);
-        this.initCipher(Cipher.DECRYPT_MODE);
+        this.initCipher(Cipher.DECRYPT_MODE, key);
         byte[] bytePlain = AESCipher.doFinal(decryptBytes);
         return new String(bytePlain);
     }
