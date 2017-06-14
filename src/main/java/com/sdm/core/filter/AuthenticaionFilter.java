@@ -12,7 +12,7 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.request.AuthorizeRequest;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.MessageResponse;
-import com.sdm.core.util.SecurityInstance;
+import com.sdm.core.util.SecurityManager;
 import eu.bitwalker.useragentutils.UserAgent;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -27,6 +27,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
@@ -51,8 +52,8 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 
     @Inject
     private IAccessManager accessManager;
-
-    private static final String AUTHORIZATION = "Authorization";
+    
+    private final String AUTH_TYPE = "Bearer";
     
     private int getFailed(){
         try{
@@ -83,8 +84,8 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
             }
 
             final MultivaluedMap<String, String> headers = requestContext.getHeaders();
-            final List<String> authorization = headers.get(AUTHORIZATION);
-            final List<String> userAgents = headers.get("user-agent");
+            final List<String> authorization = headers.get(HttpHeaders.AUTHORIZATION);
+            final List<String> userAgents = headers.get(HttpHeaders.USER_AGENT);
 
             if (authorization == null || authorization.isEmpty()
                     || userAgents == null || userAgents.isEmpty()) {
@@ -99,8 +100,9 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
             }
 
             try {
-                //String jsonAuthorization = Globalizer.decrypt(authorization.get(0).replaceFirst("Basic", ""));
-                String jsonAuthorization = SecurityInstance.base64Decode(authorization.get(0).replaceFirst("Basic", ""));
+                //String jsonAuthorization = Globalizer.decrypt(authorization.get(0).replaceFirst("Bearer ", ""));
+                String base64Authorization = authorization.get(0).substring(AUTH_TYPE.length()).trim();
+                String jsonAuthorization = SecurityManager.base64Decode(base64Authorization);
                 AuthorizeRequest tokenAuthorize = Globalizer.jsonMapper().readValue(jsonAuthorization, AuthorizeRequest.class);
                 UserAgent userAgent = UserAgent.parseUserAgentString(userAgents.get(0));
                 tokenAuthorize.setDeviceOS(userAgent.getOperatingSystem().getName());

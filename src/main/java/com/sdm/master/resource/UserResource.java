@@ -13,7 +13,7 @@ import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.util.ITemplateManager;
-import com.sdm.core.util.SecurityInstance;
+import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.util.AuthMailSend;
@@ -63,7 +63,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
                 return new ErrorResponse(errors);
             }
             String rawPassword = request.getPassword();
-            String password = SecurityInstance.md5String(request.getEmail(), rawPassword);
+            String password = SecurityManager.md5String(request.getEmail(), rawPassword);
             request.setPassword(password);
             request.setStatus('A');
             userDAO.insert(request, true);

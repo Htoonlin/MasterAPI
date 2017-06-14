@@ -64,6 +64,7 @@ public class TokenDAO extends RestDAO<TokenEntity> {
             token.setDeviceId(deviceId);
             token.setDeviceOs(deviceOS);
             token.setToken(UUID.randomUUID().toString());
+            token.setTokenExpired(Globalizer.getTokenExpired());
         }
         
         token.setTokenExpired(Globalizer.getTokenExpired());

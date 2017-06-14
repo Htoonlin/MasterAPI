@@ -17,7 +17,7 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.util.ITemplateManager;
-import com.sdm.core.util.SecurityInstance;
+import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.TokenEntity;
@@ -91,8 +91,7 @@ public class AuthResource extends DefaultResource {
         auth.setTimeStamp(cal.getTimeInMillis());
 
         String authString = Globalizer.jsonMapper().writeValueAsString(auth);
-        getHttpSession().setAttribute(Globalizer.SESSION_USER_TOKEN,
-                "Basic" + SecurityInstance.base64Encode(authString));
+        getHttpSession().setAttribute(Globalizer.SESSION_USER_TOKEN, SecurityManager.base64Encode(authString));
     }
 
     private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
@@ -172,7 +171,7 @@ public class AuthResource extends DefaultResource {
                 errors.put("email", "Sorry! someone already registered with this email");
                 return new ErrorResponse(errors);
             }
-            String password = SecurityInstance.md5String(request.getEmail(), request.getPassword());
+            String password = SecurityManager.md5String(request.getEmail(), request.getPassword());
             user = new UserEntity(request.getEmail(),
                     request.getDisplayName(), password, true,
                     request.getCountry(), UserEntity.PENDING);
@@ -197,7 +196,7 @@ public class AuthResource extends DefaultResource {
         Map<String, Object> data = new HashMap<>();
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         try {
-            request = SecurityInstance.base64Decode(request);
+            request = SecurityManager.base64Decode(request);
             ActivateRequest activateRequest = Globalizer.jsonMapper().readValue(request, ActivateRequest.class);
             activateRequest.setTimeStamp((new Date()).getTime());
             DefaultResponse response = (DefaultResponse) this.otpActivation(activateRequest);
@@ -294,7 +293,7 @@ public class AuthResource extends DefaultResource {
             } else if (user.getEmail().equalsIgnoreCase(request.getEmail())
                     && user.getPassword().equals(request.getOldPassword())
                     && user.getOtpToken().equals(token)) {
-                String newPassword = SecurityInstance.md5String(request.getEmail(), request.getNewPassword());
+                String newPassword = SecurityManager.md5String(request.getEmail(), request.getNewPassword());
                 user.setOtpExpired(null);
                 user.setOtpToken(null);
                 user.setPassword(newPassword);

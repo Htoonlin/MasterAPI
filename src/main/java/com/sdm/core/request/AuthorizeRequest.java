@@ -15,8 +15,8 @@ import javax.validation.constraints.Size;
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AuthorizeRequest extends DefaultRequest implements Serializable {
-
+public class AuthorizeRequest extends DefaultRequest implements Serializable {    
+    
     private long userId;
     
     private String deviceId;

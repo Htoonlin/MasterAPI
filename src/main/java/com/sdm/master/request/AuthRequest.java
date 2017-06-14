@@ -7,7 +7,7 @@ package com.sdm.master.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sdm.core.request.DefaultRequest;
-import com.sdm.core.util.SecurityInstance;
+import com.sdm.core.util.SecurityManager;
 import com.sdm.master.entity.UserEntity;
 import java.io.Serializable;
 import javax.validation.constraints.Size;
@@ -61,7 +61,7 @@ public class AuthRequest extends DefaultRequest implements Serializable {
     }
 
     public String getCryptPassword() {
-        return SecurityInstance.md5String(this.email, this.password);
+        return SecurityManager.md5String(this.email, this.password);
     }
 
     public boolean isAuth(UserEntity authUser) {

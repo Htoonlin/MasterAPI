@@ -5,6 +5,7 @@
  */
 package com.sdm.core.hibernate.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
@@ -25,29 +26,35 @@ public class DefaultEntity implements Serializable, ILogEntity, ITimestampEntity
     public DefaultEntity() {
     }
 
-    @JsonProperty(value = "version", index = 1000)
+    //@JsonProperty(value = "version", index = 1000)    
+    @JsonIgnore
     @Column(name = "version", columnDefinition = "INT UNSIGNED", nullable = false)
     private long version;
 
-    @JsonProperty(value = "created_by", index = 1001)
+    //@JsonProperty(value = "created_by", index = 1001)
+    @JsonIgnore
     @Column(name = "created_by", columnDefinition = "INT UNSIGNED", nullable = false)
     private long createdBy;
 
-    @JsonProperty(value = "modified_by", index = 1002)
+    //@JsonProperty(value = "modified_by", index = 1002)
+    @JsonIgnore
     @Column(name = "modified_by", columnDefinition = "INT UNSIGNED", nullable = true)
     private long modifiedBy;
 
-    @JsonProperty(value = "created_at", index = 1003)
+    //@JsonProperty(value = "created_at", index = 1003)
+    @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false, updatable = false, length = 19)
     private Date createdAt;
 
-    @JsonProperty(value = "modified_at", index = 1004)
+    //@JsonProperty(value = "modified_at", index = 1004)
+    @JsonIgnore
     @Temporal(TemporalType.DATE)
     @Column(name = "modified_at", columnDefinition = "DATETIME on update CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true, updatable = true, length = 19)
     private Date modifiedAt;
 
-    @JsonProperty(value = "deleted_at", index = 1005)
+    //@JsonProperty(value = "deleted_at", index = 1005)
+    @JsonIgnore
     @Temporal(TemporalType.DATE)
     @Column(name = "deleted_at", columnDefinition = "DATETIME", nullable = true, updatable = true, length = 19)
     private Date deletedAt;

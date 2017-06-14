@@ -8,7 +8,7 @@ package com.sdm.master.util;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.util.ITemplateManager;
-import com.sdm.core.util.SecurityInstance;
+import com.sdm.core.util.SecurityManager;
 import com.sdm.core.util.mail.WebMailService;
 import com.sdm.core.util.mail.MailInfo;
 import com.sdm.core.util.mail.MailgunService;
@@ -58,7 +58,7 @@ public class AuthMailSend {
         Map<String, Object> data = new HashMap<>();
         data.put("expire", Setting.getInstance().OTP_LIFE);
         data.put("user", user.getDisplayName());
-        data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
+        data.put("token", SecurityManager.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = manager.buildTemplate("mail/forget-password.jsp", data);
         MailInfo info = new MailInfo(
@@ -78,7 +78,7 @@ public class AuthMailSend {
         Map<String, Object> data = new HashMap<>();
         data.put("expire", Setting.getInstance().OTP_LIFE);
         data.put("user", user.getDisplayName());
-        data.put("token", SecurityInstance.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
+        data.put("token", SecurityManager.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
         String mailBody = manager.buildTemplate("mail/auth-activate.jsp", data);
         MailInfo info = new MailInfo(user.getEmail(), "Activate your account on SUNDEW MASTER API.", mailBody);

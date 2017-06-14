@@ -12,7 +12,7 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ListResponse;
-import com.sdm.core.util.SecurityInstance;
+import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.NotificationDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.NotifyEntity;
@@ -97,7 +97,7 @@ public class ProfileResource extends DefaultResource {
                 return new ErrorResponse(errors);
             }
 
-            String oldPassword = SecurityInstance.md5String(request.getEmail(), request.getOldPassword());
+            String oldPassword = SecurityManager.md5String(request.getEmail(), request.getOldPassword());
             UserEntity user = userDAO.userAuth(request.getEmail(), oldPassword);
 
             if (user == null || !user.getId().equals(getUserId())) {
@@ -111,7 +111,7 @@ public class ProfileResource extends DefaultResource {
                         "INVALID_OLD_PASSWORD", "Hey! your old password is wrong. pls try again.");
                 return new DefaultResponse(message);
             }
-            String newPassword = SecurityInstance.md5String(request.getEmail(), request.getNewPassword());
+            String newPassword = SecurityManager.md5String(request.getEmail(), request.getNewPassword());
             user.setPassword(newPassword);
             user.setVersion(user.getVersion() + 1);
             userDAO.update(user, true);
