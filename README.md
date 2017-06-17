@@ -1,4 +1,10 @@
 # MasterAPI
+### Setting Files
+Clone following files and edit: 
+- example.hibernate.cfg.xml => __hibernate.cfg.xml__ 
+- example.log4j.properties => __log4j.properties__
+- example.setting.properties => __setting.properties__
+
 ### DATABASE Standard
 - Table => tbl_{name_with_snake_case}
 - View => vw_{name_with_snake_case}
