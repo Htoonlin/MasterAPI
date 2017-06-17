@@ -56,19 +56,4 @@ public class SecurityManager {
         byte[] key = MacProvider.generateKey().getEncoded();
         return Base64.getEncoder().encodeToString(key);
     }
-    
-    public static void main(String[] args) {
-        String compactJWT = Jwts.builder()
-                .setSubject(Globalizer.AUTH_SUBJECT_PREFIX + 1)
-                .setIssuer("test-agent-string")
-                .setIssuedAt(new Date())
-                .setExpiration(Globalizer.getTokenExpired())
-                .setId("cd07922c-7d85-4b8b-b150-f275e3e2fcd3")
-                .claim("device_id", "test-device-id")
-                .claim("device_os", "Windows 10")
-                .compressWith(CompressionCodecs.DEFLATE)
-                .signWith(SignatureAlgorithm.HS512, Setting.getInstance().JWT_KEY)
-                .compact();
-        System.out.println(compactJWT);
-    }
 }
