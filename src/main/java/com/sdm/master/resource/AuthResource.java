@@ -5,10 +5,8 @@
  */
 package com.sdm.master.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
-import com.sdm.core.request.AuthorizeRequest;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.resource.DefaultResource;
@@ -28,6 +26,9 @@ import com.sdm.master.request.ChangePasswordRequest;
 import com.sdm.master.request.RegistrationRequest;
 import com.sdm.master.util.AuthMailSend;
 import eu.bitwalker.useragentutils.UserAgent;
+import io.jsonwebtoken.CompressionCodecs;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -78,20 +79,21 @@ public class AuthResource extends DefaultResource {
         return userAgent.getOperatingSystem().getName();
     }
 
-    private void storeToken(TokenEntity currentToken) throws JsonProcessingException {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_MONTH, Setting.getInstance().AUTH_TOKEN_LIFE);
+    private String generateJWT(TokenEntity currentToken) {
+        String compactJWT = Jwts.builder()
+                .setSubject(Globalizer.AUTH_SUBJECT_PREFIX + currentToken.getUserId())
+                .setIssuer(userAgentString)
+                .setIssuedAt(new Date())
+                .setExpiration(currentToken.getTokenExpired())
+                .setId(currentToken.getToken())
+                .claim("device_id", currentToken.getDeviceId())
+                .claim("device_os", currentToken.getDeviceOs())
+                .compressWith(CompressionCodecs.DEFLATE)
+                .signWith(SignatureAlgorithm.HS512, Setting.getInstance().JWT_KEY)
+                .compact();
 
-        AuthorizeRequest auth = new AuthorizeRequest();
-        auth.setUserId(currentToken.getUserId());
-        auth.setDeviceId(currentToken.getDeviceId());
-        auth.setDeviceOS(currentToken.getDeviceOs());
-        auth.setToken(currentToken.getToken());
-        auth.setTimeStamp(cal.getTimeInMillis());
-
-        String authString = Globalizer.jsonMapper().writeValueAsString(auth);
-        getHttpSession().setAttribute(Globalizer.SESSION_USER_TOKEN, SecurityManager.base64Encode(authString));
+        getHttpSession().setAttribute(Globalizer.SESSION_USER_TOKEN, compactJWT);
+        return compactJWT;
     }
 
     private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
@@ -116,9 +118,9 @@ public class AuthResource extends DefaultResource {
                         tokenDAO.cleanToken((long) authUser.getId());
                     }
                     TokenEntity authToken = tokenDAO.generateToken((long) authUser.getId(), request.getDeviceId(), this.getDeviceOS());
-                    authUser.setCurrentToken(authToken);
+                    String token = this.generateJWT(authToken);
+                    authUser.setCurrentToken(token);
                     userDao.commitTransaction();
-                    storeToken(authToken);
                     return new DefaultResponse(authUser);
                 }
             }
@@ -204,7 +206,7 @@ public class AuthResource extends DefaultResource {
                 data.put("title", "Activation Success");
                 data.put("message", "<p>Your account is ready. Thank you for your registration.</p>");
             } else if (response.getContent() instanceof MessageResponse) {
-                MessageResponse message = (MessageResponse)response.getContent();
+                MessageResponse message = (MessageResponse) response.getContent();
                 data.put("title", message.getTitle());
                 data.put("message", "<p class=\"text-warning\">" + message.getMessage() + "</p>");
             } else {
@@ -237,7 +239,7 @@ public class AuthResource extends DefaultResource {
                 return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
                         "NO_DATA", "There is no data for your request."));
             }
-            
+
             if (user.getOtpExpired().before(new Date())) {
                 AuthMailSend mailSend = new AuthMailSend(templateManager);
                 mailSend.activateLink(user, userAgentString);
@@ -254,7 +256,8 @@ public class AuthResource extends DefaultResource {
             userDao.update(user, false);
             TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
             TokenEntity authToken = tokenDAO.generateToken((long) user.getId(), request.getDeviceId(), this.getDeviceOS());
-            user.setCurrentToken(authToken);
+            String token = generateJWT(authToken);
+            user.setCurrentToken(token);
             userDao.commitTransaction();
             return new DefaultResponse(user);
         } catch (Exception e) {

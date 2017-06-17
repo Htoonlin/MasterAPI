@@ -55,18 +55,20 @@ public class UserEntity extends RestEntity<Long> implements java.io.Serializable
     private long id;
 
     @UIStructure(order = 1, label = "E-mail")
-    @Column(name = "email", nullable = false, length=255)
+    @Column(name = "email", nullable = false, length = 255)
     private String email;
-    
+
     @UIStructure(order = 2, label = "Name")
-    @Column(name = "displayName", nullable = false, length=255)
+    @Column(name = "displayName", nullable = false, length = 255)
     private String displayName;
 
     @UIStructure(order = 3, label = "Roles", hideInGrid = true)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tbl_user_role",
-            joinColumns = {@JoinColumn(name = "userId", columnDefinition = "INT UNSIGNED")},
-            inverseJoinColumns = {@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
+            joinColumns = {
+                @JoinColumn(name = "userId", columnDefinition = "INT UNSIGNED")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<RoleEntity> roles;
 
@@ -103,9 +105,9 @@ public class UserEntity extends RestEntity<Long> implements java.io.Serializable
     @UIStructure(order = 7, label = "Status")
     @Column(name = "status", nullable = false, length = 1)
     private char status;
-    
+
     @Transient
-    private TokenEntity currentToken;
+    private String currentToken;
 
     public UserEntity() {
     }
@@ -236,11 +238,11 @@ public class UserEntity extends RestEntity<Long> implements java.io.Serializable
         this.status = status;
     }
 
-    public TokenEntity getCurrentToken() {
+    public String getCurrentToken() {
         return currentToken;
     }
 
-    public void setCurrentToken(TokenEntity currentToken) {
+    public void setCurrentToken(String currentToken) {
         this.currentToken = currentToken;
     }
 

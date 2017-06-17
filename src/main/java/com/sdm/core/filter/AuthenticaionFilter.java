@@ -9,13 +9,17 @@ import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.response.ResponseType;
-import com.sdm.core.request.AuthorizeRequest;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.util.SecurityManager;
 import eu.bitwalker.useragentutils.UserAgent;
+import io.jsonwebtoken.ClaimJwtException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Base64;
 import java.util.List;
 import javax.annotation.Priority;
 import javax.annotation.security.DenyAll;
@@ -52,18 +56,16 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 
     @Inject
     private IAccessManager accessManager;
-    
-    private final String AUTH_TYPE = "Bearer";
-    
-    private int getFailed(){
-        try{
+
+    private int getFailed() {
+        try {
             return (int) httpSession.getAttribute(FAILED_COUNT);
-        }catch(Exception e){
+        } catch (Exception e) {
             return 0;
         }
     }
-    
-    private int blockTime(){
+
+    private int blockTime() {
         int seconds = httpSession.getMaxInactiveInterval() * 2;
         return (seconds / 60);
     }
@@ -73,7 +75,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
         Method method = resourceInfo.getResourceMethod();
         if (!method.isAnnotationPresent(PermitAll.class)) {
             if (getFailed() >= Setting.getInstance().AUTH_FAILED_COUNT) {
-                requestContext.abortWith(buildResponse(403, "Block", 
+                requestContext.abortWith(buildResponse(403, "Block",
                         "Sorry! Server blocked your request. You need to wait " + blockTime() + " minutes."));
                 return;
             }
@@ -100,25 +102,33 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
             }
 
             try {
-                //String jsonAuthorization = Globalizer.decrypt(authorization.get(0).replaceFirst("Bearer ", ""));
-                String base64Authorization = authorization.get(0).substring(AUTH_TYPE.length()).trim();
-                String jsonAuthorization = SecurityManager.base64Decode(base64Authorization);
-                AuthorizeRequest tokenAuthorize = Globalizer.jsonMapper().readValue(jsonAuthorization, AuthorizeRequest.class);
-                UserAgent userAgent = UserAgent.parseUserAgentString(userAgents.get(0));
-                tokenAuthorize.setDeviceOS(userAgent.getOperatingSystem().getName());
+                //Clean Token
+                String tokenString = authorization.get(0).substring(Globalizer.AUTH_TYPE.length()).trim();
+                byte[] jwtKey = Base64.getDecoder().decode(Setting.getInstance().JWT_KEY);
 
-                if (!accessManager.validateToken(tokenAuthorize)) {
-                    requestContext.abortWith(buildResponse(403));
-                    return;
+                try {
+                    Claims authorizeToken = Jwts.parser().setSigningKey(jwtKey)
+                            .requireIssuer(userAgents.get(0))
+                            .parseClaimsJws(tokenString).getBody();
+
+                    if (!accessManager.validateToken(authorizeToken)) {
+                        requestContext.abortWith(buildResponse(403));
+                        return;
+                    }
+
+                    if (!accessManager.checkPermission(authorizeToken, method,
+                            requestContext.getMethod())) {
+                        requestContext.abortWith(buildResponse(403));
+                        return;
+                    }
+
+                    //Separate UserID and Save
+                    int userId = Integer.parseInt(authorizeToken.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+                    this.saveUserId(userId);
+                } catch (ClaimJwtException ex) {
+                    requestContext.abortWith(buildResponse(403, "INVALID_TOKEN", ex.getLocalizedMessage()));
                 }
 
-                if (!accessManager.checkPermission(tokenAuthorize, method,
-                        requestContext.getMethod())) {
-                    requestContext.abortWith(buildResponse(403));
-                    return;
-                }
-
-                this.saveUserId(tokenAuthorize.getUserId());
             } catch (Exception e) {
                 logger.error(e);
                 requestContext.abortWith(buildResponse(500, "SERVER_ERROR", e.getLocalizedMessage()));

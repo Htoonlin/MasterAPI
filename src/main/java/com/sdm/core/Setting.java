@@ -29,6 +29,7 @@ public final class Setting {
     /* Security Setting */
     public int ROOT_ID;
     public int AUTH_TOKEN_LIFE;
+    public String JWT_KEY;
     public int OTP_LIFE;
     public int SECURITY_TIMESTAMP_LIFE;    
     public String ENCRYPT_SALT;
@@ -86,6 +87,7 @@ public final class Setting {
 
                 ROOT_ID = Integer.parseInt(settingProps.getProperty("ROOT_ID", "1"));
                 AUTH_TOKEN_LIFE = Integer.parseInt(settingProps.getProperty("AUTH_TOKEN_LIFE", "7"));
+                JWT_KEY = settingProps.getProperty("JWT_KEY", "iMyohUD3G1BE8BXxOpg5qoPdbT1DvB2ihyNYFQm1VLPvrErmeLEtGT74GqOeQClGbSSuIcjYMh+3m+mqCucH3A==");
                 OTP_LIFE = Integer.parseInt(settingProps.getProperty("OTP_LIFE", "10"));
                 SECURITY_TIMESTAMP_LIFE = Integer.parseInt(settingProps.getProperty("SECURITY_TIMESTAMP_LIFE", "5"));                
                 ENCRYPT_SALT = settingProps.getProperty("ENCRYPT_SALT", "s4qYAxH0SqiHAwrgwWPSI6DVm");

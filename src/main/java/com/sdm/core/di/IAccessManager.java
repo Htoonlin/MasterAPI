@@ -5,7 +5,7 @@
  */
 package com.sdm.core.di;
 
-import com.sdm.core.request.AuthorizeRequest;
+import io.jsonwebtoken.Claims;
 import java.lang.reflect.Method;
 
 /**
@@ -13,7 +13,8 @@ import java.lang.reflect.Method;
  * @author Htoonlin
  */
 public interface IAccessManager {
-    boolean validateToken(AuthorizeRequest request);
 
-    boolean checkPermission(AuthorizeRequest request, Method method, String httpMethod);
+    boolean validateToken(Claims request);
+
+    boolean checkPermission(Claims request, Method method, String httpMethod);
 }

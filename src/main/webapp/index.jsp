@@ -53,7 +53,7 @@
             <h1>SUNDEW MASTER</h1>            
             <div class="input-group">
                 <span class="input-group-addon">ACCESS TOKEN :</span>
-                <input type="text" readonly="readonly" class="form-control" id="txtAccessToken" value="<%= accessToken %>" />
+                <input type="text" readonly="readonly" class="form-control" id="txtAccessToken" value="Bearer <%= accessToken %>" />
             </div>
             <hr />
             <div id="messageBox"></div>

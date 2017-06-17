@@ -8,13 +8,13 @@ package com.sdm.master.util;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
-import com.sdm.core.request.AuthorizeRequest;
 import com.sdm.master.dao.PermissionDAO;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.RoleEntity;
 import com.sdm.master.entity.TokenEntity;
 import com.sdm.master.entity.UserEntity;
+import io.jsonwebtoken.Claims;
 import java.lang.reflect.Method;
 import java.util.Date;
 import javax.annotation.security.RolesAllowed;
@@ -36,22 +36,17 @@ public class AccessManager implements IAccessManager {
     private HttpSession httpSession;
 
     @Override
-    public boolean validateToken(AuthorizeRequest request) {
+    public boolean validateToken(Claims request) {
         if (request == null) {
             return false;
         }
 
-        if (!request.isValid()) {
-            logger.error(request.getErrors());
+        if (request.getId().length() != 36) {
             return false;
         }
 
-        if (request.getToken().length() != 36) {
-            return false;
-        }
         TokenDAO tokenDao = new TokenDAO(httpSession);
-        String token = request.getToken();
-        currentToken = tokenDao.fetchById(token);
+        currentToken = tokenDao.fetchById(request.getId());
         if (currentToken == null) {
             return false;
         }
@@ -59,9 +54,16 @@ public class AccessManager implements IAccessManager {
         if (currentToken.getTokenExpired().before(new Date())) {
             return false;
         }
-        boolean result = (currentToken.getDeviceId().equalsIgnoreCase(request.getDeviceId())
-                && currentToken.getDeviceOs().equalsIgnoreCase(request.getDeviceOS())
-                && currentToken.getUserId() == request.getUserId());
+
+        String token = request.getId();
+        String deviceId = request.get("device_id").toString();
+        String deviceOS = request.get("device_os").toString();
+        long userId = Long.parseLong(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+
+        boolean result = (currentToken.getToken().equalsIgnoreCase(token)
+                && currentToken.getDeviceId().equalsIgnoreCase(deviceId)
+                && currentToken.getDeviceOs().equalsIgnoreCase(deviceOS)
+                && currentToken.getUserId() == userId);
 
         if (result) {
             currentToken.setLastLogin(new Date());
@@ -77,13 +79,15 @@ public class AccessManager implements IAccessManager {
     }
 
     @Override
-    public boolean checkPermission(AuthorizeRequest request, Method method, String httpMethod) {
-        if (currentToken == null || currentToken.getUserId() != request.getUserId()) {
+    public boolean checkPermission(Claims request, Method method, String httpMethod) {
+        long authUserId = Long.parseLong(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+
+        if (currentToken == null || currentToken.getUserId() != authUserId) {
             return false;
         }
         //Check User Status
         UserDAO userDAO = new UserDAO(httpSession);
-        UserEntity user = userDAO.fetchById(request.getUserId());
+        UserEntity user = userDAO.fetchById(authUserId);
         if (user == null || user.getStatus() != UserEntity.ACTIVE || user.getDeletedAt() != null) {
             return false;
         }
