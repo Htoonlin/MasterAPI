@@ -12,14 +12,12 @@ import java.util.List;
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder(value = {"path", "method", "request", "response", "resource_class", "resource_method"})
+@JsonPropertyOrder(value = {"path", "method", "resource_class", "resource_method"})
 public class RouteResponse{
     private String resourceClass;
     private String resourceMethod;
     private String path;
     private String method;
-    private List<String> request;
-    private List<String> response;
 
     public String getResourceClass() {
         return resourceClass;
@@ -51,22 +49,6 @@ public class RouteResponse{
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public List<String> getRequest() {
-        return request;
-    }
-
-    public void setRequest(List<String> request) {
-        this.request = request;
-    }
-
-    public List<String> getResponse() {
-        return response;
-    }
-
-    public void setResponse(List<String> response) {
-        this.response = response;
     }
 
 }

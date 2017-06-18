@@ -5,17 +5,18 @@
  */
 package com.sdm.master.resource;
 
+import com.sdm.core.Setting;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.MapResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.master.util.GeoIPManager;
 import com.sdm.core.util.MyanmarFontManager;
-import com.sdm.master.dao.GeoIPCacheDAO;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,12 +48,25 @@ public class GeneralResource extends DefaultResource {
                 "WELCOME", "Welcome from sundew API. Never give up to be a warrior!");
         return new DefaultResponse(response);
     }
+    
+    @GET
+    @Path("setting")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DefaultResponse getAllSetting(){
+        MapResponse<String, String> response = new MapResponse<>();
+        Properties props = Setting.getInstance().getProperties();
+        for (String key : props.stringPropertyNames()) {
+            String value = props.getProperty(key, "");
+            response.put(key.toLowerCase(), value);
+        }
+        return new DefaultResponse(response);
+    }
 
     @PermitAll
     @GET
     @Path("ip")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getIpResponse(@Context HttpServletRequest request) throws Exception {
+    public DefaultResponse checkIP(@Context HttpServletRequest request) throws Exception {
         GeoIPManager ipManager = new GeoIPManager();
         return new DefaultResponse(ipManager.lookupInfo(request.getRemoteAddr()));
     }
@@ -61,7 +75,7 @@ public class GeneralResource extends DefaultResource {
     @GET
     @Path("lang")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getIpResponse(@QueryParam("input") String input) throws Exception {
+    public DefaultResponse langConverter(@QueryParam("input") String input) throws Exception {
         MessageResponse message = new MessageResponse(200, ResponseType.INFO, "IS_MYANMAR", "No! It is not myanmar font.");
         if (MyanmarFontManager.isMyanmar(input)) {
             String msgString = "Yes! It is myanmar";

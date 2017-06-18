@@ -100,10 +100,13 @@ public class ApplicationConfig extends Application {
         resources.add(com.sdm.master.resource.AuthResource.class);
         resources.add(com.sdm.master.resource.FileResource.class);
         resources.add(com.sdm.master.resource.GeneralResource.class);
+        resources.add(com.sdm.master.resource.LogResource.class);
         resources.add(com.sdm.master.resource.PermissionResource.class);
         resources.add(com.sdm.master.resource.ProfileResource.class);
         resources.add(com.sdm.master.resource.RoleResource.class);
         resources.add(com.sdm.master.resource.UserResource.class);
         resources.add(com.sdm.sample.resource.CustomerResource.class);
+        resources.add(org.glassfish.json.jaxrs.JsonStructureBodyReader.class);
+        resources.add(org.glassfish.json.jaxrs.JsonStructureBodyWriter.class);
     }
 }

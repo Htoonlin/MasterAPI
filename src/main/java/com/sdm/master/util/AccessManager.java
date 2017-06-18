@@ -67,7 +67,6 @@ public class AccessManager implements IAccessManager {
 
         if (result) {
             currentToken.setLastLogin(new Date());
-            currentToken.setTokenExpired(Globalizer.getTokenExpired());
             try {
                 tokenDao.update(currentToken, true);
             } catch (Exception e) {

@@ -17,7 +17,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.server.model.Invocable;
 import org.glassfish.jersey.server.model.Resource;
@@ -75,8 +74,14 @@ public class DefaultResource implements IBaseResource {
         List<RouteResponse> routeList = new ArrayList<>();
         String parentPath = "";
         for (ResourceMethod method : resource.getResourceMethods()) {
-            RouteResponse route = new RouteResponse();
             Invocable invocable = method.getInvocable();
+            
+            //Skip Routes
+            if(invocable.getHandlingMethod().getName().equalsIgnoreCase("getRoutes")){
+                continue;
+            }
+            
+            RouteResponse route = new RouteResponse();
             //Set Resource Class
             route.setResourceClass(this.getClass().getName());
 
@@ -92,24 +97,7 @@ public class DefaultResource implements IBaseResource {
 
             //Set HTTP Method
             route.setMethod(method.getHttpMethod());
-
-            //Set Request List
-            List<String> requestList = new ArrayList<>();
-            for (MediaType consumedType : method.getConsumedTypes()) {
-                if (!requestList.contains(consumedType.toString())) {
-                    requestList.add(consumedType.toString());
-                }
-            }
-            route.setRequest(requestList);
-
-            //Set Response List
-            List<String> responseList = new ArrayList<>();
-            for (MediaType producedType : method.getProducedTypes()) {
-                if (!responseList.contains(producedType.toString())) {
-                    responseList.add(producedType.toString());
-                }
-            }
-            route.setResponse(responseList);
+            
             routeList.add(route);
         }
 
