@@ -188,14 +188,14 @@ public class FileEntity extends RestEntity<BigInteger> implements Serializable {
         this.status = status;
     }
 
-    @JsonGetter("public_url")
+    /*@JsonGetter("public_url")
     public String getPublicURL() {
         if (externalURL != null && !externalURL.isEmpty()) {
             return externalURL;
         }
-
+        
         return FileManager.publicFileURL(this.publicToken, this.extension);
-    }
+    }*/
 
     @Override
     public boolean equals(Object obj) {

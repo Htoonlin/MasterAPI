@@ -43,12 +43,12 @@ public class FileManager {
         return fileInfo;
     }
 
-    public static String publicFileURL(String token, String ext) {
+    /*public static String publicFileURL(String token, String ext) {
         String uri = Setting.getInstance().BASE_PATH + "/file/public/{token}.{ext}";
         return UriBuilder.fromUri(uri)
                 .resolveTemplate("token", token)
                 .resolveTemplate("ext", ext).build().toString();
-    }
+    }*/
 
     public static String generateToken() {
         return Globalizer.generateToken(Setting.getInstance().TOKEN_CHAR, 10)

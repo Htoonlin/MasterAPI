@@ -5,11 +5,7 @@
  */
 package com.sdm.core.util;
 
-import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
-import io.jsonwebtoken.CompressionCodecs;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -17,7 +13,6 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Date;
 
 /**
  *

@@ -22,8 +22,7 @@ public final class Setting {
     public String ENVIRONMENT;
 
     /* Storage Settings */
-    public String STORAGE_PATH;
-    public String BASE_PATH;
+    public String STORAGE_PATH;    
     public String TEMPLATE_PATH;
 
     /* Security Setting */
@@ -77,8 +76,7 @@ public final class Setting {
             try {
                 settingProps.load(inputStream);
                 ENVIRONMENT = settingProps.getProperty("SYSTEM_ENVIRONMENT", "BETA");
-                STORAGE_PATH = settingProps.getProperty("STORAGE_PATH", "");
-                BASE_PATH = settingProps.getProperty("BASE_PATH", "http://192.168.8.1:8080/MasterAPI");
+                STORAGE_PATH = settingProps.getProperty("STORAGE_PATH", "");                
                 TEMPLATE_PATH = settingProps.getProperty("TEMPLATE_PATH", "/WEB-INF/");
 
                 DATE_TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_TIME_FORMAT", "yyyy-MM-dd HH:mm:ss"));
