@@ -7,8 +7,8 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.entity.RestEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.RestEntity;
+import com.sdm.core.hibernate.UIStructure;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Column;
@@ -32,7 +32,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_role")
-public class RoleEntity extends RestEntity<Integer> implements Serializable {
+public class RoleEntity extends RestEntity implements Serializable {
 
     @JsonIgnore
     @Formula(value = "concat(name, description)")
@@ -66,12 +66,10 @@ public class RoleEntity extends RestEntity<Integer> implements Serializable {
         this.search = search;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
 
-    @Override
     public void setId(Integer id) {
         this.id = id;
     }

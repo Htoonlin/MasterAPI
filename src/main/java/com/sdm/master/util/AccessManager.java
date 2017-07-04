@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  */
 public class AccessManager implements IAccessManager {
 
-    private static final Logger logger = Logger.getLogger(AccessManager.class.getName());
+    private static final Logger LOG = Logger.getLogger(AccessManager.class.getName());
 
     private TokenEntity currentToken;
 
@@ -45,8 +45,14 @@ public class AccessManager implements IAccessManager {
             return false;
         }
 
-        TokenDAO tokenDao = new TokenDAO(httpSession);
-        currentToken = tokenDao.fetchById(request.getId());
+        TokenDAO tokenDao = new TokenDAO();
+        try {
+            currentToken = tokenDao.fetchEntityById(request.getId());
+        } catch (Exception ex) {
+            LOG.error(ex);
+            return false;
+        }
+
         if (currentToken == null) {
             return false;
         }
@@ -70,7 +76,7 @@ public class AccessManager implements IAccessManager {
             try {
                 tokenDao.update(currentToken, true);
             } catch (Exception e) {
-                logger.error(e);
+                LOG.error(e);
                 result = false;
             }
         }
@@ -84,10 +90,27 @@ public class AccessManager implements IAccessManager {
         if (currentToken == null || currentToken.getUserId() != authUserId) {
             return false;
         }
+
         //Check User Status
-        UserDAO userDAO = new UserDAO(httpSession);
-        UserEntity user = userDAO.fetchById(authUserId);
-        if (user == null || user.getStatus() != UserEntity.ACTIVE || user.getDeletedAt() != null) {
+        UserDAO userDAO = new UserDAO(authUserId);
+        UserEntity user;
+        try {
+            user = userDAO.fetchEntityById(authUserId);
+        } catch (Exception ex) {
+            LOG.error(ex);
+            return false;
+        }
+        
+        if (user == null || user.getStatus() != UserEntity.ACTIVE) {
+            return false;
+        }
+
+        //Set User is online
+        user.setOnline(true);
+        try {
+            userDAO.update(user, true);
+        } catch (Exception e) {
+            LOG.error(e);
             return false;
         }
 
@@ -108,7 +131,7 @@ public class AccessManager implements IAccessManager {
 
         //Check Permission by User Roles
         String className = method.getDeclaringClass().getName();
-        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), httpSession);
+        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), authUserId);
         boolean permission = false;
         for (RoleEntity role : user.getRoles()) {
             permission = permissionDAO.checkRole((int) role.getId(), className, method.getName(), httpMethod);
@@ -117,15 +140,6 @@ public class AccessManager implements IAccessManager {
             }
         }
         if (!permission) {
-            return false;
-        }
-
-        //Set User is online
-        user.setOnline(true);
-        try {
-            userDAO.update(user, true);
-        } catch (Exception e) {
-            logger.error(e);
             return false;
         }
 

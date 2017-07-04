@@ -25,7 +25,7 @@ public class ClassNotFoundExceptionMapper implements ExceptionMapper<ClassNotFou
 
     @Override
     public Response toResponse(ClassNotFoundException exception) {
-        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, "INVALID_CLASS", exception.getMessage());
+        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());

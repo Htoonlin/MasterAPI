@@ -25,7 +25,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable exception) {
-        MessageResponse message =  new MessageResponse(500, ResponseType.ERROR, "SERVER_ERROR", exception.getMessage());
+        MessageResponse message =  new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());

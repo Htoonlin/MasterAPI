@@ -5,9 +5,7 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.hibernate.entity.RestEntity;
 import com.sdm.core.request.SyncRequest;
-import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,9 +17,8 @@ import javax.ws.rs.core.MediaType;
 /**
  *
  * @author Htoonlin
- * @param <T>
  */
-public interface IUtilResource<T extends RestEntity> {
+public interface IUtilResource {
 
     /*
     @POST
@@ -29,16 +26,15 @@ public interface IUtilResource<T extends RestEntity> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse queryData(QueryRequest request) throws Exception; */
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("struct")
-    public DefaultResponse getStructure() throws Exception;
+    public IBaseResponse getStructure() throws Exception;
 
     @POST
     @Path("sync")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse syncData(SyncRequest<T> request) throws Exception;
+    public IBaseResponse syncData(SyncRequest request) throws Exception;
 
 }

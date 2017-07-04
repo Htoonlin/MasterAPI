@@ -20,19 +20,19 @@ import javax.ws.rs.ext.ExceptionMapper;
  *
  * @author Htoonlin
  */
-public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingException>{
+public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingException> {
 
     @Override
     public Response toResponse(JsonMappingException exception) {
-        MessageResponse message = new MessageResponse(400, ResponseType.ERROR, "JSON_MAPPING_ERROR", exception.getOriginalMessage());
+        MessageResponse message = new MessageResponse(400, ResponseType.ERROR, exception.getOriginalMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());
             debug.put("Suppressed", exception.getSuppressed());
             message.setDebug(debug);
-        } 
-        
+        }
+
         return Response.status(400).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
     }
-    
+
 }

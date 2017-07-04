@@ -7,6 +7,7 @@ package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +17,24 @@ import java.util.Map;
  * @param <T>
  */
 @JsonPropertyOrder(value = {"code", "status", "content", "extra", "timestamp"})
-public class DefaultResponse<T extends IResponseContent> implements IBaseResponse{
+public class DefaultResponse<T extends Serializable> implements IBaseResponse{
+    
+    private int code;
+    private ResponseType status;
     
     public DefaultResponse() {
+        this.code = 200;
+        this.status = ResponseType.SUCCESS;
+    }
+
+    public DefaultResponse(int code, ResponseType status, T content) {
+        this.code = code;
+        this.status = status;
+        this.content = content;
     }
 
     public DefaultResponse(T content) {
+        this();
         this.content = content;
     }
     
@@ -63,16 +76,24 @@ public class DefaultResponse<T extends IResponseContent> implements IBaseRespons
 
     @Override
     public int getCode() {
-        return content.getResponseCode();
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
     @Override
     public ResponseType getStatus() {
-        return content.getResponseStatus();
+        return status;
+    }
+
+    public void setStatus(ResponseType status) {
+        this.status = status;
     }
 
     @Override
-    public T getContent() {
+    public Object getContent() {
         return this.content;
     }
 }

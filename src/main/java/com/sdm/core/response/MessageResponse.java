@@ -5,9 +5,12 @@
  */
 package com.sdm.core.response;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -15,38 +18,29 @@ import java.util.Map;
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder({"title", "message"})
-public class MessageResponse implements IResponseContent, Serializable {
+public class MessageResponse implements IBaseResponse, Serializable {
     
-    public MessageResponse(int code, ResponseType type, String title, String message) {
+    public MessageResponse(int code, ResponseType type,  String content) {
         this.code = code;
-        this.type = type;        
-        this.title = title;
-        this.message = message;
+        this.status = type;        
+        this.content = content;
     }
     
     public MessageResponse(){}
 
     private int code;
-    private ResponseType type;
-    private String title;
-    private String message;
+    private ResponseType status;
+    private String content;
+    
+    @JsonProperty("extra")
     private Map<String, Object> debug;
 
-    public String getTitle() {
-        return title;
+    public void setStatus(ResponseType status) {
+        this.status = status;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public void setCode(int code) {
@@ -54,9 +48,10 @@ public class MessageResponse implements IResponseContent, Serializable {
     }
 
     public void setType(ResponseType type) {
-        this.type = type;
+        this.status = type;
     }
-
+    
+    @JsonGetter("extra")
     public Map<String, Object> getDebug() {
         return debug;
     }
@@ -64,14 +59,24 @@ public class MessageResponse implements IResponseContent, Serializable {
     public void setDebug(Map<String, Object> debug) {
         this.debug = debug;
     }
-    
+
     @Override
-    public int getResponseCode() {
+    public int getCode() {
         return this.code;
     }
 
     @Override
-    public ResponseType getResponseStatus() {
-        return this.type;
+    public ResponseType getStatus() {
+        return this.status;
+    }
+
+    @Override
+    public Object getContent() {
+        return this.content;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return (new Date()).getTime();
     }
 }

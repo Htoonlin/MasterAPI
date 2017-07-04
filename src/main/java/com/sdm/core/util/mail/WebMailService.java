@@ -26,12 +26,13 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
+import com.sdm.core.di.IMailManager;
 
 /**
  *
  * @author Htoonlin
  */
-public class WebMailService implements IBaseMailService {
+public class WebMailService implements IMailManager {
 
     private static final Logger LOG = Logger.getLogger(WebMailService.class.getName());
 
@@ -57,17 +58,6 @@ public class WebMailService implements IBaseMailService {
                         Setting.getInstance().MAIL_PASSWORD);
             }
         });
-    }
-
-    public static synchronized WebMailService getInstance() {
-        if (instance == null) {
-            try {
-                instance = new WebMailService();
-            } catch (IOException e) {
-                LOG.error(e);
-            }
-        }
-        return instance;
     }
 
     private Message buildMessage(MailInfo mailInfo) throws MessagingException {
@@ -163,6 +153,11 @@ public class WebMailService implements IBaseMailService {
             throw ex;
         }
         return response;
+    }
+
+    @Override
+    public boolean checkMail(String email) throws IOException {
+        return email.matches(EMAIL_PATTERN);
     }
 
 }

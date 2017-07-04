@@ -5,7 +5,6 @@
  */
 package com.sdm.core.request;
 
-import com.sdm.core.hibernate.entity.RestEntity;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -13,14 +12,13 @@ import javax.validation.constraints.NotNull;
 /**
  *
  * @author Htoonlin
- * @param <T>
  */
-public class SyncRequest<T extends RestEntity> extends DefaultRequest implements Serializable {
+public class SyncRequest extends DefaultRequest implements Serializable {
 
     private long lastSync;
-    private List<T> insert;
-    private List<T> update;
-    private List<T> remove;
+    private List insert;
+    private List update;
+    private List remove;
 
     public SyncRequest() {}
 
@@ -33,28 +31,27 @@ public class SyncRequest<T extends RestEntity> extends DefaultRequest implements
         this.lastSync = lastSync;
     }
 
-    public List<T> getInsert() {
+    public List getInsert() {
         return insert;
     }
 
-    public void setInsert(List<T> insert) {
+    public void setInsert(List insert) {
         this.insert = insert;
     }
 
-    public List<T> getUpdate() {
+    public List getUpdate() {
         return update;
     }
 
-    public void setUpdate(List<T> update) {
+    public void setUpdate(List update) {
         this.update = update;
     }
 
-    public List<T> getRemove() {
+    public List getRemove() {
         return remove;
     }
 
-    public void setRemove(List<T> remove) {
+    public void setRemove(List remove) {
         this.remove = remove;
     }
-
 }

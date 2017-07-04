@@ -5,10 +5,7 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.hibernate.dao.DefaultDAO;
-import com.sdm.core.response.MapResponse;
-import com.sdm.master.entity.GeoIPCacheEntity;
-import java.util.Map;
+import com.sdm.core.hibernate.dao.RestDAO;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -16,37 +13,40 @@ import org.hibernate.Session;
  *
  * @author Htoonlin
  */
-public class GeoIPCacheDAO extends DefaultDAO<GeoIPCacheEntity> {
+public class GeoIPCacheDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(GeoIPCacheDAO.class.getName());
 
     public GeoIPCacheDAO() {
-        super(GeoIPCacheEntity.class);
+        super(0);
     }
 
     public GeoIPCacheDAO(Session session) {
-        super(session, GeoIPCacheEntity.class);
+        super(session, 0);
     }
 
-    public MapResponse<String, Object> getInfoByIP(String ipAddress) {
-        GeoIPCacheEntity entity = mainSession.get(this.entityClass, ipAddress);
-        if (entity == null) {
-            return null;
-        }
-        return entity.getResponse();
+    @Override
+    protected boolean useVersion() {
+        return false;
     }
 
-    public void saveInfo(Map<String, Object> info) throws Exception {
-        try {
-            GeoIPCacheEntity entity = new GeoIPCacheEntity(info);
-            beginTransaction();
-            mainSession.save(entity);
-            commitTransaction();
-        } catch (Exception e) {
-            rollbackTransaction();
-            LOG.error(e);
-            throw e;
-        }
+    @Override
+    protected boolean useLog() {
+        return false;
     }
 
+    @Override
+    protected boolean useTimeStamp() {
+        return false;
+    }
+
+    @Override
+    protected boolean useSoftDelete() {
+        return false;
+    }
+
+    @Override
+    protected String getEntityName() {
+        return "GeoIPCacheEntity";
+    }
 }

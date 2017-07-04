@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.util.mail;
+package com.sdm.core.di;
 
+import com.sdm.core.util.mail.MailInfo;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import javax.ws.rs.core.Response;
 
@@ -13,7 +15,11 @@ import javax.ws.rs.core.Response;
  *
  * @author Htoonlin
  */
-public interface IBaseMailService {
+public interface IMailManager {
+
+    public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
+    
+    public boolean checkMail(String email) throws IOException;
 
     Response sendAttachment(MailInfo mailInfo, File attachment);
 

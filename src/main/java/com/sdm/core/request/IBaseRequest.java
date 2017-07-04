@@ -7,22 +7,25 @@ package com.sdm.core.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.sdm.core.response.PropertiesResponse;
+import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author Htoonlin
  */
-public interface IBaseRequest {
+public interface IBaseRequest extends Serializable{
     @JsonSetter("timestamp")
-    public void setTimeStamp(long date);
-
-    @JsonSetter("extra")
-    public void setExtra(Map<String, Object> extra);
+    void setTimeStamp(long date);
 
     @JsonIgnore
-    public Map<String,String> getErrors();
+    Map<String,String> getErrors();
 
     @JsonIgnore
-    public boolean isValid();
+    boolean isValid();
+    
+    @JsonIgnore
+    List<PropertiesResponse> getStructure();
 }

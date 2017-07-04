@@ -5,7 +5,7 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.hibernate.entity.RestEntity;
+import com.sdm.core.request.IBaseRequest;
 import com.sdm.core.response.IBaseResponse;
 import java.io.Serializable;
 import javax.ws.rs.Consumes;
@@ -23,15 +23,16 @@ import javax.ws.rs.core.MediaType;
 /**
  *
  * @author Htoonlin
- * @param <PK>
  * @param <T>
+ * @param <PK>
  */
-public interface IRestResource<T extends RestEntity, PK extends Serializable> {
+public interface IRestResource<T extends IBaseRequest, PK extends Serializable> {
+
     @GET
     @Path("all")
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getAll() throws Exception;
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getPaging(

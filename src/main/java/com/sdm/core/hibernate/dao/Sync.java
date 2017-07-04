@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.util;
-
-import java.util.Map;
+package com.sdm.core.hibernate.dao;
 
 /**
  *
- * @author Htoonlin
+ * @author htoonlin
  */
-public interface ITemplateManager {
-    String buildTemplate(String template, Map<String, Object> data);
+public enum Sync {
+    INSERT,
+    UPDATE,
+    REMOVE;
 }

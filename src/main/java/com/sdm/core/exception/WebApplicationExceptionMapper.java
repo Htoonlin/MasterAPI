@@ -27,15 +27,15 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     @Override
     public Response toResponse(WebApplicationException exception) {
         Response exResponse = exception.getResponse();
-        MessageResponse message =  new MessageResponse(exResponse.getStatus(), ResponseType.ERROR, 
-                exResponse.getStatusInfo().getFamily().toString(), exception.getLocalizedMessage());
+        MessageResponse message = new MessageResponse(exResponse.getStatus(), ResponseType.ERROR,
+                exception.getLocalizedMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());
             debug.put("Suppressed", exception.getSuppressed());
             message.setDebug(debug);
-        } 
-        
+        }
+
         return Response.status(exResponse.getStatus()).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
     }
 

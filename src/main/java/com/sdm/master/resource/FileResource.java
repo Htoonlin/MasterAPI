@@ -6,9 +6,11 @@
 package com.sdm.master.resource;
 
 import com.sdm.core.Setting;
+import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.master.dao.FileDAO;
@@ -19,8 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.nio.file.Files;
+import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -40,16 +43,28 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
  *
  * @author Htoonlin
  */
+@SuppressWarnings("need to check delete file.")
 @Path("file")
-public class FileResource extends RestResource<FileEntity, BigInteger> {
+public class FileResource extends RestResource<FileEntity, Long> {
 
-    private static final Logger logger = Logger.getLogger(FileResource.class.getName());
+    private static final Logger LOG = Logger.getLogger(FileResource.class.getName());
     private FileDAO mainDAO;
-    
+
     @Override
-    protected void onLoad() {        
-        mainDAO = new FileDAO(getHttpSession());
-        super.mainDAO = mainDAO;
+    protected RestDAO getDAO() {
+        return this.mainDAO;
+    }
+
+    @SuppressWarnings("Need to validate request.")
+    protected boolean isValid(Map request, ErrorResponse response) {
+        return true;
+    }
+
+    @PostConstruct
+    protected void init() {
+        if (this.mainDAO == null) {
+            mainDAO = new FileDAO(getUserId());
+        }
     }
 
     private Response downloadFile(final FileEntity entity) {
@@ -84,16 +99,16 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             @FormDataParam("uploadedFile") InputStream inputFile,
             @FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
         try {
-            UserDAO userDAO = new UserDAO(mainDAO.getSession(), getHttpSession());
-            UserEntity currentUser = userDAO.fetchById(getUserId());
+            UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
+            UserEntity currentUser = userDAO.fetchEntityById(getUserId());
             if (currentUser == null) {
-                return new DefaultResponse(new MessageResponse(401, ResponseType.WARNING, "NO_USER", 
-                        "Invalid user. You neeed to register new account to upload file."));
+                return new MessageResponse(401, ResponseType.WARNING,
+                        "Invalid user. You neeed to register new account to upload file.");
             }
             FileEntity entity = mainDAO.saveFile(inputFile, fileDetail);
             return new DefaultResponse(entity);
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }
@@ -106,23 +121,24 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
         if (entity != null) {
             return this.downloadFile(entity);
         }
-        return Response.ok(new DefaultResponse(
-                new MessageResponse(204, ResponseType.WARNING, 
-                        "NO_FILE", "There is no file for your requested token.")),
-                MediaType.APPLICATION_JSON).build();
+        MessageResponse message = new MessageResponse(204, ResponseType.WARNING, "There is no file for your requested token.");
+        return Response.ok(message, MediaType.APPLICATION_JSON).build();
     }
 
     @GET
     @Path("{id:\\d+}/download")
     public Response privateDownload(@PathParam("id") double id) throws Exception {
-        FileEntity entity = mainDAO.fetchById(id);
+        FileEntity entity = mainDAO.fetchEntityById(id);
         if (entity == null) {
-            return Response.ok(new DefaultResponse(
-                    new MessageResponse(204, ResponseType.WARNING,
-                            "NO_FILE", "There is no file for your request.")),
-                    MediaType.APPLICATION_JSON).build();
+            MessageResponse message = new MessageResponse(204, ResponseType.WARNING, "There is no file for your request.");
+            return Response.ok(message, MediaType.APPLICATION_JSON).build();
         }
 
         return this.downloadFile(entity);
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return FileResource.LOG;
     }
 }

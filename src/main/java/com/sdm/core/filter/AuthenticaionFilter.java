@@ -9,11 +9,13 @@ import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.MessageResponse;
 import io.jsonwebtoken.ClaimJwtException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Base64;
@@ -72,8 +74,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
         Method method = resourceInfo.getResourceMethod();
         if (!method.isAnnotationPresent(PermitAll.class)) {
             if (getFailed() >= Setting.getInstance().AUTH_FAILED_COUNT) {
-                requestContext.abortWith(buildResponse(403, "Block",
-                        "Sorry! Server blocked your request. You need to wait " + blockTime() + " minutes."));
+                requestContext.abortWith(buildResponse(403, "Sorry! Server blocked your request. You need to wait " + blockTime() + " minutes."));
                 return;
             }
 
@@ -93,8 +94,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
             }
 
             if (accessManager == null) {
-                requestContext.abortWith(buildResponse(500,
-                        "SERVER_ERROR", "AccessManager Interface is null or invalid."));
+                requestContext.abortWith(buildResponse(500, "AccessManager Interface is null or invalid."));
                 return;
             }
 
@@ -123,12 +123,12 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
                     int userId = Integer.parseInt(authorizeToken.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
                     this.saveUserId(userId);
                 } catch (ClaimJwtException ex) {
-                    requestContext.abortWith(buildResponse(403, "INVALID_TOKEN", ex.getLocalizedMessage()));
+                    requestContext.abortWith(buildResponse(403, ex.getLocalizedMessage()));
                 }
 
-            } catch (Exception e) {
+            } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
                 logger.error(e);
-                requestContext.abortWith(buildResponse(500, "SERVER_ERROR", e.getLocalizedMessage()));
+                requestContext.abortWith(buildResponse(500, e.getLocalizedMessage()));
             }
         }
     }
@@ -139,20 +139,18 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
         httpSession.setAttribute(FAILED_COUNT, getFailed() + 1);
         switch (code) {
             case 401:
-                title = "UNAUTHROIZED";
                 description = "Hmmm! Your authorization is failed. If you are trying to hack server, don't do it again.";
                 break;
             case 403:
-                title = "ACCESS_FORBIDDEN";
                 description = "Oppp! Something wrong or user doesn't have access to the resource.";
                 break;
         }
-        return buildResponse(code, title, description);
+        return buildResponse(code, description);
     }
 
-    private Response buildResponse(int code, String title, String description) {
-        MessageResponse message = new MessageResponse(code, ResponseType.ERROR, title, description);
-        return Response.status(code).entity(new DefaultResponse(message)).build();
+    private Response buildResponse(int code, String description) {
+        MessageResponse message = new MessageResponse(code, ResponseType.ERROR, description);
+        return Response.status(code).entity(message).build();
     }
 
     private void saveUserId(long userId) {

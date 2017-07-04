@@ -26,7 +26,7 @@ public class SQLExceptionMapper implements ExceptionMapper<SQLException> {
 
     @Override
     public Response toResponse(SQLException exception) {
-        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, "MYSQL_ERROR", exception.getMessage());
+        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());

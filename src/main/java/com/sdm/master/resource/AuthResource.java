@@ -7,14 +7,14 @@ package com.sdm.master.resource;
 
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
-import com.sdm.core.util.mail.MailgunService;
+import com.sdm.core.di.IMailManager;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.util.ITemplateManager;
+import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
@@ -45,10 +45,13 @@ import org.apache.log4j.Logger;
 @Path("auth")
 public class AuthResource extends DefaultResource {
 
-    private static final Logger logger = Logger.getLogger(AuthResource.class.getName());
+    private static final Logger LOG = Logger.getLogger(AuthResource.class.getName());
 
     @Inject
-    ITemplateManager templateManager;
+    private ITemplateManager templateManager;
+
+    @Inject
+    private IMailManager mailManager;
 
     private UserDAO userDao;
     public static final String LOGIN_FAILED_COUNT = "LOGIN_FAILED_COUNT";
@@ -67,8 +70,8 @@ public class AuthResource extends DefaultResource {
     }
 
     @PostConstruct
-    public void onLoad() {
-        userDao = new UserDAO(getHttpSession());
+    public void init() {
+        userDao = new UserDAO(getUserId());
     }
 
     @HeaderParam("user-agent")
@@ -102,18 +105,18 @@ public class AuthResource extends DefaultResource {
                 return new ErrorResponse(request.getErrors());
             }
 
-            MessageResponse message = new MessageResponse(401, ResponseType.ERROR, "USER_AUTH_FAILED",
+            MessageResponse message = new MessageResponse(401, ResponseType.ERROR,
                     "Opp! Request email or password is something wrong");
 
             if (getFailed() >= Setting.getInstance().AUTH_FAILED_COUNT) {
-                message = new MessageResponse(401, ResponseType.WARNING, "SERVER_BLOCKED",
+                message = new MessageResponse(401, ResponseType.WARNING,
                         "Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
             } else {
                 UserEntity authUser = userDao.userAuth(request.getEmail(), request.getCryptPassword());
                 if (authUser != null && authUser.getStatus() == UserEntity.ACTIVE
                         && request.isAuth(authUser)) {
                     userDao.beginTransaction();
-                    TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
+                    TokenDAO tokenDAO = new TokenDAO(userDao.getSession());
                     if (cleanToken) {
                         tokenDAO.cleanToken((long) authUser.getId());
                     }
@@ -129,7 +132,7 @@ public class AuthResource extends DefaultResource {
             return new DefaultResponse(message);
         } catch (Exception e) {
             userDao.rollbackTransaction();
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }
@@ -163,7 +166,7 @@ public class AuthResource extends DefaultResource {
                 return new ErrorResponse(errors);
             }
 
-            if (!MailgunService.getInstance().checkMail(request.getEmail())) {
+            if (!mailManager.checkMail(request.getEmail())) {
                 errors.put("email", "Requested email is not valid");
                 return new ErrorResponse(errors);
             }
@@ -177,14 +180,12 @@ public class AuthResource extends DefaultResource {
             user = new UserEntity(request.getEmail(),
                     request.getDisplayName(), password, true,
                     request.getCountry(), UserEntity.PENDING);
-            AuthMailSend mailSend = new AuthMailSend(templateManager);
+            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
             mailSend.activateLink(user, userAgentString);
             userDao.insert(user, true);
-            MessageResponse response = new MessageResponse(200, ResponseType.SUCCESS,
-                    "REGISTRATION_SUCCESS", "Thank you for your registration. Pls check your mail for activation.");
-            return new DefaultResponse(response);
+            return new MessageResponse(200, ResponseType.SUCCESS, "Thank you for your registration. Pls check your mail for activation.");
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }
@@ -201,20 +202,19 @@ public class AuthResource extends DefaultResource {
             request = SecurityManager.base64Decode(request);
             ActivateRequest activateRequest = Globalizer.jsonMapper().readValue(request, ActivateRequest.class);
             activateRequest.setTimeStamp((new Date()).getTime());
-            DefaultResponse response = (DefaultResponse) this.otpActivation(activateRequest);
-            if (response.getContent() instanceof UserEntity) {
+            IBaseResponse response = this.otpActivation(activateRequest);
+            if (response instanceof MessageResponse) {
+                data.put("title", response.getStatus());
+                data.put("message", "<p class=\"text-warning\">" + response.getContent() + "</p>");
+            } else if (response.getContent() instanceof UserEntity) {
                 data.put("title", "Activation Success");
                 data.put("message", "<p>Your account is ready. Thank you for your registration.</p>");
-            } else if (response.getContent() instanceof MessageResponse) {
-                MessageResponse message = (MessageResponse) response.getContent();
-                data.put("title", message.getTitle());
-                data.put("message", "<p class=\"text-warning\">" + message.getMessage() + "</p>");
             } else {
                 data.put("title", "Activation Failed");
                 data.put("message", "<p class=\"text-warning\">Sorry! Your activation token is <strong>Invalid.</strong></p>");
             }
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             data.put("title", "SERVER ERROR");
             data.put("message", "<p class=\"text-danger\">" + e.getLocalizedMessage() + "</p>");
         }
@@ -236,17 +236,16 @@ public class AuthResource extends DefaultResource {
 
             UserEntity user = userDao.checkToken(request.getEmail(), request.getToken());
             if (user == null) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                        "NO_DATA", "There is no data for your request."));
+                return new MessageResponse(204, ResponseType.WARNING,
+                        "There is no data for your request.");
             }
 
             if (user.getOtpExpired().before(new Date())) {
-                AuthMailSend mailSend = new AuthMailSend(templateManager);
+                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.activateLink(user, userAgentString);
                 userDao.update(user, true);
-                MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
-                        "TOKEN_EXPIRE", "Sorry! Your token has expired. We send new token to your email.");
-                return new DefaultResponse(message);
+                return new MessageResponse(400, ResponseType.WARNING,
+                        "Sorry! Your token has expired. We send new token to your email.");
             }
 
             userDao.beginTransaction();
@@ -254,7 +253,7 @@ public class AuthResource extends DefaultResource {
             user.setOtpExpired(null);
             user.setStatus(UserEntity.ACTIVE);
             userDao.update(user, false);
-            TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getHttpSession());
+            TokenDAO tokenDAO = new TokenDAO(userDao.getSession());
             TokenEntity authToken = tokenDAO.generateToken((long) user.getId(), request.getDeviceId(), this.getDeviceOS());
             String token = generateJWT(authToken);
             user.setCurrentToken(token);
@@ -262,7 +261,7 @@ public class AuthResource extends DefaultResource {
             return new DefaultResponse(user);
         } catch (Exception e) {
             userDao.rollbackTransaction();
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }
@@ -278,21 +277,21 @@ public class AuthResource extends DefaultResource {
                 return new ErrorResponse(request.getErrors());
             }
             MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
-                    "INVALID_TOKEN", "Sorry! Requested token is invalid or expired.");
-            String token = request.getExtra().get("token").toString();
+                    "Sorry! Requested token is invalid or expired.");
+            String token = request.getToken();
             UserEntity user = userDao.userAuth(request.getEmail(), request.getOldPassword());
 
             if (user == null) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                        "NO_DATA", "There is no data for your request."));
+                return new MessageResponse(204, ResponseType.WARNING,
+                        "There is no data for your request.");
             }
 
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
-                AuthMailSend mailSend = new AuthMailSend(templateManager);
+                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.forgetPasswordLink(user);
                 userDao.update(user, true);
                 message = new MessageResponse(400, ResponseType.WARNING,
-                        "TOKEN_EXPIRE", "Sorry! Your token has expired. We send new link to your email.");
+                        "Sorry! Your token has expired. We send new link to your email.");
             } else if (user.getEmail().equalsIgnoreCase(request.getEmail())
                     && user.getPassword().equals(request.getOldPassword())
                     && user.getOtpToken().equals(token)) {
@@ -300,15 +299,14 @@ public class AuthResource extends DefaultResource {
                 user.setOtpExpired(null);
                 user.setOtpToken(null);
                 user.setPassword(newPassword);
-                user.setVersion(user.getVersion() + 1);
                 userDao.update(user, true);
                 message = new MessageResponse(202, ResponseType.SUCCESS,
-                        "UPDATED", "We updated the new password on your request successfully.");
+                        "We updated the new password on your request successfully.");
             }
 
             return new DefaultResponse(message);
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }
@@ -321,22 +319,22 @@ public class AuthResource extends DefaultResource {
     public DefaultResponse forgetPassword(@PathParam("email") String email) throws Exception {
         MessageResponse message;
         try {
-            if (!MailgunService.getInstance().checkMail(email)) {
-                message = new MessageResponse(400, ResponseType.WARNING, "INVALID_EMAIL", "Invalid email address.");
+            if (!mailManager.checkMail(email)) {
+                message = new MessageResponse(400, ResponseType.WARNING, "Invalid email address.");
             } else {
                 UserEntity user = userDao.getUserByEmail(email);
                 if (user == null) {
-                    message = new MessageResponse(400, ResponseType.WARNING, "INVALID_EMAIL", "Invalid email address.");
+                    message = new MessageResponse(400, ResponseType.WARNING, "Invalid email address");
                 } else {
-                    AuthMailSend mailSend = new AuthMailSend(templateManager);
+                    AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                     mailSend.forgetPasswordLink(user);
                     userDao.update(user, true);
-                    message = new MessageResponse(200, ResponseType.SUCCESS, "SUCCESS", "We send the reset password link to your e-mail.");
+                    message = new MessageResponse(200, ResponseType.SUCCESS, "We send the reset password link to your e-mail.");
                 }
             }
             return new DefaultResponse(message);
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }

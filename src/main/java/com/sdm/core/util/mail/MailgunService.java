@@ -6,7 +6,6 @@
 package com.sdm.core.util.mail;
 
 import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
 import com.sdm.core.util.mail.response.ValidateResponse;
 import java.io.File;
 import java.io.IOException;
@@ -26,20 +25,19 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import com.sdm.core.di.IMailManager;
 
 /**
  *
  * @author Htoonlin
  */
-public class MailgunService implements IBaseMailService {
+public class MailgunService implements IMailManager {
 
     private static final Logger LOG = Logger.getLogger(MailgunService.class.getName());
 
     private final String MAILGUN_URL = "https://api.mailgun.net/v3/";
     //private final String SEND_PATH = Setting.getInstance().MAILGUN_DOMAIN + "/messages";
     private final String VALIDATE_PATH = "address/validate";
-
-    public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
 
     private final String MAILGUN_PRI_API_KEY;
     private final String MAILGUN_PUB_API_KEY;
@@ -57,24 +55,10 @@ public class MailgunService implements IBaseMailService {
         MAILGUN_DEF_MAIL_SENDER = settingProps.getProperty("MAILGUN_DEF_MAIL_SENDER", "");
     }
 
-    public static synchronized MailgunService getInstance() {
-        if (instance == null) {
-            try {
-                instance = new MailgunService();
-            } catch (IOException e) {
-                LOG.error(e);
-            }
-        }
-        return instance;
-    }
-
+    @Override
     public boolean checkMail(String email) throws IOException {
-        if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
-            ValidateResponse response = validateMail(email);
-            return response.isValid();
-        } else {
-            return email.matches(EMAIL_PATTERN);
-        }
+        ValidateResponse response = validateMail(email);
+        return response.isValid();
     }
 
     private MultivaluedMap createFormData(MailInfo mailInfo) throws Exception {

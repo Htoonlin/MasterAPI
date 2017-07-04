@@ -14,7 +14,7 @@ import java.util.List;
  * @author Htoonlin
  */
 @JsonPropertyOrder({"count","data"})
-public class ListResponse implements IResponseContent, Serializable{
+public class ListResponse implements Serializable{
     private static final long serialVersionUID = 1L;
     
     public ListResponse(List data){
@@ -33,15 +33,5 @@ public class ListResponse implements IResponseContent, Serializable{
 
     public void setData(List value) {
         this.data = value;
-    }
-
-    @Override
-    public int getResponseCode() {
-        return 200;
-    }
-
-    @Override
-    public ResponseType getResponseStatus() {
-        return ResponseType.SUCCESS;
     }
 }

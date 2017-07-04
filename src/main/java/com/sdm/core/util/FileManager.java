@@ -55,7 +55,7 @@ public class FileManager {
                 + "-" + Globalizer.getDateString("yyyyMMddHHmmss", new Date());
     }
 
-    public static File generateFile(int userId, String token, String ext) {
+    public static File generateFile(long userId, String token, String ext) {
         String uploadPath = "/User-" + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
         String fileName = token + "." + ext;
 

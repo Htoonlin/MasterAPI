@@ -23,15 +23,15 @@ public class NullExceptionMapper implements ExceptionMapper<NullPointerException
 
     @Override
     public Response toResponse(NullPointerException exception) {
-        MessageResponse message =  new MessageResponse(200 , ResponseType.WARNING, "NULL_ERROR", exception.getMessage());
+        MessageResponse message = new MessageResponse(400, ResponseType.WARNING, exception.getMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());
             debug.put("Suppressed", exception.getSuppressed());
             message.setDebug(debug);
-        } 
-        
-        return Response.status(200).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        return Response.status(400).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
     }
-    
+
 }

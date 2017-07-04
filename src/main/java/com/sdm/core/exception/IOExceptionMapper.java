@@ -24,7 +24,7 @@ public class IOExceptionMapper implements ExceptionMapper<IOException>{
 
     @Override
     public Response toResponse(IOException exception) {
-        MessageResponse message = new MessageResponse(422, ResponseType.ERROR, "IO_ERROR", exception.getLocalizedMessage());
+        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getLocalizedMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());
@@ -32,7 +32,7 @@ public class IOExceptionMapper implements ExceptionMapper<IOException>{
             message.setDebug(debug);
         } 
         
-        return Response.status(422).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(500).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
     }
     
 }

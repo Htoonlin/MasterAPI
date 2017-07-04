@@ -6,8 +6,8 @@
 package com.sdm.sample.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.entity.RestEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.RestEntity;
+import com.sdm.core.hibernate.UIStructure;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -24,7 +24,7 @@ import org.hibernate.annotations.Formula;
  */
 @Entity
 @Table(name = "tbl_sample_customer")
-public class CustomerEntity extends RestEntity<Long> implements Serializable {
+public class CustomerEntity extends RestEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -89,12 +89,10 @@ public class CustomerEntity extends RestEntity<Long> implements Serializable {
         this.search = search;
     }
 
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

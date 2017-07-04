@@ -75,12 +75,12 @@ public class DefaultResource implements IBaseResource {
         String parentPath = "";
         for (ResourceMethod method : resource.getResourceMethods()) {
             Invocable invocable = method.getInvocable();
-            
+
             //Skip Routes
-            if(invocable.getHandlingMethod().getName().equalsIgnoreCase("getRoutes")){
+            if (invocable.getHandlingMethod().getName().equalsIgnoreCase("getRoutes")) {
                 continue;
             }
-            
+
             RouteResponse route = new RouteResponse();
             //Set Resource Class
             route.setResourceClass(this.getClass().getName());
@@ -97,7 +97,7 @@ public class DefaultResource implements IBaseResource {
 
             //Set HTTP Method
             route.setMethod(method.getHttpMethod());
-            
+
             routeList.add(route);
         }
 
@@ -113,8 +113,8 @@ public class DefaultResource implements IBaseResource {
         try {
             Resource resource = Resource.from(this.getClass());
             if (resource == null) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                        "NO_DATA", "There is no data for your request."));
+                return new MessageResponse(204, ResponseType.WARNING,
+                        "There is no data for your request.");
             }
             List<RouteResponse> routeList = collectRoute(resource, "/");
             return new DefaultResponse(new ListResponse(routeList));

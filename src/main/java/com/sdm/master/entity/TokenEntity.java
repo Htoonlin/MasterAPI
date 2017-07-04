@@ -2,8 +2,8 @@ package com.sdm.master.entity;
 // Generated 04-Mar-2016 00:48:07 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.sdm.core.hibernate.entity.RestEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.RestEntity;
+import com.sdm.core.hibernate.UIStructure;
 
 import java.util.Date;
 import java.util.Objects;
@@ -20,7 +20,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "tbl_user_token")
 @JsonPropertyOrder(value = {"token", "deviceId", "device_os", "token_expired"})
-public class TokenEntity extends RestEntity<String> implements java.io.Serializable {
+public class TokenEntity extends RestEntity implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,12 +63,10 @@ public class TokenEntity extends RestEntity<String> implements java.io.Serializa
         this.tokenExpired = tokenExpired;
     }
 
-    @Override
     public String getId() {
         return this.getToken();
     }
 
-    @Override
     public void setId(String token) {
         this.setToken(token.toString());
     }

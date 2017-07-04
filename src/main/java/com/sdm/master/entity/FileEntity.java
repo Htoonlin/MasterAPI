@@ -8,8 +8,8 @@ package com.sdm.master.entity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.sdm.core.hibernate.entity.RestEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.RestEntity;
+import com.sdm.core.hibernate.UIStructure;
 import com.sdm.core.util.FileManager;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -28,7 +28,7 @@ import org.hibernate.annotations.Formula;
  */
 @Entity
 @Table(name = "tbl_file")
-public class FileEntity extends RestEntity<BigInteger> implements Serializable {
+public class FileEntity extends RestEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -104,12 +104,10 @@ public class FileEntity extends RestEntity<BigInteger> implements Serializable {
         this.search = search;
     }
 
-    @Override
     public BigInteger getId() {
         return id;
     }
 
-    @Override
     public void setId(BigInteger id) {
         this.id = id;
     }

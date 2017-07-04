@@ -57,4 +57,25 @@ public class ChangePasswordRequest extends DefaultRequest implements Serializabl
     public void setNewPassword(String value) {
         this.newPassword = value;
     }
+    
+        private String token;
+
+    /**
+     * Get the value of token
+     *
+     * @return the value of token
+     */
+    public String getToken() {
+        return token;
+    }
+
+    /**
+     * Set the value of token
+     *
+     * @param token new value of token
+     */
+    public void setToken(String token) {
+        this.token = token;
+    }
+
 }

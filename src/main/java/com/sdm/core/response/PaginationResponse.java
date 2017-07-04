@@ -17,7 +17,7 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "query", "data"})
-public class PaginationResponse implements IResponseContent, Serializable {
+public class PaginationResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -91,15 +91,5 @@ public class PaginationResponse implements IResponseContent, Serializable {
 
     public void setData(List value) {
         this.data = value;
-    }
-
-    @Override
-    public int getResponseCode() {
-        return 200;
-    }
-
-    @Override
-    public ResponseType getResponseStatus() {
-        return ResponseType.SUCCESS;
     }
 }

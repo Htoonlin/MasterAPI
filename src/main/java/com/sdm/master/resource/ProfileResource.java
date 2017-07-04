@@ -11,14 +11,10 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.ListResponse;
 import com.sdm.core.util.SecurityManager;
-import com.sdm.master.dao.NotificationDAO;
 import com.sdm.master.dao.UserDAO;
-import com.sdm.master.entity.NotifyEntity;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.ChangePasswordRequest;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -39,18 +35,18 @@ public class ProfileResource extends DefaultResource {
     private UserDAO userDAO;
 
     @PostConstruct
-    public void onLoad() {
-        userDAO = new UserDAO(getHttpSession());
+    protected void init() {
+        userDAO = new UserDAO(getUserId());
     }
 
     @RolesAllowed("user")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getProfile() throws Exception {
-        UserEntity user = userDAO.fetchById(getUserId());
+        UserEntity user = userDAO.fetchEntityById(getUserId());
         if (user == null) {
-            return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                    "NO_DATA", "There is no user. (or) User is not active."));
+            return new MessageResponse(204, ResponseType.WARNING,
+                    "There is no user. (or) User is not active.");
         }
         return new DefaultResponse(user);
     }
@@ -61,24 +57,22 @@ public class ProfileResource extends DefaultResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse setProfile(UserEntity request) throws Exception {
         try {
-            UserEntity currentUser = userDAO.fetchById(getUserId());
+            UserEntity currentUser = userDAO.fetchEntityById(getUserId());
             if (currentUser == null) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                        "NO_DATA", "There is no user. (or) User is not active."));
+                return new MessageResponse(204, ResponseType.WARNING,
+                        "There is no user. (or) User is not active.");
             }
             request.setPassword(currentUser.getPassword());
-            if (!request.isValid()) {
+
+            /*if (!request.isValid()) {
                 return new ErrorResponse(request.getErrors());
-            }
+            }*/
             currentUser.setDisplayName(request.getDisplayName());
             currentUser.setOnline(request.isOnline());
             currentUser.setCountryCode(request.getCountryCode());
             currentUser.setProfileImage(request.getProfileImage());
-            currentUser.setVersion(currentUser.getVersion() + 1);
-            userDAO.update(currentUser, true);
-            MessageResponse message = new MessageResponse(202, ResponseType.SUCCESS,
-                    "UPDATED", "We updated the record with your request successfully.");
-            return new DefaultResponse(message);
+            currentUser = userDAO.update(currentUser, true);
+            return new DefaultResponse(currentUser);
         } catch (Exception e) {
             logger.error(e);
             throw e;
@@ -100,45 +94,21 @@ public class ProfileResource extends DefaultResource {
             String oldPassword = SecurityManager.md5String(request.getEmail(), request.getOldPassword());
             UserEntity user = userDAO.userAuth(request.getEmail(), oldPassword);
 
-            if (user == null || !user.getId().equals(getUserId())) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                        "NO_DATA", "There is no data for your request."));
+            if (user == null || user.getId() != getUserId()) {
+                return new MessageResponse(204, ResponseType.WARNING,
+                        "There is no data for your request.");
             }
 
             if (!(user.getEmail().equalsIgnoreCase(request.getEmail())
                     && user.getPassword().equals(oldPassword))) {
-                MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
-                        "INVALID_OLD_PASSWORD", "Hey! your old password is wrong. pls try again.");
-                return new DefaultResponse(message);
+                return new MessageResponse(400, ResponseType.WARNING,
+                        "Hey! your old password is wrong. pls try again.");
             }
             String newPassword = SecurityManager.md5String(request.getEmail(), request.getNewPassword());
             user.setPassword(newPassword);
-            user.setVersion(user.getVersion() + 1);
             userDAO.update(user, true);
-            MessageResponse message = new MessageResponse(202, ResponseType.SUCCESS,
-                    "UPDATED", "We updated the new password on your request successfully.");
-            return new DefaultResponse(message);
-        } catch (Exception e) {
-            logger.error(e);
-            throw e;
-        }
-    }
-
-    @RolesAllowed("user")
-    @GET
-    @Path("alerts")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getAlerts() throws Exception {
-        try {
-            UserEntity user = userDAO.fetchById(getUserId());
-            if (user == null) {
-                return new DefaultResponse(new MessageResponse(204, ResponseType.WARNING,
-                        "NO_DATA", "There is no data for your request."));
-            }
-            NotificationDAO notifyDAO = new NotificationDAO();
-            List<NotifyEntity> alerts = notifyDAO.getNotificationsByUserId(getUserId());
-            return new DefaultResponse(new ListResponse(alerts));
+            return new MessageResponse(202, ResponseType.SUCCESS,
+                    "We updated the new password on your request successfully.");
         } catch (Exception e) {
             logger.error(e);
             throw e;

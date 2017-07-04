@@ -7,13 +7,14 @@ package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  *
  * @author Htoonlin
  */
-public class ErrorResponse implements IBaseResponse{
+public class ErrorResponse implements IBaseResponse {
 
     public ErrorResponse() {
     }
@@ -21,8 +22,15 @@ public class ErrorResponse implements IBaseResponse{
     public ErrorResponse(Map<String, String> errors) {
         this.errors = errors;
     }
-    
-    private Map<String, String> errors;    
+
+    private Map<String, String> errors;
+
+    public void addError(String key, String value) {
+        if (this.errors == null) {
+            this.errors = new HashMap<>();
+        }
+        this.errors.put(key, value);
+    }
 
     @JsonIgnore
     public void setContent(Map<String, String> errors) {

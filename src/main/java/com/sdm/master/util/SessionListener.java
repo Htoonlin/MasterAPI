@@ -8,6 +8,7 @@ package com.sdm.master.util;
 import com.sdm.core.Globalizer;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
+import java.util.Map;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
  */
 public class SessionListener implements HttpSessionListener {
 
-    private static final Logger logger = Logger.getLogger(SessionListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(SessionListener.class.getName());
 
     private long sessionRecording(String prefix, HttpSessionEvent hse) {
         HttpSession session = hse.getSession();        
@@ -27,7 +28,7 @@ public class SessionListener implements HttpSessionListener {
         if (session.getAttribute(Globalizer.SESSION_USER_ID) != null) {
             userId = (long) session.getAttribute(Globalizer.SESSION_USER_ID);
         }
-        logger.debug(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
+        LOG.debug(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
         return userId;
     }
 
@@ -39,15 +40,15 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent hse) {
         long userId = sessionRecording("Destroyed a session.", hse);
-        UserDAO userDAO = new UserDAO(hse.getSession());
+        UserDAO userDAO = new UserDAO(userId);
         try {
-            UserEntity user = userDAO.fetchById(userId);
+            UserEntity user = userDAO.fetchEntityById(userId);
             if (user != null) {
                 user.setOnline(false);
                 userDAO.update(user, true);
             }
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
         }        
     }
 

@@ -10,27 +10,26 @@ import com.sdm.master.entity.UserEntity;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import javax.servlet.http.HttpSession;
 import org.hibernate.Session;
 
 /**
  *
  * @author Htoonlin
  */
-public class UserDAO extends RestDAO<UserEntity>{
+public class UserDAO extends RestDAO {
 
-    private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
 
     private final String SELECT_BY_EMAIL = "from UserEntity u WHERE u.email = :email AND u.deletedAt IS NULL";
     private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token AND u.deletedAt IS NULL";
     private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password AND u.deletedAt IS NULL";
 
-    public UserDAO(HttpSession httpSession) {
-        super(UserEntity.class, httpSession);
+    public UserDAO(long userId) {
+        super(userId);
     }
 
-    public UserDAO(Session session, HttpSession httpSession) {
-        super(session, UserEntity.class, httpSession);
+    public UserDAO(Session session, long userId) {
+        super(session, userId);
     }
 
     public UserEntity userAuth(String email, String password) throws Exception {
@@ -51,5 +50,30 @@ public class UserDAO extends RestDAO<UserEntity>{
         Map<String, Object> params = new HashMap<>();
         params.put("email", email);
         return super.fetchOne(SELECT_BY_EMAIL, params);
+    }
+
+    @Override
+    protected boolean useVersion() {
+        return true;
+    }
+
+    @Override
+    protected boolean useLog() {
+        return true;
+    }
+
+    @Override
+    protected boolean useTimeStamp() {
+        return true;
+    }
+
+    @Override
+    protected boolean useSoftDelete() {
+        return true;
+    }
+
+    @Override
+    protected String getEntityName() {
+        return "UserEntity";
     }
 }

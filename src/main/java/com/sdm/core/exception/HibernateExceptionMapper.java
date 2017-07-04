@@ -20,18 +20,18 @@ import org.hibernate.HibernateException;
  *
  * @author Htoonlin
  */
-public class HibernateExceptionMapper implements ExceptionMapper<HibernateException>{
+public class HibernateExceptionMapper implements ExceptionMapper<HibernateException> {
 
     @Override
     public Response toResponse(HibernateException exception) {
-        MessageResponse message = new MessageResponse(422, ResponseType.ERROR, "HIBERNATE_ERROR", exception.getLocalizedMessage());
+        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getLocalizedMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());
             debug.put("Suppressed", exception.getSuppressed());
             message.setDebug(debug);
-        } 
-        return Response.status(422).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response.status(500).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
     }
-    
+
 }

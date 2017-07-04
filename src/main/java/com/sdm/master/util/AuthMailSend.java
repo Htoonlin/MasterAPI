@@ -7,7 +7,8 @@ package com.sdm.master.util;
 
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
-import com.sdm.core.util.ITemplateManager;
+import com.sdm.core.di.IMailManager;
+import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.core.util.mail.WebMailService;
 import com.sdm.core.util.mail.MailInfo;
@@ -25,10 +26,12 @@ import java.util.Map;
  */
 public class AuthMailSend {
 
-    private final ITemplateManager manager;
+    private final ITemplateManager templateManager;
+    private final IMailManager mailManager;
 
-    public AuthMailSend(ITemplateManager manager) {
-        this.manager = manager;
+    public AuthMailSend(IMailManager mailManager, ITemplateManager templateManager) {
+        this.mailManager = mailManager;
+        this.templateManager = templateManager;
     }
 
     private UserEntity setToken(UserEntity user) {
@@ -60,14 +63,10 @@ public class AuthMailSend {
         data.put("user", user.getDisplayName());
         data.put("token", SecurityManager.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
-        String mailBody = manager.buildTemplate("mail/forget-password.jsp", data);
+        String mailBody = templateManager.buildTemplate("mail/forget-password.jsp", data);
         MailInfo info = new MailInfo(
                 user.getEmail(), "Forget password response", mailBody);
-        if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
-            MailgunService.getInstance().sendHTML(info);
-        } else {
-            WebMailService.getInstance().sendHTML(info);
-        }
+        mailManager.sendHTML(info);
     }
 
     public void activateLink(UserEntity user, String deviceId) throws Exception {
@@ -80,13 +79,9 @@ public class AuthMailSend {
         data.put("user", user.getDisplayName());
         data.put("token", SecurityManager.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
-        String mailBody = manager.buildTemplate("mail/auth-activate.jsp", data);
+        String mailBody = templateManager.buildTemplate("mail/auth-activate.jsp", data);
         MailInfo info = new MailInfo(user.getEmail(), "Activate your account on SUNDEW MASTER API.", mailBody);
-        if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
-            MailgunService.getInstance().sendHTML(info);
-        } else {
-            WebMailService.getInstance().sendHTML(info);
-        }
+        mailManager.sendHTML(info);
     }
 
     public void welcomeUser(UserEntity user, String rawPassword) throws Exception {
@@ -96,50 +91,9 @@ public class AuthMailSend {
         data.put("name", user.getDisplayName());
         data.put("password", rawPassword);
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
-        String mailBody = manager.buildTemplate("mail/create-user.jsp", data);
+        String mailBody = templateManager.buildTemplate("mail/create-user.jsp", data);
 
         MailInfo info = new MailInfo(user.getEmail(), "Welcome New User!", mailBody);
-        if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
-            MailgunService.getInstance().sendHTML(info);
-        } else {
-            WebMailService.getInstance().sendHTML(info);
-        }
+        mailManager.sendHTML(info);
     }
-
-    /*
-    public void otpToken(UserEntity user, String type) throws Exception {
-        user = this.setToken(user);
-        StringBuilder mailContent = new StringBuilder();
-        mailContent.append("<p>Dear " + user.getDisplayName() + ", <br />")
-                .append("Thank you for your " + type + ". <br/>")
-                .append("Your OTP is : <h3>")
-                .append(user.getOtpToken())
-                .append("</h3>")
-                .append("It will be expired in next <b>")
-                .append(Setting.getInstance().OTP_LIFE)
-                .append("</b> minutes. <br/></p>")
-                .append("<code>\"Never give up to be a warrior.\"</code>");
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "OTP code to verify.",
-                mailContent.toString());
-        MailgunService.getInstance().sendHTML(info);
-    }
-    
-    public void newPassword(UserEntity user) throws Exception {
-        String newPassword = user.getPassword().substring(0, 12);
-        String encryptPassword = SecurityInstance.md5String(user.getEmail(), newPassword);
-        user.setPassword(encryptPassword);
-        StringBuilder mailContent = new StringBuilder();
-        mailContent.append("<p>Dear " + user.getDisplayName() + ", <br/>")
-                .append("We generated new password for your request. Try to use this passsword for account login.")
-                .append("Your New Password is : <h3>")
-                .append(newPassword)
-                .append("</h3>")
-                .append("<code>\"Never give up to be a warrior.\"</code>");
-
-        MailInfo info = new MailInfo(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER,
-                user.getEmail(), "New generated password for your request.",
-                mailContent.toString());
-        MailgunService.getInstance().sendHTML(info);
-    } */
 }

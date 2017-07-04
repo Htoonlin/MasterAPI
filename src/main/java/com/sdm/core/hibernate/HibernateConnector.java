@@ -44,4 +44,8 @@ public class HibernateConnector {
         }
         return instance.mainFactory;
     }
+    
+    public static void shutdown(){
+        instance.mainFactory.close();
+    }
 }

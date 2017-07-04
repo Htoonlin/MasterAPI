@@ -6,10 +6,11 @@
 package com.sdm.core.hibernate.dao;
 
 import com.sdm.core.hibernate.HibernateConnector;
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 import javax.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -17,44 +18,38 @@ import org.hibernate.Transaction;
 /**
  *
  * @author Htoonlin
- * @param <T>
  */
-public class DefaultDAO<T extends Serializable> implements IBaseDAO<T>{
-    protected Session mainSession;
-    protected final Class<T> entityClass;
+public class DefaultDAO {
 
-    public DefaultDAO(Class<T> entityClass) {
-        this(HibernateConnector.getFactory().openSession(), entityClass);
+    private static final Logger LOG = Logger.getLogger(DefaultDAO.class.getName());
+    private final Session mainSession;
+
+    public DefaultDAO() {
+        this(HibernateConnector.getFactory().openSession());
     }
 
-    public DefaultDAO(Session session, Class<T> entityClass) {
-        mainSession = session;
-        this.entityClass = entityClass;      
+    public DefaultDAO(Session session) {
+        this.mainSession = session;
     }
 
-    @Override
     public Session getSession() {
-        return mainSession;
+        if (this.mainSession == null || !this.mainSession.isOpen()) {
+            return HibernateConnector.getFactory().getCurrentSession();
+        }
+
+        return this.mainSession;
     }
 
-    @Override
     public void closeSession() {
-        if (mainSession.isOpen()) {
-            mainSession.close();
-        }
+        this.mainSession.close();
     }
 
-    @Override
     public void beginTransaction() {
-        if (mainSession == null || !mainSession.isOpen()) {
-            mainSession = HibernateConnector.getFactory().openSession();
-        }
-        mainSession.beginTransaction();
+        this.getSession().beginTransaction();
     }
 
-    @Override
     public void commitTransaction() {
-        Transaction transaction = mainSession.getTransaction();
+        Transaction transaction = this.getSession().getTransaction();
         if (transaction != null) {
             transaction.commit();
         }
@@ -62,9 +57,8 @@ public class DefaultDAO<T extends Serializable> implements IBaseDAO<T>{
         this.closeSession();
     }
 
-    @Override
     public void rollbackTransaction() {
-        Transaction transaction = mainSession.getTransaction();
+        Transaction transaction = this.getSession().getTransaction();
         if (transaction != null) {
             transaction.rollback();
         }
@@ -72,9 +66,8 @@ public class DefaultDAO<T extends Serializable> implements IBaseDAO<T>{
         this.closeSession();
     }
 
-    @Override
     public Query createQuery(String hqlString, Map<String, Object> params) {
-        Query query = mainSession.createQuery(hqlString);        
+        Query query = this.getSession().createQuery(hqlString);
         if (params != null) {
             for (Map.Entry<String, Object> param : params.entrySet()) {
                 query.setParameter(param.getKey(), param.getValue());
@@ -83,57 +76,65 @@ public class DefaultDAO<T extends Serializable> implements IBaseDAO<T>{
         return query;
     }
 
-    @Override
+    public Query createQueryByName(String queryName, Map<String, Object> params) {
+        Query query = this.getSession().createNamedQuery(queryName);
+        if (params != null) {
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                query.setParameter(param.getKey(), param.getValue());
+            }
+        }
+        return query;
+    }
+
     public Query createQuery(String hqlString, Map<String, Object> params, int size) {
         Query query = this.createQuery(hqlString, params);
         return query.setMaxResults(size);
     }
 
-    @Override
     public Query createQuery(String hqlString, Map<String, Object> params, int size, int start) {
         Query query = this.createQuery(hqlString, params);
         return query.setFirstResult(start).setMaxResults(size);
     }
-    
-    @Override
-    public List<T> fetch(String hqlString, Map<String, Object> params) throws Exception {
-        try {
-            List<T> queryList = this.createQuery(hqlString, params).getResultList();
-            if (queryList != null && queryList.size() > 0) {
-                return (List<T>) queryList;
-            }
-        } catch (Exception e) {
-            throw e;
+
+    public List fetchByName(String queryName, Map<String, Object> params) {
+        List queryList = this.createQueryByName(queryName, params).getResultList();
+        if (queryList != null && queryList.size() > 0) {
+            return queryList;
         }
 
         return new ArrayList();
     }
 
-    @Override
-    public T fetchOne(String hqlString, Map<String, Object> params) throws Exception {
-        try {
-            List<T> results = this.createQuery(hqlString, params).getResultList();
-            if (results == null || results.size() < 1) {
-                return null;
-            }
-            return results.get(0);
-        } catch (Exception e) {
-            throw e;
+    public List fetch(String hqlString, Map<String, Object> params) {
+        List queryList = this.createQuery(hqlString, params).getResultList();
+        if (queryList != null && queryList.size() > 0) {
+            return queryList;
         }
+
+        return new ArrayList();
     }
 
-    @Override
-    public void execute(String hqlString, Map<String, Object> params) {
-        try {
-            this.createQuery(hqlString, params).executeUpdate();
-        } catch (Exception e) {
-            throw e;
+    public <T> T fetchOneByName(String queryName, Map<String, Object> params) {
+        List results = this.createQueryByName(queryName, params).getResultList();
+        if (results == null || results.size() < 1) {
+            return null;
         }
+        return (T) results.get(0);
     }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        this.closeSession();
-        super.finalize();
+
+    public <T> T fetchOne(String hqlString, Map<String, Object> params) {
+        List results = this.createQuery(hqlString, params).getResultList();
+        if (results == null || results.size() < 1) {
+            return null;
+        }
+        return (T) results.get(0);
+    }
+
+    public void executeByName(String queryName, Map<String, Object> params) {
+        this.createQueryByName(queryName, params).executeUpdate();
+    }
+
+    public void execute(String hqlString, Map<String, Object> params) {
+        this.createQuery(hqlString, params).executeUpdate();
     }
 }

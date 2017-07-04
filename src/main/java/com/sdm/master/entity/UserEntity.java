@@ -3,6 +3,7 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.sdm.core.hibernate.RestEntity;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,8 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sdm.core.hibernate.entity.RestEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.UIStructure;
+import com.sdm.core.request.DefaultRequest;
 import java.util.Set;
 import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
@@ -35,7 +36,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_user")
-public class UserEntity extends RestEntity<Long> implements java.io.Serializable {
+public class UserEntity extends RestEntity implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -129,12 +130,10 @@ public class UserEntity extends RestEntity<Long> implements java.io.Serializable
         this.search = search;
     }
 
-    @Override
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

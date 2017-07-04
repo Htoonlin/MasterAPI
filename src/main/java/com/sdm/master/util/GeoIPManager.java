@@ -8,7 +8,9 @@ package com.sdm.master.util;
 import com.sdm.core.Globalizer;
 import com.sdm.core.response.MapResponse;
 import com.sdm.master.dao.GeoIPCacheDAO;
+import com.sdm.master.entity.GeoIPCacheEntity;
 import java.io.IOException;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -46,16 +48,15 @@ public class GeoIPManager {
     public MapResponse<String, Object> lookupInfo(String ipAddress) {
         try {
             if (cacheDAO != null) {
-                MapResponse<String, Object> info = cacheDAO.getInfoByIP(ipAddress);
+                Map info = cacheDAO.fetchById(ipAddress);
                 if (info == null) {
                     info = requestInfo(ipAddress);
 
                     if (info != null) {
-                        cacheDAO.saveInfo(info);
+                        cacheDAO.insert(info, true);
                     }
                 }
-
-                return info;
+                return new MapResponse<>(info);
             } else {
                 return requestInfo(ipAddress);
             }

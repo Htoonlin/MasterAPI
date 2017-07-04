@@ -11,26 +11,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import javax.servlet.http.HttpSession;
 import org.hibernate.Session;
 
 /**
  *
  * @author Htoonlin
  */
-public class PermissionDAO extends RestDAO<PermissionEntity> {
+public class PermissionDAO extends RestDAO {
+
     private static final Logger LOG = Logger.getLogger(PermissionDAO.class.getName());
 
     private final String GET_BY_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.deletedAt IS NULL";
     private final String CHECK_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.resourceClass = :class "
             + "AND p.resoureMethod = :method AND p.requestMethod like :request AND p.deletedAt IS NULL";
 
-    public PermissionDAO(HttpSession httpSession) {
-        super(PermissionEntity.class, httpSession);
+    public PermissionDAO(long userId) {
+        super(userId);
     }
 
-    public PermissionDAO(Session session, HttpSession httpSession) {
-        super(session, PermissionEntity.class, httpSession);
+    public PermissionDAO(Session session, long userId) {
+        super(session, userId);
     }
 
     public List<PermissionEntity> fetchByRole(int roleId) throws Exception {
@@ -47,13 +47,38 @@ public class PermissionDAO extends RestDAO<PermissionEntity> {
         params.put("request", httpMethod);
         try {
             PermissionEntity entity = this.fetchOne(CHECK_ROLE, params);
-            return (entity != null) && (entity.getRoleId() == roleId) 
+            return (entity != null) && (entity.getRoleId() == roleId)
                     && (entity.getResourceClass().equals(resourceClass))
                     && (entity.getResourceMethod().equals(resourceMethod)
                     && (entity.getRequestMethod().equalsIgnoreCase(httpMethod)));
-        }catch(Exception e){
+        } catch (Exception e) {
             LOG.error(e);
         }
         return false;
+    }
+
+    @Override
+    protected boolean useVersion() {
+        return true;
+    }
+
+    @Override
+    protected boolean useLog() {
+        return true;
+    }
+
+    @Override
+    protected boolean useTimeStamp() {
+        return true;
+    }
+
+    @Override
+    protected boolean useSoftDelete() {
+        return false;
+    }
+
+    @Override
+    protected String getEntityName() {
+        return "PermissionEntity";
     }
 }

@@ -6,12 +6,16 @@
 package com.sdm;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.sdm.core.Setting;
 import com.sdm.core.di.HttpSessionFactory;
 import com.sdm.core.di.IAccessManager;
+import com.sdm.core.di.IMailManager;
+import com.sdm.core.di.ITemplateManager;
 import com.sdm.master.util.AccessManager;
 import com.sdm.core.filter.JacksonObjectMapper;
-import com.sdm.core.util.ITemplateManager;
 import com.sdm.core.util.JSPTemplateManager;
+import com.sdm.core.util.mail.MailgunService;
+import com.sdm.core.util.mail.WebMailService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +55,13 @@ public class ApplicationConfig extends Application {
 
         //Inject TemplateManager
         Injections.addBinding(Injections.newBinder(JSPTemplateManager.class).to(ITemplateManager.class), dc);
+        
+        //Inject MailManager
+        if(Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")){
+            Injections.addBinding(Injections.newBinder(MailgunService.class).to(IMailManager.class), dc);    
+        }else{
+            Injections.addBinding(Injections.newBinder(WebMailService.class).to(IMailManager.class), dc);    
+        }
 
         dc.commit();
     }

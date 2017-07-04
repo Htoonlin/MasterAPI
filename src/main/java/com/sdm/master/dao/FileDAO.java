@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import javax.servlet.http.HttpSession;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.hibernate.Session;
 
@@ -26,19 +25,19 @@ import org.hibernate.Session;
  *
  * @author Htoonlin
  */
-public class FileDAO extends RestDAO<FileEntity> {
+public class FileDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(FileDAO.class.getName());
     private final String GET_BY_TOKEN = "FROM FileEntity f WHERE f.publicToken = :token AND f.extension = :extension AND f.deletedAt IS NULL";
 
-    public FileDAO(HttpSession httpSession) {
-        super(FileEntity.class, httpSession);
+    public FileDAO(long userId) {
+        super(userId);
     }
 
-    public FileDAO(Session session, HttpSession httpSession) {
-        super(session, FileEntity.class, httpSession);
+    public FileDAO(Session session, long userId) {
+        super(session, userId);
     }
-
+    
     public FileEntity fetchByToken(String token, String ext) throws Exception {
         try {
             Map<String, Object> params = new HashMap<>();
@@ -50,7 +49,6 @@ public class FileDAO extends RestDAO<FileEntity> {
         }
     }
 
-    @Override
     public void delete(FileEntity entity, boolean commit) throws Exception {
         File savedFile = new File(Setting.getInstance().STORAGE_PATH + entity.getStoragePath());
         if (savedFile.exists() && savedFile.delete()) {
@@ -67,7 +65,7 @@ public class FileDAO extends RestDAO<FileEntity> {
             entity.setExtension(fileInfo[1]);
         }
         String token = FileManager.generateToken();
-        File saveFile = FileManager.generateFile(getUserId(), token, entity.getExtension());
+        File saveFile = FileManager.generateFile(USER_ID, token, entity.getExtension());
 
         try (OutputStream out = new FileOutputStream(saveFile)) {
             int read;
@@ -89,5 +87,30 @@ public class FileDAO extends RestDAO<FileEntity> {
         entity.setFileSize(saveFile.length());
         entity.setStoragePath(saveFile.getPath().substring(Setting.getInstance().STORAGE_PATH.length()));
         return super.insert(entity, true);
+    }
+
+    @Override
+    protected boolean useVersion() {
+        return true;
+    }
+
+    @Override
+    protected boolean useLog() {
+        return true;
+    }
+
+    @Override
+    protected boolean useTimeStamp() {
+        return true;
+    }
+
+    @Override
+    protected boolean useSoftDelete() {
+        return true;
+    }
+
+    @Override
+    protected String getEntityName() {
+        return "FileEntity";
     }
 }

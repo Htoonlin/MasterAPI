@@ -6,8 +6,8 @@
 package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.entity.RestEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.RestEntity;
+import com.sdm.core.hibernate.UIStructure;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,7 +26,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_permission")
-public class PermissionEntity extends RestEntity<Long> implements Serializable{
+public class PermissionEntity extends RestEntity implements Serializable{
     private static final long serialVersionUID = 1L;
     
     @JsonIgnore
@@ -63,12 +63,10 @@ public class PermissionEntity extends RestEntity<Long> implements Serializable{
         this.search = search;
     }
     
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

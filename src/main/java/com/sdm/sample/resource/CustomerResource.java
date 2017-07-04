@@ -5,8 +5,11 @@
  */
 package com.sdm.sample.resource;
 
+import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
+import com.sdm.sample.dao.CustomerDAO;
 import com.sdm.sample.entity.CustomerEntity;
+import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import javax.ws.rs.Path;
 
@@ -18,5 +21,21 @@ import javax.ws.rs.Path;
 public class CustomerResource extends RestResource<CustomerEntity, Long> {
 
     private static final Logger LOG = Logger.getLogger(CustomerResource.class.getName());
+    private RestDAO mainDAO;
+
+    @Override
+    protected Logger getLogger() {
+        return CustomerResource.LOG;
+    }
+
+    @PostConstruct
+    private void init() {
+        mainDAO = new CustomerDAO(getUserId());
+    }
+
+    @Override
+    protected RestDAO getDAO() {
+        return this.mainDAO;
+    }
 
 }

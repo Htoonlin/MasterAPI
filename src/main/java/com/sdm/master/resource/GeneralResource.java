@@ -18,8 +18,10 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -44,15 +46,14 @@ public class GeneralResource extends DefaultResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse welcome() throws Exception {
-        MessageResponse response = new MessageResponse(200, ResponseType.SUCCESS,
-                "WELCOME", "Welcome from sundew API. Never give up to be a warrior!");
-        return new DefaultResponse(response);
+        return new MessageResponse(200, ResponseType.SUCCESS,
+                "Welcome! from sundew API. Never give up to be a warrior!");
     }
-    
+
     @GET
     @Path("setting")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getAllSetting(){
+    public DefaultResponse getAllSetting() {
         MapResponse<String, String> response = new MapResponse<>();
         Properties props = Setting.getInstance().getProperties();
         for (String key : props.stringPropertyNames()) {
@@ -64,19 +65,23 @@ public class GeneralResource extends DefaultResource {
 
     @PermitAll
     @GET
-    @Path("ip")
+    @Path("ip/{address}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse checkIP(@Context HttpServletRequest request) throws Exception {
+    public DefaultResponse checkIP(@Context HttpServletRequest request,
+            @DefaultValue("") @PathParam("address") String address) throws Exception {
         GeoIPManager ipManager = new GeoIPManager();
-        return new DefaultResponse(ipManager.lookupInfo(request.getRemoteAddr()));
+        if (address.isEmpty()) {
+            address = request.getRemoteAddr();
+        }
+        return new DefaultResponse(ipManager.lookupInfo(address));
     }
 
     @PermitAll
     @GET
     @Path("lang")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse langConverter(@QueryParam("input") String input) throws Exception {
-        MessageResponse message = new MessageResponse(200, ResponseType.INFO, "IS_MYANMAR", "No! It is not myanmar font.");
+    public IBaseResponse langConverter(@QueryParam("input") String input) throws Exception {
+        MessageResponse message = new MessageResponse(200, ResponseType.INFO, "No! It is not myanmar font.");
         if (MyanmarFontManager.isMyanmar(input)) {
             String msgString = "Yes! It is myanmar";
             if (MyanmarFontManager.isUnicode(input)) {
@@ -84,8 +89,8 @@ public class GeneralResource extends DefaultResource {
             } else if (MyanmarFontManager.isZawgyi(input)) {
                 msgString += " zawgyi font.";
             }
-            message = new MessageResponse(200, ResponseType.INFO, "IS_MYANMAR", msgString);
+            message = new MessageResponse(200, ResponseType.INFO, msgString);
         }
-        return new DefaultResponse(message);
+        return message;
     }
 }

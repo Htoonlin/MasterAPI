@@ -5,6 +5,7 @@
  */
 package com.sdm.core.util;
 
+import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.Setting;
 import java.io.CharArrayWriter;
 import java.io.IOException;
