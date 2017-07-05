@@ -32,7 +32,7 @@ public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingEx
             message.setDebug(debug);
         }
 
-        return Response.status(400).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(400).entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

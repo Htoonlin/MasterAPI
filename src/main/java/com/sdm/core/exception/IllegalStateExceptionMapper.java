@@ -33,7 +33,7 @@ public class IllegalStateExceptionMapper implements ExceptionMapper<IllegalState
             message.setDebug(debug);
         } 
         
-        return Response.serverError().entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        return Response.serverError().entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

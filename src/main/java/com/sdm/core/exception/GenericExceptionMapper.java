@@ -6,7 +6,6 @@
 package com.sdm.core.exception;
 
 import com.sdm.core.Setting;
-import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.MessageResponse;
 import java.util.HashMap;
@@ -25,15 +24,15 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable exception) {
-        MessageResponse message =  new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
+        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
         if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
             Map<String, Object> debug = new HashMap<>();
             debug.put("StackTrace", exception.getStackTrace());
             debug.put("Suppressed", exception.getSuppressed());
             message.setDebug(debug);
-        } 
-        
-        return Response.serverError().entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        return Response.serverError().entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

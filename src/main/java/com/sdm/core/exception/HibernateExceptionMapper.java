@@ -31,7 +31,7 @@ public class HibernateExceptionMapper implements ExceptionMapper<HibernateExcept
             debug.put("Suppressed", exception.getSuppressed());
             message.setDebug(debug);
         }
-        return Response.status(500).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(500).entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

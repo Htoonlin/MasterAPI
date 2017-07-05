@@ -61,4 +61,9 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse remove(@PathParam("id") PK id) throws Exception;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("struct")
+    public IBaseResponse getStructure() throws Exception;
 }

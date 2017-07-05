@@ -14,36 +14,13 @@ import org.hibernate.Session;
  */
 public class CustomerDAO extends RestDAO {
 
+    private static final String ENTITY = "Sample_CustomerEntity";
+
     public CustomerDAO(long userId) {
-        super(userId);
+        super(ENTITY, userId);
     }
 
     public CustomerDAO(Session session, long userId) {
-        super(session, userId);
-    }
-
-    @Override
-    protected boolean useVersion() {
-        return true;
-    }
-
-    @Override
-    protected boolean useLog() {
-        return true;
-    }
-
-    @Override
-    protected boolean useTimeStamp() {
-        return true;
-    }
-
-    @Override
-    protected boolean useSoftDelete() {
-        return true;
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "Sample_Customer";
+        super(session, ENTITY, userId);
     }
 }

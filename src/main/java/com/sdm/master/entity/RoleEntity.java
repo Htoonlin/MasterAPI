@@ -7,8 +7,8 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.RestEntity;
-import com.sdm.core.hibernate.UIStructure;
+import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Column;
@@ -24,6 +24,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -32,10 +34,12 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_role")
-public class RoleEntity extends RestEntity implements Serializable {
+@Audited
+public class RoleEntity extends DefaultEntity implements Serializable {
 
     @JsonIgnore
     @Formula(value = "concat(name, description)")
+    @NotAudited
     private String search;
 
     @Id
@@ -45,14 +49,15 @@ public class RoleEntity extends RestEntity implements Serializable {
     private int id;
 
     @UIStructure(order = 1, label = "Name")
-    @Column(name = "name", columnDefinition = "varchar(255)", length=255, nullable = false)
+    @Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
     private String name;
 
     @UIStructure(order = 2, label = "Description")
-    @Column(name = "description", columnDefinition = "varchar(500)", length=500, nullable = false)
+    @Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
     private String description;
 
     @JsonIgnore
+    @NotAudited
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
     @NotFound(action = NotFoundAction.IGNORE)

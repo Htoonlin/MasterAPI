@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.UUID;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 /**
@@ -20,16 +21,19 @@ import org.hibernate.Session;
  */
 public class TokenDAO extends RestDAO {
 
-    private final String CHECK_USER = "FROM TokenEntity t WHERE t.userId = :userId AND t.deviceId = :deviceId AND t.deviceOs = :deviceOS AND t.deletedAt IS NULL";
-    private final String CLEAN_TOKEN = "DELETE FROM TokenEntity t WHERE t.userId = :userId AND t.deletedAt IS NULL";
-    private final String UPDATE_EXPIRED_BY_TOKEN = "UPDATE TokenEntity t SET t.tokenExpired = :expired WHERE t.token = :token AND t.deletedAt IS NULL";
+    private static final Logger LOG = Logger.getLogger(TokenDAO.class.getName());
+    private static final String ENTITY = "TokenEntity";
+
+    private final String CHECK_USER = "FROM TokenEntity t WHERE t.userId = :userId AND t.deviceId = :deviceId AND t.deviceOs = :deviceOS";
+    private final String CLEAN_TOKEN = "DELETE FROM TokenEntity t WHERE t.userId = :userId";
+    private final String UPDATE_EXPIRED_BY_TOKEN = "UPDATE TokenEntity t SET t.tokenExpired = :expired WHERE t.token = :token";
 
     public TokenDAO() {
-        super(0);
+        super(ENTITY, 0);
     }
 
     public TokenDAO(Session session) {
-        super(session, 0);
+        super(session, ENTITY, 0);
     }
 
     public void cleanToken(long userId) throws Exception {
@@ -73,30 +77,5 @@ public class TokenDAO extends RestDAO {
         } else {
             return super.update(token, false);
         }
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "TokenEntity";
-    }
-
-    @Override
-    protected boolean useVersion() {
-        return false;
-    }
-
-    @Override
-    protected boolean useLog() {
-        return false;
-    }
-
-    @Override
-    protected boolean useTimeStamp() {
-        return true;
-    }
-
-    @Override
-    protected boolean useSoftDelete() {
-        return false;
     }
 }

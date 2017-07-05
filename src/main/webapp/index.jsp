@@ -138,7 +138,7 @@
                     $("div#messageBox").attr('class', 'alert alert-' + type).html(html);
                 }
                 function call_api(url_suffix, method, data, callback) {
-                    var url = "<%= request.getContextPath() %>/api/";
+                    var url = "<%= Globalizer.getBasePath(request) %>/api/";
                     url += $('input#txtAPIURL').val() + url_suffix;
                     $('label#lblWaiting').html("CONNECTING:" + url);
                     var request = {
@@ -152,9 +152,9 @@
                         },
                         success: callback,
                         error: function (data) {
-                            var content = data.responseJSON.content;
+                            var json = data.responseJSON;
                             $("div#mainPanel").attr('class', 'panel panel-danger');
-                            show_message('danger', content.title, content.message);
+                            show_message('danger', json.status, json.content);
                         }
                     };
                     if (method.toLowerCase() === 'get') {

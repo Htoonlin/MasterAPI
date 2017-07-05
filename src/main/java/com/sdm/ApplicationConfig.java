@@ -39,11 +39,10 @@ import org.glassfish.jersey.server.ServerProperties;
 @javax.ws.rs.ApplicationPath("/api")
 public class ApplicationConfig extends Application {
 
-    private static final Logger logger = Logger.getLogger(ApplicationConfig.class.getName());
+    private static final Logger LOG = Logger.getLogger(ApplicationConfig.class.getName());
 
     @Inject
     public ApplicationConfig(ServiceLocator serviceLocator) {
-        logger.info("System is starting ....");
         DynamicConfiguration dc = Injections.getConfiguration(serviceLocator);
         //Inject HttpSession
         Injections.addBinding(Injections.newFactoryBinder(HttpSessionFactory.class)
@@ -116,7 +115,5 @@ public class ApplicationConfig extends Application {
         resources.add(com.sdm.master.resource.RoleResource.class);
         resources.add(com.sdm.master.resource.UserResource.class);
         resources.add(com.sdm.sample.resource.CustomerResource.class);
-        resources.add(org.glassfish.json.jaxrs.JsonStructureBodyReader.class);
-        resources.add(org.glassfish.json.jaxrs.JsonStructureBodyWriter.class);
     }
 }

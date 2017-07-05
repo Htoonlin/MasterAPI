@@ -20,17 +20,18 @@ import org.hibernate.Session;
 public class PermissionDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(PermissionDAO.class.getName());
+    private static final String ENTITY = "PermissionEntity";
 
-    private final String GET_BY_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.deletedAt IS NULL";
+    private final String GET_BY_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId";
     private final String CHECK_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.resourceClass = :class "
-            + "AND p.resoureMethod = :method AND p.requestMethod like :request AND p.deletedAt IS NULL";
+            + "AND p.resoureMethod = :method AND p.requestMethod like :request";
 
     public PermissionDAO(long userId) {
-        super(userId);
+        super(ENTITY, userId);
     }
 
     public PermissionDAO(Session session, long userId) {
-        super(session, userId);
+        super(session, ENTITY, userId);
     }
 
     public List<PermissionEntity> fetchByRole(int roleId) throws Exception {
@@ -55,30 +56,5 @@ public class PermissionDAO extends RestDAO {
             LOG.error(e);
         }
         return false;
-    }
-
-    @Override
-    protected boolean useVersion() {
-        return true;
-    }
-
-    @Override
-    protected boolean useLog() {
-        return true;
-    }
-
-    @Override
-    protected boolean useTimeStamp() {
-        return true;
-    }
-
-    @Override
-    protected boolean useSoftDelete() {
-        return false;
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "PermissionEntity";
     }
 }

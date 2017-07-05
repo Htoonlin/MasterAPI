@@ -6,8 +6,8 @@
 package com.sdm.sample.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.RestEntity;
-import com.sdm.core.hibernate.UIStructure;
+import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -17,19 +17,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Formula;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  *
  * @author Htoonlin
  */
-@Entity
+@Entity(name = "Sample_CustomerEntity")
 @Table(name = "tbl_sample_customer")
-public class CustomerEntity extends RestEntity implements Serializable {
+@Audited
+public class CustomerEntity extends DefaultEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @JsonIgnore
     @Formula(value = "concat(name, email, phone, company, address, city, country, remark)")
+    @NotAudited
     private String search;
 
     @Id

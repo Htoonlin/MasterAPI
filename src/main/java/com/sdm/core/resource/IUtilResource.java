@@ -5,10 +5,10 @@
  */
 package com.sdm.core.resource;
 
+import com.sdm.core.request.QueryRequest;
 import com.sdm.core.request.SyncRequest;
 import com.sdm.core.response.IBaseResponse;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -20,16 +20,11 @@ import javax.ws.rs.core.MediaType;
  */
 public interface IUtilResource {
 
-    /*
     @POST
     @Path("query")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse queryData(QueryRequest request) throws Exception; */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("struct")
-    public IBaseResponse getStructure() throws Exception;
+    public IBaseResponse queryData(QueryRequest request) throws Exception;
 
     @POST
     @Path("sync")

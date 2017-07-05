@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -66,6 +67,21 @@ public class Globalizer {
         return false;
     }
 
+    public static String getBasePath(HttpServletRequest request) {
+        String url = "";
+        String schema = request.getScheme();
+        String server = request.getServerName();
+        String contextPath = request.getContextPath();
+        int port = request.getServerPort();
+        if (port == 80 || port == 443) {
+            url = String.format("%s://%s", schema, server);
+        } else {
+            url = String.format("%s://%s:%s", schema, server, port);
+        }
+
+        return url + contextPath;
+    }
+
     public static String getDateString(String format, Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);
         return formatter.format(date);
@@ -86,7 +102,7 @@ public class Globalizer {
         return checkDate.after(new Date());
     }
 
-    public static String generateToken(String chars, int length) {        
+    public static String generateToken(String chars, int length) {
         SecureRandom rnd = new SecureRandom();
         StringBuilder pass = new StringBuilder();
         for (int i = 0; i < length; i++) {

@@ -125,26 +125,26 @@
                     "old_password": "<%= activate.getDeviceId()%>",
                     "new_password": new_pass,
                     "timestamp": (new Date()).getTime(),
-                    "extra": { "token" : "<%= activate.getToken() %>"}
+                    "extra": {"token": "<%= activate.getToken()%>"}
                 };
 
                 var url = "api/auth/resetPassword/";
                 call_api(url, 'post', data, function (res) {
-                    alert(res.content.message);
+                    alert(res.content);
                     window.location.href = "login.jsp";
                 }, function (res) {
-                    var content = res.responseJSON.content;
+                    var json = res.responseJSON;
                     $("#server-message").addClass("alert alert-danger")
-                            .html('<strong>' + content.title + '</strong>' + content.message);                    
+                            .html('<strong>' + json.status + '</strong>' + json.content);
                 });
             <% } else {%>
                 var url = "api/auth/forgetPassword/" + $("#txtEmail").val();
                 call_api(url, 'get', null, function (res) {
-                    alert(res.content.message);
+                    alert(res.content);
                     window.location.href = "login.jsp";
                 }, function (res) {
                     var content = res.responseJSON.content;
-                    $('#msgEmail').html(content.message);
+                    $('#msgEmail').html(content);
                 });
             <% }%>
             });

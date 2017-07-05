@@ -47,7 +47,7 @@ public class AccessManager implements IAccessManager {
 
         TokenDAO tokenDao = new TokenDAO();
         try {
-            currentToken = tokenDao.fetchEntityById(request.getId());
+            currentToken = tokenDao.fetchById(request.getId());
         } catch (Exception ex) {
             LOG.error(ex);
             return false;
@@ -95,12 +95,12 @@ public class AccessManager implements IAccessManager {
         UserDAO userDAO = new UserDAO(authUserId);
         UserEntity user;
         try {
-            user = userDAO.fetchEntityById(authUserId);
+            user = userDAO.fetchById(authUserId);
         } catch (Exception ex) {
             LOG.error(ex);
             return false;
         }
-        
+
         if (user == null || user.getStatus() != UserEntity.ACTIVE) {
             return false;
         }

@@ -7,7 +7,6 @@ package com.sdm.core.hibernate.dao;
 
 import com.sdm.core.hibernate.HibernateConnector;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;

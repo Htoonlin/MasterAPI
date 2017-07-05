@@ -5,6 +5,7 @@
  */
 package com.sdm.core.request;
 
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sdm.core.request.query.Aggregate;
 import com.sdm.core.request.query.Column;
@@ -12,7 +13,6 @@ import com.sdm.core.request.query.Condition;
 import com.sdm.core.request.query.Join;
 import com.sdm.core.request.query.Sort;
 import com.sdm.core.util.MySQLManager;
-import com.sdm.core.request.DefaultRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import javax.validation.constraints.Size;
  * @author Htoonlin
  */
 @JsonIgnoreProperties(value = {"row_counts_col", "all_columns", "group_by_column", "hasAggregate"})
-public class QueryRequest extends DefaultRequest implements Serializable {
+public class QueryRequest extends DefaultEntity implements Serializable {
 
     public final String ROW_COUNTS_COL = "total_rows";
     private String table;
@@ -257,6 +257,5 @@ public class QueryRequest extends DefaultRequest implements Serializable {
     public void setJoins(List<Join> joins) {
         this.joins = joins;
     }
-    
-    
+
 }

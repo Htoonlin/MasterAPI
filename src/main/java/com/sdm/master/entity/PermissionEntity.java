@@ -6,8 +6,8 @@
 package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.RestEntity;
-import com.sdm.core.hibernate.UIStructure;
+import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -26,11 +28,13 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_permission")
-public class PermissionEntity extends RestEntity implements Serializable{
+@Audited
+public class PermissionEntity extends DefaultEntity implements Serializable{
     private static final long serialVersionUID = 1L;
     
     @JsonIgnore
     @Formula(value = "concat(resourceClass, resourceMethod, requestMethod)")
+    @NotAudited
     private String search;
     
     @Id

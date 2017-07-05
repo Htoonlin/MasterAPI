@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  */
 public final class Setting {
 
-    private static final Logger logger = Logger.getLogger(Setting.class.getName());
+    private static final Logger LOG = Logger.getLogger(Setting.class.getName());
     
     /* System Setting */
     public String ENVIRONMENT;
@@ -95,7 +95,7 @@ public final class Setting {
         try (OutputStream outputStream = new FileOutputStream(propFile)) {
             this.settingProps.store(outputStream, comments);
         } catch (IOException ex) {
-            logger.error(ex);
+            LOG.error(ex);
         }
 
     }
@@ -139,7 +139,7 @@ public final class Setting {
                 MAIL_USER = settingProps.getProperty("MAIL_USER", "example@gmail.com");
                 MAIL_PASSWORD = settingProps.getProperty("MAIL_PASSWORD", "3x@mp13");
             } catch (IOException ex) {
-                logger.error(ex);
+                LOG.error(ex);
             }
         }
     }

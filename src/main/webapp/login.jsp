@@ -98,12 +98,12 @@
                 call_api("api/auth/", "post", data, function (res) {
                     window.location.href = "index.jsp";
                 }, function (res) {
-                    var content = res.responseJSON.content;
-                    if (content.message) {
+                    var json = res.responseJSON;
+                    if (json.status != 400) {
                         $("#server-message").addClass("alert alert-danger")
-                                .html(content.message);
-                    } else {
-                        $.each(content, function (prop, value) {
+                                .html(json.content);
+                    } else{
+                        $.each(json.content, function (prop, value) {
                             console.log(prop + ":" + value);
                             if (prop === "email") {
                                 $("span#msgEmail").html(value);

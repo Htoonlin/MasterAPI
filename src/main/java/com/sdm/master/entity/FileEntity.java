@@ -8,8 +8,8 @@ package com.sdm.master.entity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.sdm.core.hibernate.RestEntity;
-import com.sdm.core.hibernate.UIStructure;
+import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.util.FileManager;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -21,6 +21,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Formula;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  *
@@ -28,7 +30,8 @@ import org.hibernate.annotations.Formula;
  */
 @Entity
 @Table(name = "tbl_file")
-public class FileEntity extends RestEntity implements Serializable {
+@Audited
+public class FileEntity extends DefaultEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,6 +41,7 @@ public class FileEntity extends RestEntity implements Serializable {
 
     @JsonIgnore
     @Formula(value = "concat(name, extension, type)")
+    @NotAudited
     private String search;
 
     @Id

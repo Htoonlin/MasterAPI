@@ -100,7 +100,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
             @FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
         try {
             UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
-            UserEntity currentUser = userDAO.fetchEntityById(getUserId());
+            UserEntity currentUser = userDAO.fetchById(getUserId());
             if (currentUser == null) {
                 return new MessageResponse(401, ResponseType.WARNING,
                         "Invalid user. You neeed to register new account to upload file.");
@@ -128,7 +128,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
     @GET
     @Path("{id:\\d+}/download")
     public Response privateDownload(@PathParam("id") double id) throws Exception {
-        FileEntity entity = mainDAO.fetchEntityById(id);
+        FileEntity entity = mainDAO.fetchById(id);
         if (entity == null) {
             MessageResponse message = new MessageResponse(204, ResponseType.WARNING, "There is no file for your request.");
             return Response.ok(message, MediaType.APPLICATION_JSON).build();

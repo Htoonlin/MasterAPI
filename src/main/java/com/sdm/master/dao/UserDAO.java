@@ -19,17 +19,18 @@ import org.hibernate.Session;
 public class UserDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
+    private static final String ENTITY = "UserEntity";
 
-    private final String SELECT_BY_EMAIL = "from UserEntity u WHERE u.email = :email AND u.deletedAt IS NULL";
-    private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token AND u.deletedAt IS NULL";
-    private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password AND u.deletedAt IS NULL";
+    private final String SELECT_BY_EMAIL = "from UserEntity u WHERE u.email = :email";
+    private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token";
+    private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password";
 
     public UserDAO(long userId) {
-        super(userId);
+        super(ENTITY, userId);
     }
 
     public UserDAO(Session session, long userId) {
-        super(session, userId);
+        super(session, ENTITY, userId);
     }
 
     public UserEntity userAuth(String email, String password) throws Exception {
@@ -50,30 +51,5 @@ public class UserDAO extends RestDAO {
         Map<String, Object> params = new HashMap<>();
         params.put("email", email);
         return super.fetchOne(SELECT_BY_EMAIL, params);
-    }
-
-    @Override
-    protected boolean useVersion() {
-        return true;
-    }
-
-    @Override
-    protected boolean useLog() {
-        return true;
-    }
-
-    @Override
-    protected boolean useTimeStamp() {
-        return true;
-    }
-
-    @Override
-    protected boolean useSoftDelete() {
-        return true;
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "UserEntity";
     }
 }

@@ -5,12 +5,8 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.hibernate.DefaultProperty;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.core.hibernate.dao.Sync;
-import com.sdm.core.request.IBaseRequest;
-import com.sdm.core.request.MapRequest;
-import com.sdm.core.request.SyncRequest;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
@@ -20,11 +16,8 @@ import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.PaginationResponse;
 import com.sdm.core.response.PropertiesResponse;
 import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.SyncResponse;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -35,8 +28,8 @@ import org.apache.log4j.Logger;
  * @param <T>
  * @param <PK>
  */
-public abstract class RestResource<T extends IBaseRequest, PK extends Serializable>
-        extends DefaultResource implements IRestResource<T, PK>, IUtilResource {
+public abstract class RestResource<T extends DefaultEntity, PK extends Serializable>
+        extends DefaultResource implements IRestResource<T, PK> {
 
     protected abstract Logger getLogger();
 
@@ -93,14 +86,8 @@ public abstract class RestResource<T extends IBaseRequest, PK extends Serializab
                 return new ErrorResponse(request.getErrors());
             }
 
-            if (request instanceof MapRequest) {
-                HashMap entity = (HashMap) getDAO().insert(request, true);
-                return new DefaultResponse(entity);
-            } else {
-                T entity = getDAO().insert(request, true);
-                return new DefaultResponse(entity);
-            }
-
+            T entity = getDAO().insert(request, true);
+            return new DefaultResponse(entity);
         } catch (Exception e) {
             getLogger().error(e);
             throw e;
@@ -113,13 +100,8 @@ public abstract class RestResource<T extends IBaseRequest, PK extends Serializab
             if (!request.isValid()) {
                 return new ErrorResponse(request.getErrors());
             }
-            if (request instanceof MapRequest) {
-                HashMap entity = (HashMap) getDAO().update(request, true);
-                return new DefaultResponse(entity);
-            } else {
-                T entity = getDAO().update(request, true);
-                return new DefaultResponse(entity);
-            }
+            T entity = getDAO().update(request, true);
+            return new DefaultResponse(entity);
         } catch (Exception e) {
             getLogger().error(e);
             throw e;
@@ -149,6 +131,7 @@ public abstract class RestResource<T extends IBaseRequest, PK extends Serializab
         return new DefaultResponse(new ListResponse(properties));
     }
 
+    /*
     @Override
     public IBaseResponse syncData(SyncRequest request) throws Exception {
         try {
@@ -245,5 +228,5 @@ public abstract class RestResource<T extends IBaseRequest, PK extends Serializab
                 break;
             }
         }
-    }
+    }*/
 }

@@ -21,7 +21,10 @@ import com.sdm.master.util.AuthMailSend;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 
 /**
@@ -55,6 +58,8 @@ public class UserResource extends RestResource<UserEntity, Long> {
     }
 
     @Override
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse create(UserEntity request) throws Exception {
         try {
             ErrorResponse errors = new ErrorResponse();
@@ -88,6 +93,8 @@ public class UserResource extends RestResource<UserEntity, Long> {
     }
 
     @Override
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse update(UserEntity request, Long id) throws Exception {
         try {
             if (!request.isValid()) {
@@ -95,7 +102,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
             }
             UserEntity reqEntity = (UserEntity) request;
 
-            UserEntity dbEntity = userDAO.fetchEntityById(id);
+            UserEntity dbEntity = userDAO.fetchById(id);
             if (dbEntity == null || !Objects.equals(dbEntity.getId(), reqEntity.getId())) {
                 return new MessageResponse(204, ResponseType.WARNING,
                         "There is no data for your request.");

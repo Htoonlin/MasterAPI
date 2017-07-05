@@ -4,6 +4,9 @@
     <listener>
         <listener-class>com.sdm.master.util.SessionListener</listener-class>
     </listener>
+    <listener>        
+        <listener-class>com.sdm.core.SundewServletContextListener</listener-class>    
+    </listener>
     <session-config>
         <session-timeout>3</session-timeout>
     </session-config>

@@ -36,7 +36,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             message.setDebug(debug);
         }
 
-        return Response.status(exResponse.getStatus()).entity(new DefaultResponse(message)).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(exResponse.getStatus()).entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

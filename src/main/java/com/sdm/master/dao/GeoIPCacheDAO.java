@@ -16,37 +16,13 @@ import org.hibernate.Session;
 public class GeoIPCacheDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(GeoIPCacheDAO.class.getName());
+    private static final String ENTITY = "GeoIPCacheEntity";
 
     public GeoIPCacheDAO() {
-        super(0);
+        super(ENTITY, 0);
     }
 
     public GeoIPCacheDAO(Session session) {
-        super(session, 0);
-    }
-
-    @Override
-    protected boolean useVersion() {
-        return false;
-    }
-
-    @Override
-    protected boolean useLog() {
-        return false;
-    }
-
-    @Override
-    protected boolean useTimeStamp() {
-        return false;
-    }
-
-    @Override
-    protected boolean useSoftDelete() {
-        return false;
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "GeoIPCacheEntity";
+        super(session, ENTITY, 0);
     }
 }

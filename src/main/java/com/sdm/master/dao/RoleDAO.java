@@ -12,39 +12,16 @@ import org.hibernate.Session;
  *
  * @author htoonlin
  */
-public class RoleDAO extends RestDAO{
+public class RoleDAO extends RestDAO {
+
+    private static final String ENTITY = "RoleEntity";
 
     public RoleDAO(long userId) {
-        super(userId);
+        super(ENTITY, userId);
     }
 
     public RoleDAO(Session session, long userId) {
-        super(session, userId);
+        super(session, ENTITY, userId);
     }
 
-    @Override
-    protected boolean useVersion() {
-        return true;
-    }
-
-    @Override
-    protected boolean useLog() {
-        return true;
-    }
-
-    @Override
-    protected boolean useTimeStamp() {
-        return true;
-    }
-
-    @Override
-    protected boolean useSoftDelete() {
-        return true;
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "RoleEntity";
-    }
-    
 }

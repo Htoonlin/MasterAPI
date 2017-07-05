@@ -6,7 +6,7 @@
 package com.sdm.master.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sdm.core.request.DefaultRequest;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.entity.UserEntity;
 import java.io.Serializable;
@@ -19,7 +19,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AuthRequest extends DefaultRequest implements Serializable {
+public class AuthRequest extends DefaultEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

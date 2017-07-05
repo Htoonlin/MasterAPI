@@ -3,7 +3,6 @@ package com.sdm.master.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.sdm.core.hibernate.RestEntity;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,8 +12,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sdm.core.hibernate.UIStructure;
-import com.sdm.core.request.DefaultRequest;
+import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import java.util.Set;
 import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
@@ -28,6 +27,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -36,7 +37,8 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity
 @Table(name = "tbl_user")
-public class UserEntity extends RestEntity implements java.io.Serializable {
+@Audited
+public class UserEntity extends DefaultEntity implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +49,7 @@ public class UserEntity extends RestEntity implements java.io.Serializable {
 
     @JsonIgnore
     @Formula(value = "concat(email, displayname)")
+    @NotAudited
     private String search;
 
     @Id

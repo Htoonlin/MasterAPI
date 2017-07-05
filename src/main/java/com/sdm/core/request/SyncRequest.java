@@ -5,6 +5,7 @@
  */
 package com.sdm.core.request;
 
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotNull;
  *
  * @author Htoonlin
  */
-public class SyncRequest extends DefaultRequest implements Serializable {
+public class SyncRequest extends DefaultEntity implements Serializable {
 
     private long lastSync;
     private List insert;

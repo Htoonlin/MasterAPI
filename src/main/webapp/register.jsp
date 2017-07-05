@@ -101,15 +101,16 @@
                     "timestamp": (new Date()).getTime()
                 };
                 call_api("api/auth/register/", "post", data, function (res) {
-                    alert(res.content.message);
+                    alert(res.content);
                     window.location.href = "login.jsp";
                 }, function (res) {
-                    var content = res.responseJSON.content;
-                    if (content.message) {
+                    console.log(res);
+                    var json = res.responseJSON;
+                    if (json.code == 200) {
                         $("#server-message").addClass("alert alert-danger")
-                                .html('<strong>' + content.title + '</strong>' + content.message);
+                                .html('<strong>' + json.status + '</strong>' + json.content);
                     } else {
-                        $.each(content, function (prop, value) {
+                        $.each(json.content, function (prop, value) {
                             console.log(prop + ":" + value);
                             if (prop === "display_name") {
                                 $("span#msgName").html(value);

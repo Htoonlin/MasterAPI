@@ -28,16 +28,17 @@ import org.hibernate.Session;
 public class FileDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(FileDAO.class.getName());
-    private final String GET_BY_TOKEN = "FROM FileEntity f WHERE f.publicToken = :token AND f.extension = :extension AND f.deletedAt IS NULL";
+    private final String GET_BY_TOKEN = "FROM FileEntity f WHERE f.publicToken = :token AND f.extension = :extension";
+    private static final String ENTITY = "FileEntity";
 
     public FileDAO(long userId) {
-        super(userId);
+        super(ENTITY, userId);
     }
 
     public FileDAO(Session session, long userId) {
-        super(session, userId);
+        super(session, ENTITY, userId);
     }
-    
+
     public FileEntity fetchByToken(String token, String ext) throws Exception {
         try {
             Map<String, Object> params = new HashMap<>();
@@ -87,30 +88,5 @@ public class FileDAO extends RestDAO {
         entity.setFileSize(saveFile.length());
         entity.setStoragePath(saveFile.getPath().substring(Setting.getInstance().STORAGE_PATH.length()));
         return super.insert(entity, true);
-    }
-
-    @Override
-    protected boolean useVersion() {
-        return true;
-    }
-
-    @Override
-    protected boolean useLog() {
-        return true;
-    }
-
-    @Override
-    protected boolean useTimeStamp() {
-        return true;
-    }
-
-    @Override
-    protected boolean useSoftDelete() {
-        return true;
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "FileEntity";
     }
 }

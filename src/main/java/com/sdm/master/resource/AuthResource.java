@@ -129,7 +129,7 @@ public class AuthResource extends DefaultResource {
             }
             //Increase failed count
             getHttpSession().setAttribute(LOGIN_FAILED_COUNT, getFailed() + 1);
-            return new DefaultResponse(message);
+            return message;
         } catch (Exception e) {
             userDao.rollbackTransaction();
             LOG.error(e);
@@ -304,7 +304,7 @@ public class AuthResource extends DefaultResource {
                         "We updated the new password on your request successfully.");
             }
 
-            return new DefaultResponse(message);
+            return message;
         } catch (Exception e) {
             LOG.error(e);
             throw e;
@@ -316,7 +316,7 @@ public class AuthResource extends DefaultResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public DefaultResponse forgetPassword(@PathParam("email") String email) throws Exception {
+    public IBaseResponse forgetPassword(@PathParam("email") String email) throws Exception {
         MessageResponse message;
         try {
             if (!mailManager.checkMail(email)) {
@@ -332,7 +332,7 @@ public class AuthResource extends DefaultResource {
                     message = new MessageResponse(200, ResponseType.SUCCESS, "We send the reset password link to your e-mail.");
                 }
             }
-            return new DefaultResponse(message);
+            return message;
         } catch (Exception e) {
             LOG.error(e);
             throw e;

@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 @Path("/me")
 public class ProfileResource extends DefaultResource {
 
-    private static final Logger logger = Logger.getLogger(ProfileResource.class.getName());
+    private static final Logger LOG = Logger.getLogger(ProfileResource.class.getName());
 
     private UserDAO userDAO;
 
@@ -43,7 +43,7 @@ public class ProfileResource extends DefaultResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getProfile() throws Exception {
-        UserEntity user = userDAO.fetchEntityById(getUserId());
+        UserEntity user = userDAO.fetchById(getUserId());
         if (user == null) {
             return new MessageResponse(204, ResponseType.WARNING,
                     "There is no user. (or) User is not active.");
@@ -57,7 +57,7 @@ public class ProfileResource extends DefaultResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse setProfile(UserEntity request) throws Exception {
         try {
-            UserEntity currentUser = userDAO.fetchEntityById(getUserId());
+            UserEntity currentUser = userDAO.fetchById(getUserId());
             if (currentUser == null) {
                 return new MessageResponse(204, ResponseType.WARNING,
                         "There is no user. (or) User is not active.");
@@ -74,7 +74,7 @@ public class ProfileResource extends DefaultResource {
             currentUser = userDAO.update(currentUser, true);
             return new DefaultResponse(currentUser);
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }
@@ -110,7 +110,7 @@ public class ProfileResource extends DefaultResource {
             return new MessageResponse(202, ResponseType.SUCCESS,
                     "We updated the new password on your request successfully.");
         } catch (Exception e) {
-            logger.error(e);
+            LOG.error(e);
             throw e;
         }
     }

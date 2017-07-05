@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class HibernateConnector {
 
-    private static final Logger logger = Logger.getLogger(HibernateConnector.class.getName());
+    private static final Logger LOG = Logger.getLogger(HibernateConnector.class.getName());
     private static HibernateConnector instance;
     private SessionFactory mainFactory;
 
@@ -26,26 +26,22 @@ public class HibernateConnector {
         this.setup();
     }
 
-    private void setup(){
+    private void setup() {
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .configure().build();
-        try {
-            mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-        } catch (Exception e) {
-            StandardServiceRegistryBuilder.destroy(registry);
-            instance = null;
-            throw e;
-        }
+        mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
     }
-    
+
     public static synchronized SessionFactory getFactory() throws HibernateException {
         if (instance == null) {
             instance = new HibernateConnector();
         }
         return instance.mainFactory;
     }
-    
-    public static void shutdown(){
-        instance.mainFactory.close();
+
+    public static void shutdown() {
+        if (instance != null) {
+            instance.mainFactory.close();
+        }
     }
 }

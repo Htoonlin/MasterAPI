@@ -7,9 +7,7 @@ package com.sdm.core.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.sdm.core.response.PropertiesResponse;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,8 +22,5 @@ public interface IBaseRequest extends Serializable{
     Map<String,String> getErrors();
 
     @JsonIgnore
-    boolean isValid();
-    
-    @JsonIgnore
-    List<PropertiesResponse> getStructure();
+    boolean isValid();    
 }

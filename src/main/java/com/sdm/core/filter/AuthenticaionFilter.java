@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticaionFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = Logger.getLogger(AuthenticaionFilter.class);
+    private static final Logger LOG = Logger.getLogger(AuthenticaionFilter.class);
     public final String FAILED_COUNT = "AUTHORIZATION_FAILED_COUNT";
 
     @Context
@@ -127,7 +127,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
                 }
 
             } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-                logger.error(e);
+                LOG.error(e);
                 requestContext.abortWith(buildResponse(500, e.getLocalizedMessage()));
             }
         }
