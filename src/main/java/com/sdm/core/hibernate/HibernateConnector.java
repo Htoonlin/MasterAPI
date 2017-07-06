@@ -29,7 +29,13 @@ public class HibernateConnector {
     private void setup() {
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .configure().build();
-        mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        try {
+            mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        } catch (Exception e) {
+            StandardServiceRegistryBuilder.destroy(registry);
+            instance = null;
+            throw e;
+        }
     }
 
     public static synchronized SessionFactory getFactory() throws HibernateException {

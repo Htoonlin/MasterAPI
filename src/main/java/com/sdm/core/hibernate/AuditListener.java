@@ -5,8 +5,11 @@
  */
 package com.sdm.core.hibernate;
 
+import com.sdm.core.Globalizer;
 import com.sdm.core.hibernate.entity.AuditEntity;
-import java.util.Date;
+import org.apache.log4j.Logger;
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 import org.hibernate.envers.RevisionListener;
 
 /**
@@ -15,11 +18,20 @@ import org.hibernate.envers.RevisionListener;
  */
 public class AuditListener implements RevisionListener {
 
+    private static final Logger LOG = Logger.getLogger(AuditListener.class.getName());
+
+    @Inject
+    HttpSession session;
+
     @Override
     public void newRevision(Object o) {
-        AuditEntity entity = (AuditEntity) o;
-        entity.setAuditAt(new Date());
-        entity.setUserId(0);
+        try {
+            long userId = (long) this.session.getAttribute(Globalizer.SESSION_USER_ID);
+            AuditEntity entity = (AuditEntity) o;
+            entity.setUserId(userId);
+        } catch (Exception e) {
+            LOG.error("There is no session. <" + e.getLocalizedMessage() + ">");
+        }
     }
 
 }

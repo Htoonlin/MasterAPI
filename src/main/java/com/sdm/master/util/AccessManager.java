@@ -18,8 +18,6 @@ import io.jsonwebtoken.Claims;
 import java.lang.reflect.Method;
 import java.util.Date;
 import javax.annotation.security.RolesAllowed;
-import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,9 +29,6 @@ public class AccessManager implements IAccessManager {
     private static final Logger LOG = Logger.getLogger(AccessManager.class.getName());
 
     private TokenEntity currentToken;
-
-    @Inject
-    private HttpSession httpSession;
 
     @Override
     public boolean validateToken(Claims request) {

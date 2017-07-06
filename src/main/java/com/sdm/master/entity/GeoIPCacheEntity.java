@@ -5,8 +5,8 @@
  */
 package com.sdm.master.entity;
 
-import com.sdm.core.response.MapResponse;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.persistence.Column;
@@ -76,8 +76,8 @@ public class GeoIPCacheEntity implements Serializable {
         }
     }
 
-    public MapResponse<String, Object> getResponse() {
-        MapResponse<String, Object> response = new MapResponse<>();
+    public HashMap<String, Object> getResponse() {
+        HashMap<String, Object> response = new HashMap<>();
         response.put("status", "cache");
         response.put("query", this.ipAddress);
         response.put("country_code", this.countryCode);

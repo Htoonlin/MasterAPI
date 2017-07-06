@@ -6,10 +6,9 @@
 package com.sdm.master.util;
 
 import com.sdm.core.Globalizer;
-import com.sdm.core.response.MapResponse;
 import com.sdm.master.dao.GeoIPCacheDAO;
-import com.sdm.master.entity.GeoIPCacheEntity;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import javax.ws.rs.client.Client;
@@ -34,18 +33,18 @@ public class GeoIPManager {
         this.cacheDAO = new GeoIPCacheDAO();
     }
 
-    private MapResponse<String, Object> requestInfo(String ipAddress) throws IOException {
+    private HashMap<String, Object> requestInfo(String ipAddress) throws IOException {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(callAPI + ipAddress);
         Response response = target.request().accept(MediaType.APPLICATION_JSON).get(Response.class);
         if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
             String responseString = response.readEntity(String.class);
-            return Globalizer.jsonMapper().readValue(responseString, MapResponse.class);
+            return Globalizer.jsonMapper().readValue(responseString, HashMap.class);
         }
         return null;
     }
 
-    public MapResponse<String, Object> lookupInfo(String ipAddress) {
+    public HashMap<String, Object> lookupInfo(String ipAddress) {
         try {
             if (cacheDAO != null) {
                 Map info = cacheDAO.fetchById(ipAddress);
@@ -56,7 +55,7 @@ public class GeoIPManager {
                         cacheDAO.insert(info, true);
                     }
                 }
-                return new MapResponse<>(info);
+                return new HashMap<>(info);
             } else {
                 return requestInfo(ipAddress);
             }

@@ -9,11 +9,11 @@ import com.sdm.core.Setting;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.MapResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.master.util.GeoIPManager;
 import com.sdm.core.util.MyanmarFontManager;
+import java.util.HashMap;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -54,7 +54,7 @@ public class GeneralResource extends DefaultResource {
     @Path("setting")
     @Produces(MediaType.APPLICATION_JSON)
     public DefaultResponse getAllSetting() {
-        MapResponse<String, String> response = new MapResponse<>();
+        HashMap<String, String> response = new HashMap<>();
         Properties props = Setting.getInstance().getProperties();
         for (String key : props.stringPropertyNames()) {
             String value = props.getProperty(key, "");

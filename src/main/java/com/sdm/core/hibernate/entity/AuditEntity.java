@@ -6,7 +6,8 @@
 package com.sdm.core.hibernate.entity;
 
 import com.sdm.core.hibernate.AuditListener;
-import java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionEntity;
 
@@ -14,11 +15,12 @@ import org.hibernate.envers.RevisionEntity;
  *
  * @author Htoonlin
  */
+@Entity
+@Table(name = "revinfo")
 @RevisionEntity(AuditListener.class)
 public class AuditEntity extends DefaultRevisionEntity {
 
     private long userId;
-    private Date auditAt;
 
     public long getUserId() {
         return userId;
@@ -26,13 +28,5 @@ public class AuditEntity extends DefaultRevisionEntity {
 
     public void setUserId(long userId) {
         this.userId = userId;
-    }
-
-    public Date getAuditAt() {
-        return auditAt;
-    }
-
-    public void setAuditAt(Date auditAt) {
-        this.auditAt = auditAt;
     }
 }

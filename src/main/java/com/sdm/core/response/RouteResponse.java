@@ -6,7 +6,6 @@
 package com.sdm.core.response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.List;
 
 /**
  *

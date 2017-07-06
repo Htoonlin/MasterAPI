@@ -32,7 +32,7 @@ import org.hibernate.validator.constraints.NotBlank;
  *
  * @author Htoonlin
  */
-@Entity
+@Entity(name = "RoleEntity")
 @Table(name = "tbl_role")
 @Audited
 public class RoleEntity extends DefaultEntity implements Serializable {

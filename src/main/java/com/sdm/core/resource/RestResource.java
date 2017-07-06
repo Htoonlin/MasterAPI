@@ -11,13 +11,13 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ListResponse;
-import com.sdm.core.response.MapResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.PaginationResponse;
 import com.sdm.core.response.PropertiesResponse;
 import com.sdm.core.response.ResponseType;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -72,11 +72,11 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
     @Override
     public IBaseResponse getById(PK id) throws Exception {
-        Map data = getDAO().fetchById(id);
+        HashMap<String, Object> data = getDAO().fetchById(id);
         if (data == null) {
             return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
         }
-        return new DefaultResponse(new MapResponse(data));
+        return new DefaultResponse(data);
     }
 
     @Override
