@@ -21,16 +21,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Formula;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 /**
  *
  * @author Htoonlin
  */
-@Entity
+@Entity(name = "FileEntity")
 @Table(name = "tbl_file")
-@Audited
 public class FileEntity extends DefaultEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,7 +38,6 @@ public class FileEntity extends DefaultEntity implements Serializable {
 
     @JsonIgnore
     @Formula(value = "concat(name, extension, type)")
-    @NotAudited
     private String search;
 
     @Id
@@ -198,7 +194,6 @@ public class FileEntity extends DefaultEntity implements Serializable {
         
         return FileManager.publicFileURL(this.publicToken, this.extension);
     }*/
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

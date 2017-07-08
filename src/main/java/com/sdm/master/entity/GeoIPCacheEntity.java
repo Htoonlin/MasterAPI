@@ -18,7 +18,7 @@ import javax.persistence.Table;
  *
  * @author Htoonlin
  */
-@Entity
+@Entity(name = "GeoIPCacheEntity")
 @Table(name = "tbl_geoip_cache")
 public class GeoIPCacheEntity implements Serializable {
 

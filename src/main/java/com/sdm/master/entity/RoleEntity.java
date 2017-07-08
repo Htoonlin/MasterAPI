@@ -24,8 +24,6 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -34,12 +32,10 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Entity(name = "RoleEntity")
 @Table(name = "tbl_role")
-@Audited
 public class RoleEntity extends DefaultEntity implements Serializable {
 
     @JsonIgnore
-    @Formula(value = "concat(name, description)")
-    @NotAudited
+    @Formula(value = "concat(name, description)")    
     private String search;
 
     @Id
@@ -56,8 +52,7 @@ public class RoleEntity extends DefaultEntity implements Serializable {
     @Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
     private String description;
 
-    @JsonIgnore
-    @NotAudited
+    @JsonIgnore    
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
     @NotFound(action = NotFoundAction.IGNORE)

@@ -6,6 +6,7 @@
 package com.sdm.core.resource;
 
 import com.sdm.core.Globalizer;
+import com.sdm.core.hibernate.HibernateConnector;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ListResponse;

@@ -18,23 +18,19 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  *
  * @author Htoonlin
  */
-@Entity
+@Entity(name = "PermissionEntity")
 @Table(name = "tbl_permission")
-@Audited
 public class PermissionEntity extends DefaultEntity implements Serializable{
     private static final long serialVersionUID = 1L;
     
     @JsonIgnore
-    @Formula(value = "concat(resourceClass, resourceMethod, requestMethod)")
-    @NotAudited
+    @Formula(value = "concat(resourceClass, resourceMethod, requestMethod)")    
     private String search;
     
     @Id

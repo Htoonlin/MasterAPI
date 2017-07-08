@@ -17,8 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Formula;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 /**
  *
@@ -26,14 +24,12 @@ import org.hibernate.envers.NotAudited;
  */
 @Entity(name = "Sample_CustomerEntity")
 @Table(name = "tbl_sample_customer")
-@Audited
 public class CustomerEntity extends DefaultEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @JsonIgnore
     @Formula(value = "concat(name, email, phone, company, address, city, country, remark)")
-    @NotAudited
     private String search;
 
     @Id
