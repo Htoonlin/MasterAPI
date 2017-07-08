@@ -12,12 +12,14 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder(value = {"code", "status", "content", "extra", "timestamp"})
 public class MessageResponse implements IBaseResponse, Serializable {
     
     /**

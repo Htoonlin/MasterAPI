@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.master.entity.GeoIPCacheEntity;
 
 /**
  *
@@ -17,14 +18,13 @@ import com.sdm.core.hibernate.dao.RestDAO;
 public class GeoIPCacheDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(GeoIPCacheDAO.class.getName());
-    private static final String ENTITY = "GeoIPCacheEntity";
 
     public GeoIPCacheDAO() {
-        super(ENTITY, 0);
+        super(GeoIPCacheEntity.class.getName(), 0);
         LOG.info("Start DAO");
     }
 
     public GeoIPCacheDAO(Session session) {
-        super(session, ENTITY, 0);
+        super(session, GeoIPCacheEntity.class.getName(), 0);
     }
 }

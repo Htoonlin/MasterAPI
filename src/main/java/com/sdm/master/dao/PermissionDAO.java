@@ -22,18 +22,17 @@ import com.sdm.master.entity.PermissionEntity;
 public class PermissionDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(PermissionDAO.class.getName());
-    private static final String ENTITY = "PermissionEntity";
 
     private final String GET_BY_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId";
     private final String CHECK_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.resourceClass = :class "
             + "AND p.resoureMethod = :method AND p.requestMethod like :request";
 
     public PermissionDAO(long userId) {
-        super(ENTITY, userId);
+        super(PermissionEntity.class.getName(), userId);
     }
 
     public PermissionDAO(Session session, long userId) {
-        super(session, ENTITY, userId);
+        super(session, PermissionEntity.class.getName(), userId);
     }
 
     public List<PermissionEntity> fetchByRole(int roleId) throws Exception {

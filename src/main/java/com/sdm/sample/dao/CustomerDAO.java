@@ -8,6 +8,7 @@ package com.sdm.sample.dao;
 import org.hibernate.Session;
 
 import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.sample.entity.CustomerEntity;
 
 /**
  *
@@ -15,13 +16,11 @@ import com.sdm.core.hibernate.dao.RestDAO;
  */
 public class CustomerDAO extends RestDAO {
 
-    private static final String ENTITY = "Sample_CustomerEntity";
-
     public CustomerDAO(long userId) {
-        super(ENTITY, userId);
+        super(CustomerEntity.class.getName(), userId);
     }
 
     public CustomerDAO(Session session, long userId) {
-        super(session, ENTITY, userId);
+        super(session, CustomerEntity.class.getName(), userId);
     }
 }

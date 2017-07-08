@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Transient;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.validation.ConstraintViolation;
@@ -34,104 +35,104 @@ import com.sdm.core.response.model.UIProperty;
  */
 public class DefaultEntity implements Serializable, IBaseRequest {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private Date timestamp;
+	private Date timestamp;
 
-    public Date getTimestamp() {
-        return this.timestamp;
-    }
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
 
-    @Override
-    public void setTimeStamp(long date) {
-        this.timestamp = new Date(date);
-    }
+	@Override
+	public void setTimeStamp(long date) {
+		this.timestamp = new Date(date);
+	}
 
-    private Map<String, String> errors;
+	private Map<String, String> errors;
 
-    protected void addError(String key, String value) {
-        if (errors == null) {
-            errors = new HashMap<>();
-        }
-        errors.put(key, value);
-    }
+	protected void addError(String key, String value) {
+		if (errors == null) {
+			errors = new HashMap<>();
+		}
+		errors.put(key, value);
+	}
 
-    @Override
-    public Map<String, String> getErrors() {
-        return errors;
-    }
+	@Override
+	public Map<String, String> getErrors() {
+		return errors;
+	}
 
-    @Override
-    public boolean isValid() {
-        if (!Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
-            if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
-                addError("timestamp", "Invalid timestamp.");
-                return false;
-            }
-        }
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<DefaultEntity>> violoationSet = validator.validate(this);
-        for (ConstraintViolation<DefaultEntity> v : violoationSet) {
-            String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
-            addError(propertyName, v.getMessage());
-        }
+	@Override
+	public boolean isValid() {
+		if (!Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+			if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
+				addError("timestamp", "Invalid timestamp.");
+				return false;
+			}
+		}
+		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+		Set<ConstraintViolation<DefaultEntity>> violoationSet = validator.validate(this);
+		for (ConstraintViolation<DefaultEntity> v : violoationSet) {
+			String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
+			addError(propertyName, v.getMessage());
+		}
 
-        return violoationSet.isEmpty();
-    }
+		return violoationSet.isEmpty();
+	}
 
-    @JsonIgnore
-    public List<UIProperty> getStructure() {
-        List<UIProperty> properties = new ArrayList<>();
-        for (Field field : this.getClass().getDeclaredFields()) {
-            //Check has annotations
-            if (field.getAnnotations().length <= 0) {
-                continue;
-            }
+	@JsonIgnore
+	public List<UIProperty> getStructure() {
+		List<UIProperty> properties = new ArrayList<>();
+		for (Field field : this.getClass().getDeclaredFields()) {
+			// Check has annotations
+			if (field.getAnnotations().length <= 0) {
+				continue;
+			}
 
-            //Check JsonIgnore 
-            if (field.getAnnotation(JsonIgnore.class) != null) {
-                continue;
-            }
+			// Check JsonIgnore || Transient
+			if (field.getAnnotation(JsonIgnore.class) != null || field.getAnnotation(Transient.class) != null) {
+				continue;
+			}
 
-            UIProperty property = new UIProperty();
-            //General info
-            property.setName(field.getName());
-            property.setType(field.getType().getSimpleName());
+			UIProperty property = new UIProperty();
+			// General info
+			property.setName(field.getName());
+			property.setType(field.getType().getSimpleName());
 
-            if (field.getAnnotation(Id.class) != null) {
-                property.setPrimary(true);
-            }
+			if (field.getAnnotation(Id.class) != null) {
+				property.setPrimary(true);
+			}
 
-            //UI Info
-            UIStructure structure = field.getAnnotation(UIStructure.class);
-            if (structure != null) {
-                property.setInputType(structure.inputType());
-                property.setLabel(structure.label());
-                property.setHideInGrid(structure.hideInGrid());
-                property.setReadOnly(structure.readOnly());
-                property.setOrderIndex(structure.order());
-            }
+			// UI Info
+			UIStructure structure = field.getAnnotation(UIStructure.class);
+			if (structure != null) {
+				property.setInputType(structure.inputType());
+				property.setLabel(structure.label());
+				property.setHideInGrid(structure.hideInGrid());
+				property.setReadOnly(structure.readOnly());
+				property.setOrderIndex(structure.order());
+			}
 
-            //Db Info
-            Column column = field.getAnnotation(Column.class);
-            if (column != null) {
-                if (column.nullable()) {
-                    property.setNullable(column.nullable());
-                }
-                property.setLength(column.length());
-            }
+			// Db Info
+			Column column = field.getAnnotation(Column.class);
+			if (column != null) {
+				if (column.nullable()) {
+					property.setNullable(column.nullable());
+				}
+				property.setLength(column.length());
+			}
 
-            //Validations Info
-            properties.add(property);
-        }
+			// Validations Info
+			properties.add(property);
+		}
 
-        Collections.sort(properties, new Comparator<UIProperty>() {
-            @Override
-            public int compare(UIProperty t1, UIProperty t2) {
-                return Integer.compare(t1.getOrderIndex(), t2.getOrderIndex());
-            }
-        });
+		Collections.sort(properties, new Comparator<UIProperty>() {
+			@Override
+			public int compare(UIProperty t1, UIProperty t2) {
+				return Integer.compare(t1.getOrderIndex(), t2.getOrderIndex());
+			}
+		});
 
-        return properties;
-    }
+		return properties;
+	}
 }

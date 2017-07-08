@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder({"count","data"})
+@JsonPropertyOrder({"code", "status", "count","content", "extra", "timestamp"})
 public class ListResponse<T extends Serializable> extends DefaultResponse<T> implements Serializable{
     private static final long serialVersionUID = 1L;
     

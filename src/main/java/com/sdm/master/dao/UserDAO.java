@@ -20,39 +20,38 @@ import com.sdm.master.entity.UserEntity;
  */
 public class UserDAO extends RestDAO {
 
-    private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
-    private static final String ENTITY = "UserEntity";
+	private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
 
-    private final String SELECT_BY_EMAIL = "from UserEntity u WHERE u.email = :email";
-    private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token";
-    private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password";
+	private final String SELECT_BY_EMAIL = "from UserEntity u WHERE u.email = :email";
+	private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token";
+	private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password";
 
-    public UserDAO(long userId) {
-        super(ENTITY, userId);
-        LOG.info("Start DAO");
-    }
+	public UserDAO(long userId) {
+		super(UserEntity.class.getName(), userId);
+		LOG.info("Start DAO");
+	}
 
-    public UserDAO(Session session, long userId) {
-        super(session, ENTITY, userId);
-    }
+	public UserDAO(Session session, long userId) {
+		super(session, UserEntity.class.getName(), userId);
+	}
 
-    public UserEntity userAuth(String email, String password) throws Exception {
-        Map<String, Object> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
-        return super.fetchOne(AUTH_BY_EMAIL, params);
-    }
+	public UserEntity userAuth(String email, String password) throws Exception {
+		Map<String, Object> params = new HashMap<>();
+		params.put("email", email);
+		params.put("password", password);
+		return super.fetchOne(AUTH_BY_EMAIL, params);
+	}
 
-    public UserEntity checkToken(String email, String token) throws Exception {
-        Map<String, Object> params = new HashMap<>();
-        params.put("email", email);
-        params.put("token", token);
-        return super.fetchOne(GET_USER_BY_TOKEN, params);
-    }
+	public UserEntity checkToken(String email, String token) throws Exception {
+		Map<String, Object> params = new HashMap<>();
+		params.put("email", email);
+		params.put("token", token);
+		return super.fetchOne(GET_USER_BY_TOKEN, params);
+	}
 
-    public UserEntity getUserByEmail(String email) throws Exception {
-        Map<String, Object> params = new HashMap<>();
-        params.put("email", email);
-        return super.fetchOne(SELECT_BY_EMAIL, params);
-    }
+	public UserEntity getUserByEmail(String email) throws Exception {
+		Map<String, Object> params = new HashMap<>();
+		params.put("email", email);
+		return super.fetchOne(SELECT_BY_EMAIL, params);
+	}
 }

@@ -11,6 +11,8 @@ import javax.servlet.annotation.WebListener;
 
 import org.apache.log4j.Logger;
 
+import com.sdm.core.hibernate.HibernateConnector;
+
 /**
  *
  * @author Htoonlin
@@ -28,7 +30,7 @@ public class SundewServletContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         LOG.info("System is stopping ....");
-        //HibernateConnector.shutdown();
+        HibernateConnector.shutdown();
         LOG.info("Good bye!");
     }
 

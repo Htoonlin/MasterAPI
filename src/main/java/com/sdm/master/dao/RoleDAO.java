@@ -8,6 +8,7 @@ package com.sdm.master.dao;
 import org.hibernate.Session;
 
 import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.master.entity.RoleEntity;
 
 /**
  *
@@ -15,14 +16,12 @@ import com.sdm.core.hibernate.dao.RestDAO;
  */
 public class RoleDAO extends RestDAO {
 
-    private static final String ENTITY = "RoleEntity";
+	public RoleDAO(long userId) {
+		super(RoleEntity.class.getName(), userId);
+	}
 
-    public RoleDAO(long userId) {
-        super(ENTITY, userId);
-    }
-
-    public RoleDAO(Session session, long userId) {
-        super(session, ENTITY, userId);
-    }
+	public RoleDAO(Session session, long userId) {
+		super(session, RoleEntity.class.getName(), userId);
+	}
 
 }

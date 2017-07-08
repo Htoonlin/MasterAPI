@@ -10,11 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  *
  * @author Htoonlin
  */
+@JsonPropertyOrder(value = {"code", "status", "content", "extra", "timestamp"})
 public class ErrorResponse implements IBaseResponse {
 
     public ErrorResponse() {
