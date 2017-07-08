@@ -5,30 +5,17 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.core.Setting;
-import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.core.resource.RestResource;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.ErrorResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
-import com.sdm.master.dao.FileDAO;
-import com.sdm.master.dao.UserDAO;
-import com.sdm.master.entity.FileEntity;
-import com.sdm.master.entity.UserEntity;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import org.apache.log4j.Logger;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -36,14 +23,27 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+
+import com.sdm.core.Setting;
+import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.core.resource.RestResource;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
+import com.sdm.master.dao.FileDAO;
+import com.sdm.master.dao.UserDAO;
+import com.sdm.master.entity.FileEntity;
+import com.sdm.master.entity.UserEntity;
 
 /**
  *
  * @author Htoonlin
  */
-@SuppressWarnings("need to check delete file.")
 @Path("file")
 public class FileResource extends RestResource<FileEntity, Long> {
 
@@ -53,11 +53,6 @@ public class FileResource extends RestResource<FileEntity, Long> {
     @Override
     protected RestDAO getDAO() {
         return this.mainDAO;
-    }
-
-    @SuppressWarnings("Need to validate request.")
-    protected boolean isValid(Map request, ErrorResponse response) {
-        return true;
     }
 
     @PostConstruct
@@ -106,7 +101,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
                         "Invalid user. You neeed to register new account to upload file.");
             }
             FileEntity entity = mainDAO.saveFile(inputFile, fileDetail);
-            return new DefaultResponse(entity);
+            return new DefaultResponse<FileEntity>(entity);
         } catch (Exception e) {
             LOG.error(e);
             throw e;

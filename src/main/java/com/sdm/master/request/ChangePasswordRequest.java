@@ -5,12 +5,15 @@
  */
 package com.sdm.master.request;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sdm.core.hibernate.entity.DefaultEntity;
 import java.io.Serializable;
+
 import javax.validation.constraints.Size;
+
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 
 /**
  *

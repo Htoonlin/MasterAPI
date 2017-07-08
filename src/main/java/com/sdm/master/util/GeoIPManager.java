@@ -5,17 +5,20 @@
  */
 package com.sdm.master.util;
 
-import com.sdm.core.Globalizer;
-import com.sdm.master.dao.GeoIPCacheDAO;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.log4j.Logger;
+
+import com.sdm.core.Globalizer;
+import com.sdm.master.dao.GeoIPCacheDAO;
 
 /**
  *
@@ -47,7 +50,7 @@ public class GeoIPManager {
     public HashMap<String, Object> lookupInfo(String ipAddress) {
         try {
             if (cacheDAO != null) {
-                Map info = cacheDAO.fetchById(ipAddress);
+                Map<String, Object> info = cacheDAO.fetchById(ipAddress);
                 if (info == null) {
                     info = requestInfo(ipAddress);
 

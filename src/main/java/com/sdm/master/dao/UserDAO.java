@@ -5,12 +5,14 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.master.entity.UserEntity;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+
+import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.master.entity.UserEntity;
 
 /**
  *
@@ -27,6 +29,7 @@ public class UserDAO extends RestDAO {
 
     public UserDAO(long userId) {
         super(ENTITY, userId);
+        LOG.info("Start DAO");
     }
 
     public UserDAO(Session session, long userId) {

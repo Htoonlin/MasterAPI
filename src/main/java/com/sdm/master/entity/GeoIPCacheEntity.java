@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,7 +23,12 @@ import javax.persistence.Table;
 @Table(name = "tbl_geoip_cache")
 public class GeoIPCacheEntity implements Serializable {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @Column(name = "ipAddress", columnDefinition = "varchar(50)", nullable = false, unique = true)
     private String ipAddress;
 

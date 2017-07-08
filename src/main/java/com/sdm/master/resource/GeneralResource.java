@@ -5,16 +5,9 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.core.Setting;
-import com.sdm.core.resource.DefaultResource;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
-import com.sdm.master.util.GeoIPManager;
-import com.sdm.core.util.MyanmarFontManager;
 import java.util.HashMap;
 import java.util.Properties;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +19,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
+
+import com.sdm.core.Setting;
+import com.sdm.core.resource.DefaultResource;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
+import com.sdm.core.util.MyanmarFontManager;
+import com.sdm.master.util.GeoIPManager;
 
 /**
  *
@@ -53,27 +56,27 @@ public class GeneralResource extends DefaultResource {
     @GET
     @Path("setting")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse getAllSetting() {
+    public IBaseResponse getAllSetting() {
         HashMap<String, String> response = new HashMap<>();
         Properties props = Setting.getInstance().getProperties();
         for (String key : props.stringPropertyNames()) {
             String value = props.getProperty(key, "");
             response.put(key.toLowerCase(), value);
         }
-        return new DefaultResponse(response);
+        return new DefaultResponse<HashMap<String, String>>(response);
     }
 
     @PermitAll
     @GET
     @Path("ip/{address}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DefaultResponse checkIP(@Context HttpServletRequest request,
+    public IBaseResponse checkIP(@Context HttpServletRequest request,
             @DefaultValue("") @PathParam("address") String address) throws Exception {
         GeoIPManager ipManager = new GeoIPManager();
         if (address.isEmpty()) {
             address = request.getRemoteAddr();
         }
-        return new DefaultResponse(ipManager.lookupInfo(address));
+        return new DefaultResponse<HashMap<String, Object>>(ipManager.lookupInfo(address));
     }
 
     @PermitAll

@@ -5,19 +5,21 @@
  */
 package com.sdm.core.response;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonPropertyOrder({"count","data"})
-public class ListResponse implements Serializable{
+public class ListResponse<T extends Serializable> extends DefaultResponse<T> implements Serializable{
     private static final long serialVersionUID = 1L;
     
-    public ListResponse(List data){
+    public ListResponse(List<T> data){
         this.data = data;
     }
        
@@ -25,13 +27,21 @@ public class ListResponse implements Serializable{
         return this.data.size();
     }
 
-    private List data;
+    private List<T> data;
+    
+    public void addData(T entity) {
+    		if(this.data == null) {
+    			this.data = new ArrayList<>();
+    		}
+    		this.data.add(entity);
+    }
 
-    public List getData() {
+    @Override
+    public List<T> getContent() {
         return this.data;
     }
 
-    public void setData(List value) {
+    public void setContent(List<T> value) {
         this.data = value;
     }
 }

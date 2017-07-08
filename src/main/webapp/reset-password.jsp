@@ -5,14 +5,14 @@
 --%>
 
 <%@page import="com.sdm.core.Globalizer"%>
-<%@page import="com.sdm.master.request.auth.ActivateRequest"%>
-<%@page import="com.sdm.core.util.SecurityInstance"%>
+<%@page import="com.sdm.master.request.ActivateRequest"%>
+<%@page import="com.sdm.core.util.SecurityManager"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     boolean isReset = false;
     ActivateRequest activate = null;
     try {
-        String tokenString = SecurityInstance.base64Decode(request.getParameter("token"));
+        String tokenString = SecurityManager.base64Decode(request.getParameter("token"));
         activate = Globalizer.jsonMapper().readValue(tokenString, ActivateRequest.class);
         isReset = (activate != null);
     } catch (Exception e) {

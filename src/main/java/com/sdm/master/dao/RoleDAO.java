@@ -5,8 +5,9 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.hibernate.dao.RestDAO;
 import org.hibernate.Session;
+
+import com.sdm.core.hibernate.dao.RestDAO;
 
 /**
  *

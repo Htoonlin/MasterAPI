@@ -7,6 +7,7 @@ package com.sdm.master.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,7 +23,12 @@ import javax.persistence.TemporalType;
 @Table(name = "tbl_notification")
 public class NotifyEntity implements Serializable {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @Column(name = "id", columnDefinition = "CHAR(36)", nullable = false, unique = true)
     private String id;
 

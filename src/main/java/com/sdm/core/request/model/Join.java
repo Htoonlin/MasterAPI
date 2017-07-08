@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.request.query;
+package com.sdm.core.request.model;
 
-import com.sdm.core.util.MySQLManager;
 import java.io.Serializable;
 import java.util.List;
+
+import com.sdm.core.util.MySQLManager;
 
 /**
  *
@@ -15,7 +16,12 @@ import java.util.List;
  */
 public class Join implements Serializable {
 
-    private String table;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private String table;
     private String alias;
     private JoinType join;
     private List<Condition> conditions;

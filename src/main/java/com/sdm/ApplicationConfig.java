@@ -5,25 +5,16 @@
  */
 package com.sdm;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.sdm.core.Setting;
-import com.sdm.core.di.HttpSessionFactory;
-import com.sdm.core.di.IAccessManager;
-import com.sdm.core.di.IMailManager;
-import com.sdm.core.di.ITemplateManager;
-import com.sdm.master.util.AccessManager;
-import com.sdm.core.filter.JacksonObjectMapper;
-import com.sdm.core.util.JSPTemplateManager;
-import com.sdm.core.util.mail.MailgunService;
-import com.sdm.core.util.mail.WebMailService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.apache.log4j.Logger;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Application;
+
+import org.apache.log4j.Logger;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.internal.inject.Injections;
@@ -31,6 +22,18 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.glassfish.jersey.server.ServerProperties;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.sdm.core.Setting;
+import com.sdm.core.di.HttpSessionFactory;
+import com.sdm.core.di.IAccessManager;
+import com.sdm.core.di.IMailManager;
+import com.sdm.core.di.ITemplateManager;
+import com.sdm.core.filter.JacksonObjectMapper;
+import com.sdm.core.util.JSPTemplateManager;
+import com.sdm.core.util.mail.MailgunService;
+import com.sdm.core.util.mail.WebMailService;
+import com.sdm.master.util.AccessManager;
 
 /**
  *
@@ -43,6 +46,7 @@ public class ApplicationConfig extends Application {
 
     @Inject
     public ApplicationConfig(ServiceLocator serviceLocator) {
+    		LOG.info("Loading Dependency Injections....");
         DynamicConfiguration dc = Injections.getConfiguration(serviceLocator);
         //Inject HttpSession
         Injections.addBinding(Injections.newFactoryBinder(HttpSessionFactory.class)
@@ -63,6 +67,7 @@ public class ApplicationConfig extends Application {
         }
 
         dc.commit();
+        LOG.info("Successfully loaded Dependency Injections....");
     }
 
     @Override

@@ -5,20 +5,19 @@
  */
 package com.sdm.master.util;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.util.SecurityManager;
-import com.sdm.core.util.mail.WebMailService;
 import com.sdm.core.util.mail.MailInfo;
-import com.sdm.core.util.mail.MailgunService;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.ActivateRequest;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *

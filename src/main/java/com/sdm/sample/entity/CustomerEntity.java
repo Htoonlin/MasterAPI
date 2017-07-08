@@ -5,18 +5,21 @@
  */
 package com.sdm.sample.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.entity.UIStructure;
-import com.sdm.core.hibernate.entity.DefaultEntity;
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Formula;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.hibernate.entity.UIStructure;
 
 /**
  *

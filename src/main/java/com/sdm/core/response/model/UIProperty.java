@@ -3,21 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.response;
+package com.sdm.core.response.model;
+
+import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sdm.core.Globalizer;
-import java.io.Serializable;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonPropertyOrder({"name", "request_name", "type", "length", "label", "input_type", "primary", "nullable", "read_only", "hide_in_grid"})
-public class PropertiesResponse implements Serializable {
+public class UIProperty implements Serializable {
 
-    private String name;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private String name;
     private String type;
     private Boolean primary;
     private String label;

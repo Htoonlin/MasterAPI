@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.request.query;
+package com.sdm.core.request.model;
+
+import java.io.Serializable;
 
 import com.sdm.core.util.MySQLManager;
-import java.io.Serializable;
 
 /**
  *
@@ -14,7 +15,12 @@ import java.io.Serializable;
  */
 public class Column implements Serializable {
 
-    private Aggregate aggregate;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private Aggregate aggregate;
     private String name;
     private String alias;
     private boolean expression;

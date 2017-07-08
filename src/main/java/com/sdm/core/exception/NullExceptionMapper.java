@@ -5,15 +5,16 @@
  */
 package com.sdm.core.exception;
 
-import com.sdm.core.Setting;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+
+import com.sdm.core.Setting;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
 
 /**
  *

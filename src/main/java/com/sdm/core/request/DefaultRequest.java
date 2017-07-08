@@ -5,16 +5,18 @@
  */
 package com.sdm.core.request;
 
-import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+
+import com.sdm.core.Globalizer;
+import com.sdm.core.Setting;
 
 /**
  *

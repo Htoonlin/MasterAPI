@@ -5,6 +5,13 @@
  */
 package com.sdm.core;
 
+import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -13,11 +20,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sdm.core.util.security.AccessType;
 import com.sdm.core.util.security.AccessorType;
-import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -33,7 +35,7 @@ public class Globalizer {
     public static ObjectMapper jsonMapper() {
         ObjectMapper mapper = new ObjectMapper();
         //mapper.setDateFormat(Setting.getInstance().DATE_TIME_FORMAT);
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -45,7 +47,7 @@ public class Globalizer {
         /*String regex = "([a-z])([A-Z]+)";
         String replacement = "$1_$2";
         return input.replaceAll(regex, replacement).toLowerCase();*/
-        return (new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy()).translate(input);
+        return (new PropertyNamingStrategy.SnakeCaseStrategy()).translate(input);
     }
 
     public static String camelToReadable(String input) {

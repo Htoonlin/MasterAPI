@@ -5,14 +5,17 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.request.QueryRequest;
-import com.sdm.core.request.SyncRequest;
-import com.sdm.core.response.IBaseResponse;
+import java.io.Serializable;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import com.sdm.core.request.QueryRequest;
+import com.sdm.core.request.SyncRequest;
+import com.sdm.core.response.IBaseResponse;
 
 /**
  *
@@ -30,6 +33,6 @@ public interface IUtilResource {
     @Path("sync")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse syncData(SyncRequest request) throws Exception;
+    public <T extends Serializable> IBaseResponse syncData(SyncRequest<T> request) throws Exception;
 
 }

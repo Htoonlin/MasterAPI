@@ -5,9 +5,10 @@
  */
 package com.sdm.core.util.facebook.model.messenger;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.io.Serializable;
 
 /**
  *
@@ -15,7 +16,12 @@ import java.io.Serializable;
  */
 public class TemplateButton implements Serializable{
 
-    public enum ButtonType {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public enum ButtonType {
         WEB_URL,
         POSTBACK,
         PHONE_NUMBER,

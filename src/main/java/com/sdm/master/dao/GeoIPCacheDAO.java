@@ -5,9 +5,10 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.hibernate.dao.RestDAO;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+
+import com.sdm.core.hibernate.dao.RestDAO;
 
 /**
  *
@@ -20,6 +21,7 @@ public class GeoIPCacheDAO extends RestDAO {
 
     public GeoIPCacheDAO() {
         super(ENTITY, 0);
+        LOG.info("Start DAO");
     }
 
     public GeoIPCacheDAO(Session session) {

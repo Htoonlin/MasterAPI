@@ -5,22 +5,29 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.core.response.MessageResponse;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.log4j.Logger;
+
 import com.sdm.core.resource.DefaultResource;
-import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.ErrorResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.ChangePasswordRequest;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import org.apache.log4j.Logger;
 
 /**
  * REST Web Service
@@ -48,7 +55,7 @@ public class ProfileResource extends DefaultResource {
             return new MessageResponse(204, ResponseType.WARNING,
                     "There is no user. (or) User is not active.");
         }
-        return new DefaultResponse(user);
+        return new DefaultResponse<UserEntity>(user);
     }
 
     @RolesAllowed("user")
@@ -72,7 +79,7 @@ public class ProfileResource extends DefaultResource {
             currentUser.setCountryCode(request.getCountryCode());
             currentUser.setProfileImage(request.getProfileImage());
             currentUser = userDAO.update(currentUser, true);
-            return new DefaultResponse(currentUser);
+            return new DefaultResponse<UserEntity>(currentUser);
         } catch (Exception e) {
             LOG.error(e);
             throw e;

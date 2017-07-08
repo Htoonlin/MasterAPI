@@ -5,25 +5,27 @@
  */
 package com.sdm.master.resource;
 
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.log4j.Logger;
+
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
-import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ListResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.master.dao.PermissionDAO;
 import com.sdm.master.entity.PermissionEntity;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import org.apache.log4j.Logger;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 /**
  *
@@ -73,7 +75,7 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
     public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
         try {
             List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
-            return new DefaultResponse(new ListResponse(permissions));
+            return new ListResponse<PermissionEntity>(permissions);
         } catch (Exception e) {
             LOG.error(e);
             throw e;

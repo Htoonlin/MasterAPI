@@ -5,11 +5,13 @@
  */
 package com.sdm.core.di;
 
-import com.sdm.core.util.mail.MailInfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import javax.ws.rs.core.Response;
+
+import com.sdm.core.util.mail.MailInfo;
 
 /**
  *

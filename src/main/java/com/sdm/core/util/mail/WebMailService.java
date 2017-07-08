@@ -5,12 +5,12 @@
  */
 package com.sdm.core.util.mail;
 
-import com.sdm.core.Setting;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -25,7 +25,10 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
+
 import org.apache.log4j.Logger;
+
+import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
 
 /**
@@ -35,8 +38,6 @@ import com.sdm.core.di.IMailManager;
 public class WebMailService implements IMailManager {
 
     private static final Logger LOG = Logger.getLogger(WebMailService.class.getName());
-
-    private static WebMailService instance;
 
     private final String MAIL_SOCKET_FACTORY = "javax.net.ssl.SSLSocketFactory";
 

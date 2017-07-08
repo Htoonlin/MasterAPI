@@ -5,16 +5,37 @@
  */
 package com.sdm.master.resource;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.security.PermitAll;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.log4j.Logger;
+
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.resource.DefaultResource;
-import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ErrorResponse;
-import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.di.ITemplateManager;
+import com.sdm.core.resource.DefaultResource;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.ErrorResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
@@ -25,17 +46,11 @@ import com.sdm.master.request.AuthRequest;
 import com.sdm.master.request.ChangePasswordRequest;
 import com.sdm.master.request.RegistrationRequest;
 import com.sdm.master.util.AuthMailSend;
+
 import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.*;
-import javax.annotation.PostConstruct;
-import javax.annotation.security.PermitAll;
-import javax.inject.Inject;
-import javax.ws.rs.core.*;
-import javax.ws.rs.*;
-import org.apache.log4j.Logger;
 
 /**
  * REST Web Service
@@ -118,13 +133,13 @@ public class AuthResource extends DefaultResource {
                     userDao.beginTransaction();
                     TokenDAO tokenDAO = new TokenDAO(userDao.getSession());
                     if (cleanToken) {
-                        tokenDAO.cleanToken((long) authUser.getId());
+                        tokenDAO.cleanToken(authUser.getId());
                     }
-                    TokenEntity authToken = tokenDAO.generateToken((long) authUser.getId(), request.getDeviceId(), this.getDeviceOS());
+                    TokenEntity authToken = tokenDAO.generateToken(authUser.getId(), request.getDeviceId(), this.getDeviceOS());
                     String token = this.generateJWT(authToken);
                     authUser.setCurrentToken(token);
                     userDao.commitTransaction();
-                    return new DefaultResponse(authUser);
+                    return new DefaultResponse<UserEntity>(authUser);
                 }
             }
             //Increase failed count
@@ -254,11 +269,11 @@ public class AuthResource extends DefaultResource {
             user.setStatus(UserEntity.ACTIVE);
             userDao.update(user, false);
             TokenDAO tokenDAO = new TokenDAO(userDao.getSession());
-            TokenEntity authToken = tokenDAO.generateToken((long) user.getId(), request.getDeviceId(), this.getDeviceOS());
+            TokenEntity authToken = tokenDAO.generateToken(user.getId(), request.getDeviceId(), this.getDeviceOS());
             String token = generateJWT(authToken);
             user.setCurrentToken(token);
             userDao.commitTransaction();
-            return new DefaultResponse(user);
+            return new DefaultResponse<UserEntity>(user);
         } catch (Exception e) {
             userDao.rollbackTransaction();
             LOG.error(e);

@@ -5,9 +5,8 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.request.IBaseRequest;
-import com.sdm.core.response.IBaseResponse;
 import java.io.Serializable;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -19,6 +18,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import com.sdm.core.request.IBaseRequest;
+import com.sdm.core.response.IBaseResponse;
 
 /**
  *

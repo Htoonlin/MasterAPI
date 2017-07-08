@@ -5,27 +5,30 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.core.di.IMailManager;
-import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.resource.RestResource;
-import com.sdm.core.response.ErrorResponse;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.di.ITemplateManager;
-import com.sdm.core.util.SecurityManager;
-import com.sdm.master.dao.UserDAO;
-import com.sdm.master.entity.UserEntity;
-import com.sdm.master.util.AuthMailSend;
 import java.util.Objects;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
+
+import com.sdm.core.di.IMailManager;
+import com.sdm.core.di.ITemplateManager;
+import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.core.resource.RestResource;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.ErrorResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
+import com.sdm.core.util.SecurityManager;
+import com.sdm.master.dao.UserDAO;
+import com.sdm.master.entity.UserEntity;
+import com.sdm.master.util.AuthMailSend;
 
 /**
  * REST Web Service
@@ -68,7 +71,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
                 return errors;
             }
 
-            UserEntity entity = (UserEntity) request;
+            UserEntity entity = request;
 
             UserEntity user = userDAO.getUserByEmail(entity.getEmail());
             if (user != null && user.getEmail().equalsIgnoreCase(entity.getEmail())) {
@@ -84,7 +87,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
 
             AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
             mailSend.welcomeUser(user, rawPassword);
-            return new DefaultResponse(createdUser);
+            return new DefaultResponse<UserEntity>(createdUser);
 
         } catch (Exception e) {
             LOG.error(e);
@@ -100,7 +103,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
             if (!request.isValid()) {
                 return new ErrorResponse(request.getErrors());
             }
-            UserEntity reqEntity = (UserEntity) request;
+            UserEntity reqEntity = request;
 
             UserEntity dbEntity = userDAO.fetchById(id);
             if (dbEntity == null || !Objects.equals(dbEntity.getId(), reqEntity.getId())) {
@@ -110,7 +113,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
             reqEntity.setPassword(dbEntity.getPassword());
 
             userDAO.update(reqEntity, true);
-            return new DefaultResponse(reqEntity);
+            return new DefaultResponse<UserEntity>(reqEntity);
         } catch (Exception e) {
             LOG.error(e);
             throw e;

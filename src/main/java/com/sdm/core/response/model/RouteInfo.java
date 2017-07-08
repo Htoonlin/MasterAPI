@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.response;
+package com.sdm.core.response.model;
+
+import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -12,8 +14,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author Htoonlin
  */
 @JsonPropertyOrder(value = {"path", "method", "resource_class", "resource_method"})
-public class RouteResponse{
-    private String resourceClass;
+public class RouteInfo implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String resourceClass;
     private String resourceMethod;
     private String path;
     private String method;

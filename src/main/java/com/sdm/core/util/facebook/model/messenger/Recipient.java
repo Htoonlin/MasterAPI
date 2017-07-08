@@ -12,7 +12,11 @@ import java.io.Serializable;
  * @author htoonlin
  */
 public class Recipient implements Serializable{
-    private String id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String id;
     private String phoneNumber;    
     private String name;
 

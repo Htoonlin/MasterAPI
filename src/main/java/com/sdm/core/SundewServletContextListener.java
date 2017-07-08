@@ -5,11 +5,11 @@
  */
 package com.sdm.core;
 
-import com.sdm.core.hibernate.HibernateConnector;
-import org.apache.log4j.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+
+import org.apache.log4j.Logger;
 
 /**
  *

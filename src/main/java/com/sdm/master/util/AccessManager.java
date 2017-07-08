@@ -5,6 +5,13 @@
  */
 package com.sdm.master.util;
 
+import java.lang.reflect.Method;
+import java.util.Date;
+
+import javax.annotation.security.RolesAllowed;
+
+import org.apache.log4j.Logger;
+
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
@@ -14,11 +21,8 @@ import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.RoleEntity;
 import com.sdm.master.entity.TokenEntity;
 import com.sdm.master.entity.UserEntity;
+
 import io.jsonwebtoken.Claims;
-import java.lang.reflect.Method;
-import java.util.Date;
-import javax.annotation.security.RolesAllowed;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -110,7 +114,7 @@ public class AccessManager implements IAccessManager {
         }
 
         //Skip Permission for ROOT USER
-        if (((long) user.getId()) == Setting.getInstance().ROOT_ID) {
+        if ((user.getId()) == Setting.getInstance().ROOT_ID) {
             return true;
         }
 
@@ -129,7 +133,7 @@ public class AccessManager implements IAccessManager {
         PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), authUserId);
         boolean permission = false;
         for (RoleEntity role : user.getRoles()) {
-            permission = permissionDAO.checkRole((int) role.getId(), className, method.getName(), httpMethod);
+            permission = permissionDAO.checkRole(role.getId(), className, method.getName(), httpMethod);
             if (permission) {
                 break;
             }

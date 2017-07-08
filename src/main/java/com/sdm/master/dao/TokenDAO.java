@@ -5,15 +5,17 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.Globalizer;
-import com.sdm.master.entity.TokenEntity;
-import com.sdm.core.hibernate.dao.RestDAO;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+
+import com.sdm.core.Globalizer;
+import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.master.entity.TokenEntity;
 
 /**
  *
@@ -30,6 +32,7 @@ public class TokenDAO extends RestDAO {
 
     public TokenDAO() {
         super(ENTITY, 0);
+        LOG.info("Start DAO");
     }
 
     public TokenDAO(Session session) {

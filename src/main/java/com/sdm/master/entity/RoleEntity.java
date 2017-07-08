@@ -5,26 +5,30 @@
  */
 package com.sdm.master.entity;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.hibernate.entity.UIStructure;
-import com.sdm.core.hibernate.entity.DefaultEntity;
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.io.Serializable;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.validator.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.hibernate.entity.UIStructure;
 
 /**
  *
@@ -34,7 +38,12 @@ import org.hibernate.validator.constraints.NotBlank;
 @Table(name = "tbl_role")
 public class RoleEntity extends DefaultEntity implements Serializable {
 
-    @JsonIgnore
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@JsonIgnore
     @Formula(value = "concat(name, description)")    
     private String search;
 

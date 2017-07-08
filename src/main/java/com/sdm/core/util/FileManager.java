@@ -5,11 +5,11 @@
  */
 package com.sdm.core.util;
 
-import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
 import java.io.File;
 import java.util.Date;
-import javax.ws.rs.core.UriBuilder;
+
+import com.sdm.core.Globalizer;
+import com.sdm.core.Setting;
 
 /**
  *
@@ -23,7 +23,7 @@ public class FileManager {
         if (size <= 1024) {
             return "1 KB";
         }
-        float resultSize = (float) size;
+        float resultSize = size;
         String result = resultSize + " T";
         for (String code : SIZE_CODES) {
             if (resultSize < 1024) {

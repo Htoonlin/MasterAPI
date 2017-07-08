@@ -5,22 +5,25 @@
  */
 package com.sdm.master.entity;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.sdm.core.hibernate.entity.UIStructure;
-import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.util.FileManager;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Formula;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.util.FileManager;
 
 /**
  *

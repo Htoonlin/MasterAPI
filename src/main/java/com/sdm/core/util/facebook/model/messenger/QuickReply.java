@@ -12,7 +12,11 @@ import java.io.Serializable;
  * @author Htoonlin
  */
 public class QuickReply implements Serializable{
-    //Contenty Type must be => text, location
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//Contenty Type must be => text, location
     private String contentType;
     private String title;
     private String payload;

@@ -5,20 +5,22 @@
  */
 package com.sdm.core.request;
 
-import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sdm.core.request.query.Aggregate;
-import com.sdm.core.request.query.Column;
-import com.sdm.core.request.query.Condition;
-import com.sdm.core.request.query.Join;
-import com.sdm.core.request.query.Sort;
-import com.sdm.core.util.MySQLManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.request.model.Aggregate;
+import com.sdm.core.request.model.Column;
+import com.sdm.core.request.model.Condition;
+import com.sdm.core.request.model.Join;
+import com.sdm.core.request.model.Sort;
+import com.sdm.core.util.MySQLManager;
 
 /**
  *
@@ -27,7 +29,12 @@ import javax.validation.constraints.Size;
 @JsonIgnoreProperties(value = {"row_counts_col", "all_columns", "group_by_column", "hasAggregate"})
 public class QueryRequest extends DefaultEntity implements Serializable {
 
-    public final String ROW_COUNTS_COL = "total_rows";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public final String ROW_COUNTS_COL = "total_rows";
     private String table;
     private String alias;
     private List<Join> joins;

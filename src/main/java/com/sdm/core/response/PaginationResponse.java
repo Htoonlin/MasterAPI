@@ -5,23 +5,25 @@
  */
 package com.sdm.core.response;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sdm.core.request.QueryRequest;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = {"total", "count", "current_page", "page_size", "page_count", "query", "data"})
-public class PaginationResponse implements Serializable {
+@JsonPropertyOrder(value = {"code", "status", "total", "count", "current_page", "page_size", "page_count", "query", "content"})
+public class PaginationResponse<T extends Serializable> extends DefaultResponse<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List data;
+    private List<T> data;
     private long total;
     private int currentPage;
     private int pageSize;
@@ -30,14 +32,14 @@ public class PaginationResponse implements Serializable {
     public PaginationResponse() {
     }
 
-    public PaginationResponse(List data, long total, int currentPage, int pageSize) {
+    public PaginationResponse(List<T> data, long total, int currentPage, int pageSize) {
         this.data = data;
         this.total = total;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
     }
 
-    public PaginationResponse(List data, long total, int currentPage, int pageSize, QueryRequest query) {
+    public PaginationResponse(List<T> data, long total, int currentPage, int pageSize, QueryRequest query) {
         this.data = data;
         this.total = total;
         this.currentPage = currentPage;
@@ -85,11 +87,19 @@ public class PaginationResponse implements Serializable {
         this.query = query;
     }
 
-    public List getData() {
+    public void addData(T entity) {
+    		if(this.data == null) {
+    			this.data = new ArrayList<>();
+    		}
+    		this.data.add(entity);
+    }
+    
+    @Override
+    public List<T> getContent() {
         return this.data;
     }
 
-    public void setData(List value) {
+    public void setContent(List<T> value) {
         this.data = value;
     }
 }

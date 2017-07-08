@@ -5,24 +5,25 @@
  */
 package com.sdm.core.resource;
 
-import com.sdm.core.Globalizer;
-import com.sdm.core.hibernate.HibernateConnector;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ListResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.RouteResponse;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.model.Invocable;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.ResourceMethod;
-import org.apache.log4j.Logger;
+
+import com.sdm.core.Globalizer;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.ListResponse;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.RouteInfo;
 
 /**
  *
@@ -71,8 +72,8 @@ public class DefaultResource implements IBaseResource {
         return getUriInfo().getAbsolutePath().toString();
     }
 
-    protected List<RouteResponse> collectRoute(Resource resource, String basePath) {
-        List<RouteResponse> routeList = new ArrayList<>();
+    protected List<RouteInfo> collectRoute(Resource resource, String basePath) {
+        List<RouteInfo> routeList = new ArrayList<>();
         String parentPath = "";
         for (ResourceMethod method : resource.getResourceMethods()) {
             Invocable invocable = method.getInvocable();
@@ -82,7 +83,7 @@ public class DefaultResource implements IBaseResource {
                 continue;
             }
 
-            RouteResponse route = new RouteResponse();
+            RouteInfo route = new RouteInfo();
             //Set Resource Class
             route.setResourceClass(this.getClass().getName());
 
@@ -117,8 +118,9 @@ public class DefaultResource implements IBaseResource {
                 return new MessageResponse(204, ResponseType.WARNING,
                         "There is no data for your request.");
             }
-            List<RouteResponse> routeList = collectRoute(resource, "/");
-            return new DefaultResponse(new ListResponse(routeList));
+            List<RouteInfo> routeList = collectRoute(resource, "/");
+            ListResponse<RouteInfo> response = new ListResponse<RouteInfo>(routeList);
+			return response;
         } catch (Exception e) {
             LOG.error(e);
             throw e;

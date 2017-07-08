@@ -5,12 +5,13 @@
  */
 package com.sdm.core.response;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
@@ -19,7 +20,12 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MessageResponse implements IBaseResponse, Serializable {
     
-    public MessageResponse(int code, ResponseType type,  String content) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public MessageResponse(int code, ResponseType type,  String content) {
         this.code = code;
         this.status = type;        
         this.content = content;

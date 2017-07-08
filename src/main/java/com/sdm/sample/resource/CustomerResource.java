@@ -5,13 +5,15 @@
  */
 package com.sdm.sample.resource;
 
+import javax.annotation.PostConstruct;
+import javax.ws.rs.Path;
+
+import org.apache.log4j.Logger;
+
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.sample.dao.CustomerDAO;
 import com.sdm.sample.entity.CustomerEntity;
-import javax.annotation.PostConstruct;
-import org.apache.log4j.Logger;
-import javax.ws.rs.Path;
 
 /**
  *

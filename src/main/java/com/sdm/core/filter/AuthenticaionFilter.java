@@ -5,21 +5,11 @@
  */
 package com.sdm.core.filter;
 
-import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
-import com.sdm.core.di.IAccessManager;
-import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.MessageResponse;
-import io.jsonwebtoken.ClaimJwtException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Base64;
 import java.util.List;
+
 import javax.annotation.Priority;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -34,7 +24,21 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+
 import org.apache.log4j.Logger;
+
+import com.sdm.core.Globalizer;
+import com.sdm.core.Setting;
+import com.sdm.core.di.IAccessManager;
+import com.sdm.core.response.MessageResponse;
+import com.sdm.core.response.ResponseType;
+
+import io.jsonwebtoken.ClaimJwtException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 /**
  *
@@ -134,7 +138,6 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
     }
 
     private Response buildResponse(int code) {
-        String title = "";
         String description = "";
         httpSession.setAttribute(FAILED_COUNT, getFailed() + 1);
         switch (code) {

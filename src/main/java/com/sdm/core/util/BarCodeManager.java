@@ -5,6 +5,15 @@
  */
 package com.sdm.core.util;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
+
+import javax.imageio.ImageIO;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -12,13 +21,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Hashtable;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -48,7 +50,7 @@ public class BarCodeManager {
     }
 
     public static void createBarcode(File barcodeFile, BarcodeFormat format, String content, int width, int height) throws WriterException, IOException {
-        Hashtable hintMap = new Hashtable();
+        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
         MultiFormatWriter codeWriter = new MultiFormatWriter();
         BitMatrix byteMatrix = codeWriter.encode(content, format, width, height, hintMap);
@@ -57,7 +59,7 @@ public class BarCodeManager {
 
 
     public static void createQR(File qrFile, String content, int size) throws WriterException, IOException {
-        Hashtable hintMap = new Hashtable();
+        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
         QRCodeWriter codeWriter = new QRCodeWriter();
         BitMatrix byteMatrix = codeWriter.encode(content, BarcodeFormat.QR_CODE, size, size, hintMap);

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -91,9 +92,9 @@ public class RestDAO extends DefaultDAO {
     public List fetchAll() {
         List queryList = this.fetch(fetchHQL(), null);
         if (queryList != null && queryList.size() > 0) {
-            return (List) queryList;
+            return queryList;
         }
-        return new ArrayList();
+        return new ArrayList<>();
     }
 
     public <T extends Serializable> T fetchById(Serializable id) {

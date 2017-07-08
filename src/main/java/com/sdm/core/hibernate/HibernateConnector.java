@@ -5,12 +5,12 @@
  */
 package com.sdm.core.hibernate;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -27,11 +27,13 @@ public class HibernateConnector {
     }
 
     private void setup() {
+    		LOG.info("Creating new hibernate instance....");
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .configure().build();
         try {
             mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
         } catch (Exception e) {
+        		LOG.error(e);
             StandardServiceRegistryBuilder.destroy(registry);
             instance = null;
             throw e;
@@ -46,6 +48,7 @@ public class HibernateConnector {
     }
 
     public static void shutdown() {
+    		LOG.info("Shutting down hibernate session factory");
         if (instance != null) {
             instance.mainFactory.close();
         }

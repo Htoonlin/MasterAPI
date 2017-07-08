@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.response;
+package com.sdm.core.response.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,14 +15,19 @@ import java.util.List;
  * @author Htoonlin
 
  */
-public class SyncResponse implements Serializable {
+public class SyncContent<T extends Serializable> implements Serializable {
 
-    private final long syncTime;
-    private List insert;
-    private List update;
-    private List remove;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private final long syncTime;
+    private List<T> insert;
+    private List<T> update;
+    private List<T> remove;
 
-    public SyncResponse() {
+    public SyncContent() {
         this.syncTime = (new Date()).getTime();
         insert = new ArrayList<>();
         update = new ArrayList<>();
@@ -33,27 +38,27 @@ public class SyncResponse implements Serializable {
         return syncTime;
     }
 
-    public List getInsert() {
+    public List<T> getInsert() {
         return insert;
     }
 
-    public void setInsert(List insert) {
+    public void setInsert(List<T> insert) {
         this.insert = insert;
     }
 
-    public List getUpdate() {
+    public List<T> getUpdate() {
         return update;
     }
 
-    public void setUpdate(List update) {
+    public void setUpdate(List<T> update) {
         this.update = update;
     }
 
-    public List getRemove() {
+    public List<T> getRemove() {
         return remove;
     }
 
-    public void setRemove(List remove) {
+    public void setRemove(List<T> remove) {
         this.remove = remove;
     }
 

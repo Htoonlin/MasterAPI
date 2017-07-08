@@ -5,14 +5,18 @@
  */
 package com.sdm.core.hibernate.dao;
 
-import com.sdm.core.hibernate.HibernateConnector;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+
 import javax.persistence.Query;
+
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import com.sdm.core.hibernate.HibernateConnector;
 
 /**
  *
@@ -21,10 +25,12 @@ import org.hibernate.Transaction;
 public class DefaultDAO {
 
     private static final Logger LOG = Logger.getLogger(DefaultDAO.class.getName());
+    
     private final Session mainSession;
 
     public DefaultDAO() {
         this(HibernateConnector.getFactory().openSession());
+        LOG.info("Created Hibernate Session Factory.");
     }
 
     public DefaultDAO(Session session) {
@@ -95,13 +101,13 @@ public class DefaultDAO {
         return query.setFirstResult(start).setMaxResults(size);
     }
 
-    public List fetchByName(String queryName, Map<String, Object> params) {
-        List queryList = this.createQueryByName(queryName, params).getResultList();
+    public List<?> fetchByName(String queryName, Map<String, Object> params) {
+        List<?> queryList = this.createQueryByName(queryName, params).getResultList();
         if (queryList != null && queryList.size() > 0) {
             return queryList;
         }
 
-        return new ArrayList();
+        return new ArrayList<>();
     }
 
     public List fetch(String hqlString, Map<String, Object> params) {
@@ -110,19 +116,19 @@ public class DefaultDAO {
             return queryList;
         }
 
-        return new ArrayList();
+        return new ArrayList<>();
     }
 
-    public <T> T fetchOneByName(String queryName, Map<String, Object> params) {
-        List results = this.createQueryByName(queryName, params).getResultList();
+    public <T extends Serializable> T fetchOneByName(String queryName, Map<String, Object> params) {
+        List<T> results = this.createQueryByName(queryName, params).getResultList();
         if (results == null || results.size() < 1) {
             return null;
         }
         return (T) results.get(0);
     }
 
-    public <T> T fetchOne(String hqlString, Map<String, Object> params) {
-        List results = this.createQuery(hqlString, params).getResultList();
+    public <T extends Serializable> T fetchOne(String hqlString, Map<String, Object> params) {
+        List<T> results = this.createQuery(hqlString, params).getResultList();
         if (results == null || results.size() < 1) {
             return null;
         }

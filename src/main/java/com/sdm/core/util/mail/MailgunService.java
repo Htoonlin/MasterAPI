@@ -5,13 +5,12 @@
  */
 package com.sdm.core.util.mail;
 
-import com.sdm.core.Globalizer;
-import com.sdm.core.util.mail.response.ValidateResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -20,12 +19,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+
+import com.sdm.core.Globalizer;
 import com.sdm.core.di.IMailManager;
+import com.sdm.core.util.mail.response.ValidateResponse;
 
 /**
  *
@@ -44,8 +47,6 @@ public class MailgunService implements IMailManager {
     private final String MAILGUN_DOMAIN;
     private final String MAILGUN_DEF_MAIL_SENDER;
 
-    private static MailgunService instance;
-
     public MailgunService() throws IOException {
         Properties settingProps = new Properties();
         settingProps.load(getClass().getClassLoader().getResourceAsStream("setting.properties"));
@@ -61,7 +62,7 @@ public class MailgunService implements IMailManager {
         return response.isValid();
     }
 
-    private MultivaluedMap createFormData(MailInfo mailInfo) throws Exception {
+    private MultivaluedMap<String, String> createFormData(MailInfo mailInfo) throws Exception {
         try {
             MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
             if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
@@ -153,7 +154,7 @@ public class MailgunService implements IMailManager {
             WebTarget target = client.target(MAILGUN_URL).path(MAILGUN_DOMAIN + "/messages");
             target.register(HttpAuthenticationFeature.basic("api", MAILGUN_PRI_API_KEY));
 
-            MultivaluedMap formData = createFormData(mailInfo);
+            MultivaluedMap<String, String> formData = createFormData(mailInfo);
             formData.add("html", mailInfo.getBody());
 
             Response response = target.request(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData));
@@ -174,7 +175,7 @@ public class MailgunService implements IMailManager {
             WebTarget target = client.target(MAILGUN_URL).path(MAILGUN_DOMAIN + "/messages");
             target.register(HttpAuthenticationFeature.basic("api", MAILGUN_PRI_API_KEY));
 
-            MultivaluedMap formData = createFormData(mailInfo);
+            MultivaluedMap<String, String> formData = createFormData(mailInfo);
             formData.add("text", mailInfo.getBody());
 
             Response response = target.request(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData));

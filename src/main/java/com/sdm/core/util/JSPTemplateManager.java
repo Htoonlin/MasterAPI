@@ -5,18 +5,21 @@
  */
 package com.sdm.core.util;
 
-import com.sdm.core.di.ITemplateManager;
-import com.sdm.core.Setting;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+
 import javax.servlet.ServletException;
-import org.apache.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.ws.rs.core.Context;
+
+import org.apache.log4j.Logger;
+
+import com.sdm.core.Setting;
+import com.sdm.core.di.ITemplateManager;
 
 /**
  *
