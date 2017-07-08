@@ -18,3 +18,4 @@ buildNumber.properties
 /src/main/resources/
 /src/main/webapp/META-INF/
 /src/main/java/com/sdm/ApplicationConfig.java
+/nb-configuration.xml
