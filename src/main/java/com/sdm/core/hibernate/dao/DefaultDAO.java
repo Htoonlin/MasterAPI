@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -23,14 +22,11 @@ import com.sdm.core.hibernate.HibernateConnector;
  * @author Htoonlin
  */
 public class DefaultDAO {
-
-    private static final Logger LOG = Logger.getLogger(DefaultDAO.class.getName());
     
     private final Session mainSession;
 
     public DefaultDAO() {
         this(HibernateConnector.getFactory().openSession());
-        LOG.info("Created Hibernate Session Factory.");
     }
 
     public DefaultDAO(Session session) {
@@ -110,8 +106,8 @@ public class DefaultDAO {
         return new ArrayList<>();
     }
 
-    public List fetch(String hqlString, Map<String, Object> params) {
-        List queryList = this.createQuery(hqlString, params).getResultList();
+    public List<?> fetch(String hqlString, Map<String, Object> params) {
+        List<?> queryList = this.createQuery(hqlString, params).getResultList();
         if (queryList != null && queryList.size() > 0) {
             return queryList;
         }

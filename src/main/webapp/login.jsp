@@ -101,7 +101,7 @@
                     var json = res.responseJSON;
                     if (json.status != 400) {
                         $("#server-message").addClass("alert alert-danger")
-                                .html(json.content);
+                                .html(json.content.message);
                     } else{
                         $.each(json.content, function (prop, value) {
                             console.log(prop + ":" + value);

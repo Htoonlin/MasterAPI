@@ -17,6 +17,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,111 +29,113 @@ import com.sdm.core.hibernate.entity.UIStructure;
  *
  * @author Htoonlin
  */
+@Audited
 @Entity(name = "PermissionEntity")
 @Table(name = "tbl_permission")
-public class PermissionEntity extends DefaultEntity implements Serializable{
-    private static final long serialVersionUID = 1L;
-    
-    @JsonIgnore
-    @Formula(value = "concat(resourceClass, resourceMethod, requestMethod)")    
-    private String search;
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @UIStructure(order = 0, label = "#", readOnly = true)
-    @Column(name = "id", columnDefinition = "INT UNSIGNED", nullable = false, unique = true)
-    private long id;
-    
-    @UIStructure(order = 1, label = "Role-ID")
-    @Column(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED", nullable = false)
-    private int roleId;
-    
-    @UIStructure(order = 2, label = "Class")
-    @Column(name = "resourceClass", columnDefinition = "varchar(255)",length=255, nullable = false)
-    private String resourceClass;    
-    
-    @UIStructure(order = 3, label = "Method")
-    @Column(name = "resourceMethod", columnDefinition = "varchar(255)",length=255, nullable = false)
-    private String resourceMethod;
-    
-    @UIStructure(order = 4, label = "Http-Method")
-    @Column(name = "requestMethod", columnDefinition = "varchar(10)",length=10, nullable = false)
-    private String requestMethod;
+public class PermissionEntity extends DefaultEntity implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-    public String getSearch() {
-        return search;
-    }
+	@JsonIgnore
+	@NotAudited
+	@Formula(value = "concat(resourceClass, resourceMethod, requestMethod)")
+	private String search;
 
-    public void setSearch(String search) {
-        this.search = search;
-    }
-    
-    public Long getId() {
-        return id;
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@UIStructure(order = 0, label = "#", readOnly = true)
+	@Column(name = "id", columnDefinition = "INT UNSIGNED", nullable = false, unique = true)
+	private long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@UIStructure(order = 1, label = "Role-ID")
+	@Column(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED", nullable = false)
+	private int roleId;
 
-    @NotNull
-    public int getRoleId() {
-        return roleId;
-    }
+	@UIStructure(order = 2, label = "Class")
+	@Column(name = "resourceClass", columnDefinition = "varchar(255)", length = 255, nullable = false)
+	private String resourceClass;
 
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
+	@UIStructure(order = 3, label = "Method")
+	@Column(name = "resourceMethod", columnDefinition = "varchar(255)", length = 255, nullable = false)
+	private String resourceMethod;
 
-    @NotBlank
-    @Size(min = 1, max = 255)
-    public String getResourceClass() {
-        return resourceClass;
-    }
+	@UIStructure(order = 4, label = "Http-Method")
+	@Column(name = "requestMethod", columnDefinition = "varchar(10)", length = 10, nullable = false)
+	private String requestMethod;
 
-    public void setResourceClass(String resourceClass) {
-        this.resourceClass = resourceClass;
-    }
+	public String getSearch() {
+		return search;
+	}
 
-    @NotBlank
-    @Size(min = 1, max = 255)
-    public String getResourceMethod() {
-        return resourceMethod;
-    }
+	public void setSearch(String search) {
+		this.search = search;
+	}
 
-    public void setResourceMethod(String resourceMethod) {
-        this.resourceMethod = resourceMethod;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    @NotBlank
-    @Size(min = 1, max = 10)
-    public String getRequestMethod() {
-        return requestMethod;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setRequestMethod(String requestMethod) {
-        this.requestMethod = requestMethod;
-    }
+	@NotNull
+	public int getRoleId() {
+		return roleId;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + (int) (this.id ^ (this.id >>> 32));
-        return hash;
-    }
+	public void setRoleId(int roleId) {
+		this.roleId = roleId;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final PermissionEntity other = (PermissionEntity) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
-    }
+	@NotBlank
+	@Size(min = 1, max = 255)
+	public String getResourceClass() {
+		return resourceClass;
+	}
+
+	public void setResourceClass(String resourceClass) {
+		this.resourceClass = resourceClass;
+	}
+
+	@NotBlank
+	@Size(min = 1, max = 255)
+	public String getResourceMethod() {
+		return resourceMethod;
+	}
+
+	public void setResourceMethod(String resourceMethod) {
+		this.resourceMethod = resourceMethod;
+	}
+
+	@NotBlank
+	@Size(min = 1, max = 10)
+	public String getRequestMethod() {
+		return requestMethod;
+	}
+
+	public void setRequestMethod(String requestMethod) {
+		this.requestMethod = requestMethod;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 67 * hash + (int) (this.id ^ (this.id >>> 32));
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final PermissionEntity other = (PermissionEntity) obj;
+		if (this.id != other.id) {
+			return false;
+		}
+		return true;
+	}
 }

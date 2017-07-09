@@ -58,7 +58,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
     @PostConstruct
     protected void init() {
         if (this.mainDAO == null) {
-            mainDAO = new FileDAO(getUserId());
+            mainDAO = new FileDAO();
         }
     }
 
@@ -94,13 +94,13 @@ public class FileResource extends RestResource<FileEntity, Long> {
             @FormDataParam("uploadedFile") InputStream inputFile,
             @FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
         try {
-            UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
+            UserDAO userDAO = new UserDAO(mainDAO.getSession());
             UserEntity currentUser = userDAO.fetchById(getUserId());
             if (currentUser == null) {
                 return new MessageResponse(401, ResponseType.WARNING,
                         "Invalid user. You neeed to register new account to upload file.");
             }
-            FileEntity entity = mainDAO.saveFile(inputFile, fileDetail);
+            FileEntity entity = mainDAO.saveFile(getUserId(), inputFile, fileDetail);
             return new DefaultResponse<FileEntity>(entity);
         } catch (Exception e) {
             LOG.error(e);

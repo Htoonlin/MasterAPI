@@ -44,7 +44,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
     @Override
     public IBaseResponse getAll() throws Exception {
         try {
-            List<T> data = getDAO().fetchAll();
+            List<T> data = (List<T>) getDAO().fetchAll();
             ListResponse<T> response = new ListResponse<T>(data);
             return response;
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
     public IBaseResponse getPaging(String filter, int pageId, int pageSize, String sortString) throws Exception {
         try {
             long total = getDAO().getTotal(filter);
-            List<T> data = getDAO().paging(filter, pageId, pageSize, sortString);
+            List<T> data = (List<T>) getDAO().paging(filter, pageId, pageSize, sortString);
 
             if (data == null) {
                 return new MessageResponse(204, ResponseType.WARNING, "There is no data for your query string.");
@@ -102,6 +102,12 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
             if (!request.isValid()) {
                 return new ErrorResponse(request.getErrors());
             }
+            
+            T dbEntity = getDAO().fetchById(id);
+			if (dbEntity == null) {
+				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+			}
+            
             T entity = getDAO().update(request, true);
             return new DefaultResponse<T>(entity);
         } catch (Exception e) {
@@ -118,7 +124,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
                 return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
             }
 
-            getDAO().delete(id, true);
+            getDAO().delete(entity, true);
             return new MessageResponse(202, ResponseType.SUCCESS, "We deleted the record with your request successfully.");
         } catch (Exception e) {
             getLogger().error(e);

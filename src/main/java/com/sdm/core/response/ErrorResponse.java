@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder(value = {"code", "status", "content", "extra", "timestamp"})
+@JsonPropertyOrder(value = {"code", "status", "content", "timestamp"})
 public class ErrorResponse implements IBaseResponse {
 
     public ErrorResponse() {

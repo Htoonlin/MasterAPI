@@ -23,6 +23,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -34,6 +36,7 @@ import com.sdm.core.hibernate.entity.UIStructure;
  *
  * @author Htoonlin
  */
+@Audited
 @Entity(name = "RoleEntity")
 @Table(name = "tbl_role")
 public class RoleEntity extends DefaultEntity implements Serializable {
@@ -44,6 +47,7 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@JsonIgnore
+	@NotAudited
     @Formula(value = "concat(name, description)")    
     private String search;
 
@@ -62,6 +66,7 @@ public class RoleEntity extends DefaultEntity implements Serializable {
     private String description;
 
     @JsonIgnore    
+    @NotAudited
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
     @NotFound(action = NotFoundAction.IGNORE)

@@ -7,17 +7,14 @@ package com.sdm.core.response;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  *
  * @author Htoonlin
  * @param <T>
  */
-@JsonPropertyOrder(value = {"code", "status", "content", "extra", "timestamp"})
+@JsonPropertyOrder(value = {"code", "status", "content", "timestamp"})
 public class DefaultResponse<T extends Serializable> implements IBaseResponse{
     
     private int code;
@@ -40,34 +37,9 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse{
     }
     
     private T content;
-    private Map<String, Object> extra;
     
     public void setContent(T content) {
         this.content = content;
-    }
-    
-    public void setExtra(Map<String, Object> extra) {
-        this.extra = extra;
-    }
-
-    @JsonIgnore
-    public void putExtra(String key, Object obj) {
-        if (this.extra == null) {
-            this.extra = new HashMap<>();
-        }
-        this.extra.put(key, obj);
-    }
-
-    @JsonIgnore
-    public Object getExtra(String key, Object defObject) {
-        if (this.extra == null) {
-            return defObject;
-        }
-        return this.extra.getOrDefault(key, defObject);
-    }
-    
-    public Map<String, Object> getExtra() {
-        return extra;
     }
 
     @Override    

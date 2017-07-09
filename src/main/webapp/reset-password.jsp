@@ -130,17 +130,17 @@
 
                 var url = "api/auth/resetPassword/";
                 call_api(url, 'post', data, function (res) {
-                    alert(res.content);
+                    alert(res.content.message);
                     window.location.href = "login.jsp";
                 }, function (res) {
                     var json = res.responseJSON;
                     $("#server-message").addClass("alert alert-danger")
-                            .html('<strong>' + json.status + '</strong>' + json.content);
+                            .html('<strong>' + json.status + '</strong>' + json.content.message);
                 });
             <% } else {%>
                 var url = "api/auth/forgetPassword/" + $("#txtEmail").val();
                 call_api(url, 'get', null, function (res) {
-                    alert(res.content);
+                    alert(res.content.message);
                     window.location.href = "login.jsp";
                 }, function (res) {
                     var content = res.responseJSON.content;

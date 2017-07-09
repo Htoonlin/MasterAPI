@@ -86,7 +86,7 @@ public class AuthResource extends DefaultResource {
 
     @PostConstruct
     public void init() {
-        userDao = new UserDAO(getUserId());
+        userDao = new UserDAO();
     }
 
     @HeaderParam("user-agent")

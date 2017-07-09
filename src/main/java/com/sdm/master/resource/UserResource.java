@@ -48,7 +48,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
 	@PostConstruct
 	protected void init() {
 		if (this.userDAO == null) {
-			userDAO = new UserDAO(getUserId());
+			userDAO = new UserDAO();
 		}
 	}
 

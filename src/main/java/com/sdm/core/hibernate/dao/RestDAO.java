@@ -27,43 +27,40 @@ public class RestDAO extends DefaultDAO {
 
 	protected final String ENTITY_NAME;
 
-	protected final long USER_ID;
-
-	public RestDAO(String entityName, long userId) {
+	public RestDAO(String entityName) {
 		super();
 		this.ENTITY_NAME = entityName;
-		this.USER_ID = userId;
 	}
 
-	public RestDAO(Session session, String entityName, long userId) {
+	public RestDAO(Session session, String entityName) {
 		super(session);
 		this.ENTITY_NAME = entityName;
-		this.USER_ID = userId;
 	}
 
 	protected String fetchHQL() {
 		return "FROM " + this.ENTITY_NAME + " WHERE 1 = 1";
 	}
 
-	protected String filterHQL(String filter, Map<String, Object> params) {
-		String query = fetchHQL();
-		if (filter != null && filter.length() > 0) {
-			params = new HashMap<>();
-			params.put("filter", "%" + filter + "%");
-			query += " AND " + GLOBAL_FILTER + " LIKE :filter";
-		}
-		return query;
-	}
-
 	public long getTotal(String filter) {
-		Map<String, Object> params = new HashMap<>();
-		String hql = "SELECT COUNT(*) " + this.filterHQL(filter, params);
+		String hql = "SELECT COUNT(*) " + fetchHQL();
+		HashMap<String, Object> params = new HashMap<>();
+		if (filter != null && filter.length() > 0) {
+			params.put("filter", "%" + filter + "%");
+			hql += " AND " + GLOBAL_FILTER + " LIKE :filter";
+		}
+
 		return (long) this.createQuery(hql, params).getSingleResult();
 	}
 
-	public List paging(String filter, int pageId, int pageSize, String sortString) {
-		Map<String, Object> params = new HashMap<>();
-		String hql = this.filterHQL(filter, params);
+	public List<?> paging(String filter, int pageId, int pageSize, String sortString) {
+		String hql = fetchHQL();
+		
+		//Init Filter
+		HashMap<String, Object> params = new HashMap<>();
+		if (filter != null && filter.length() > 0) {
+			params.put("filter", "%" + filter + "%");
+			hql += " AND " + GLOBAL_FILTER + " LIKE :filter";
+		}
 
 		// Build SortMap
 		if (sortString.length() > 0) {
@@ -89,8 +86,8 @@ public class RestDAO extends DefaultDAO {
 		return this.createQuery(hql, params, pageSize, start).getResultList();
 	}
 
-	public List fetchAll() {
-		List queryList = this.fetch(fetchHQL(), null);
+	public List<?> fetchAll() {
+		List<?> queryList = this.fetch(fetchHQL(), null);
 		if (queryList != null && queryList.size() > 0) {
 			return queryList;
 		}
@@ -151,6 +148,7 @@ public class RestDAO extends DefaultDAO {
 			if (autoCommit) {
 				beginTransaction();
 			}
+			entity = (T) getSession().merge(entity);
 			getSession().saveOrUpdate(entity);
 			if (autoCommit) {
 				commitTransaction();
@@ -171,6 +169,7 @@ public class RestDAO extends DefaultDAO {
 			if (autoCommit) {
 				beginTransaction();
 			}
+			entity = (HashMap<String, Object>) getSession().merge(this.ENTITY_NAME, entity);
 			getSession().saveOrUpdate(this.ENTITY_NAME, entity);
 			if (autoCommit) {
 				commitTransaction();
@@ -185,12 +184,8 @@ public class RestDAO extends DefaultDAO {
 		}
 	}
 
-	public void delete(Serializable id, boolean autoCommit) {
+	public <T extends Serializable> void delete(T entity, boolean autoCommit) {
 		try {
-			Map<String, Object> entity = this.fetchById(id);
-			if (entity == null) {
-				throw new Exception("There is no data to remove.");
-			}
 			if (autoCommit) {
 				beginTransaction();
 			}

@@ -30,12 +30,12 @@ public class TokenDAO extends RestDAO {
 	private final String UPDATE_EXPIRED_BY_TOKEN = "UPDATE TokenEntity t SET t.tokenExpired = :expired WHERE t.token = :token";
 
 	public TokenDAO() {
-		super(TokenEntity.class.getName(), 0);
+		super(TokenEntity.class.getName());
 		LOG.info("Start TokenDAO");
 	}
 
 	public TokenDAO(Session session) {
-		super(session, TokenEntity.class.getName(), 0);
+		super(session, TokenEntity.class.getName());
 	}
 
 	public void cleanToken(long userId) throws Exception {

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Application;
 
 import org.apache.log4j.Logger;
@@ -20,8 +21,10 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.internal.inject.Injections;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.process.internal.RequestScope;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.glassfish.jersey.server.ServerProperties;
+import org.hibernate.envers.RevisionListener;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.sdm.core.Setting;
@@ -30,10 +33,13 @@ import com.sdm.core.di.IAccessManager;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.filter.JacksonObjectMapper;
+import com.sdm.core.hibernate.audit.AuditListener;
 import com.sdm.core.util.JSPTemplateManager;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.util.mail.WebMailService;
 import com.sdm.master.util.AccessManager;
+
+import io.jsonwebtoken.Claims;
 
 /**
  *
@@ -50,6 +56,10 @@ public class ApplicationConfig extends Application {
 		DynamicConfiguration dc = Injections.getConfiguration(serviceLocator);
 		// Inject HttpSession
 		Injections.addBinding(Injections.newFactoryBinder(HttpSessionFactory.class).to(HttpSession.class).proxy(true)
+				.proxyForSameScope(false).in(RequestScoped.class), dc);
+		
+		//Inject Audit Listener
+		Injections.addBinding(Injections.newBinder(AuditListener.class).to(ContainerRequestContext.class).proxy(true)
 				.proxyForSameScope(false).in(RequestScoped.class), dc);
 
 		// Inject AccessManager

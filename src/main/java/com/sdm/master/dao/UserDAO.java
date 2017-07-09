@@ -26,13 +26,13 @@ public class UserDAO extends RestDAO {
 	private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token";
 	private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password";
 
-	public UserDAO(long userId) {
-		super(UserEntity.class.getName(), userId);
+	public UserDAO() {
+		super(UserEntity.class.getName());
 		LOG.info("Start DAO");
 	}
 
-	public UserDAO(Session session, long userId) {
-		super(session, UserEntity.class.getName(), userId);
+	public UserDAO(Session session) {
+		super(session, UserEntity.class.getName());
 	}
 
 	public UserEntity userAuth(String email, String password) throws Exception {

@@ -91,7 +91,7 @@ public class AccessManager implements IAccessManager {
         }
 
         //Check User Status
-        UserDAO userDAO = new UserDAO(authUserId);
+        UserDAO userDAO = new UserDAO();
         UserEntity user;
         try {
             user = userDAO.fetchById(authUserId);
@@ -130,7 +130,7 @@ public class AccessManager implements IAccessManager {
 
         //Check Permission by User Roles
         String className = method.getDeclaringClass().getName();
-        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), authUserId);
+        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession());
         boolean permission = false;
         for (RoleEntity role : user.getRoles()) {
             permission = permissionDAO.checkRole(role.getId(), className, method.getName(), httpMethod);

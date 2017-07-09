@@ -16,12 +16,12 @@ import com.sdm.master.entity.RoleEntity;
  */
 public class RoleDAO extends RestDAO {
 
-	public RoleDAO(long userId) {
-		super(RoleEntity.class.getName(), userId);
+	public RoleDAO() {
+		super(RoleEntity.class.getName());
 	}
 
-	public RoleDAO(Session session, long userId) {
-		super(session, RoleEntity.class.getName(), userId);
+	public RoleDAO(Session session) {
+		super(session, RoleEntity.class.getName());
 	}
 
 }

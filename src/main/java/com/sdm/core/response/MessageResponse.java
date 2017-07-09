@@ -7,11 +7,11 @@ package com.sdm.core.response;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
@@ -19,71 +19,82 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = {"code", "status", "content", "extra", "timestamp"})
+@JsonPropertyOrder(value = { "code", "status", "content", "timestamp" })
 public class MessageResponse implements IBaseResponse, Serializable {
-    
-    /**
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public MessageResponse(int code, ResponseType type,  String content) {
-        this.code = code;
-        this.status = type;        
-        this.content = content;
-    }
-    
-    public MessageResponse(){}
+	public MessageResponse(int code, ResponseType type, String message) {
+		this.code = code;
+		this.status = type;
+		this.message = message;
+	}
 
-    private int code;
-    private ResponseType status;
-    private String content;
-    
-    @JsonProperty("extra")
-    private Map<String, Object> debug;
+	public MessageResponse() {
+	}
 
-    public void setStatus(ResponseType status) {
-        this.status = status;
-    }
+	private int code;
+	private ResponseType status;
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+	@JsonIgnore
+	private String message;
+	
+	@JsonIgnore
+	private Map<String, Object> debug;
 
-    public void setCode(int code) {
-        this.code = code;
-    }
+	public void setStatus(ResponseType status) {
+		this.status = status;
+	}
 
-    public void setType(ResponseType type) {
-        this.status = type;
-    }
-    
-    @JsonGetter("extra")
-    public Map<String, Object> getDebug() {
-        return debug;
-    }
+	public void setCode(int code) {
+		this.code = code;
+	}
 
-    public void setDebug(Map<String, Object> debug) {
-        this.debug = debug;
-    }
+	public void setType(ResponseType type) {
+		this.status = type;
+	}
 
-    @Override
-    public int getCode() {
-        return this.code;
-    }
+	public Map<String, Object> getDebug() {
+		return debug;
+	}
 
-    @Override
-    public ResponseType getStatus() {
-        return this.status;
-    }
+	public void setDebug(Map<String, Object> debug) {
+		this.debug = debug;
+	}
 
-    @Override
-    public Object getContent() {
-        return this.content;
-    }
+	public String getMessage() {
+		return message;
+	}
 
-    @Override
-    public long getTimestamp() {
-        return (new Date()).getTime();
-    }
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	@Override
+	public int getCode() {
+		return this.code;
+	}
+
+	@Override
+	public ResponseType getStatus() {
+		return this.status;
+	}
+
+	@Override
+	public Object getContent() {
+		Map<String, Object> content = new HashMap<>();
+		if(this.debug != null) {
+			content.put("trace", this.debug);
+		}
+		content.put("message", this.message);
+		return content;
+	}
+
+	@Override
+	public long getTimestamp() {
+		return (new Date()).getTime();
+	}
 }

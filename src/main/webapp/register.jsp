@@ -101,14 +101,13 @@
                     "timestamp": (new Date()).getTime()
                 };
                 call_api("api/auth/register/", "post", data, function (res) {
-                    alert(res.content);
+                    alert(res.content.message);
                     window.location.href = "login.jsp";
                 }, function (res) {
-                    console.log(res);
                     var json = res.responseJSON;
                     if (json.code == 200) {
                         $("#server-message").addClass("alert alert-danger")
-                                .html('<strong>' + json.status + '</strong>' + json.content);
+                                .html('<strong>' + json.status + '</strong>' + json.content.message);
                     } else {
                         $.each(json.content, function (prop, value) {
                             console.log(prop + ":" + value);

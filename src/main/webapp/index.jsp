@@ -154,7 +154,7 @@
                         error: function (data) {
                             var json = data.responseJSON;
                             $("div#mainPanel").attr('class', 'panel panel-danger');
-                            show_message('danger', json.status, json.content);
+                            show_message('danger', json.status, json.content.message);
                         }
                     };
                     if (method.toLowerCase() === 'get') {
@@ -206,7 +206,7 @@
                     }
                     call_api(query, 'get', null, function (data) {
                         var content = data.content;
-                        $.each(content.data, function (index, item) {
+                        $.each(content, function (index, item) {
                             $('div#dataList').append(build_item(item));
                         });
                     });
@@ -218,7 +218,7 @@
                         var boolean = ['bool', 'boolean'];
                         var date = ['date', 'datetime'];
                         var content = response.content;
-                        $.each(content.data, function (index, property) {
+                        $.each(content, function (index, property) {
                             if ($.inArray(property.name, hide_columns) === -1) {
                                 var form_group = $('<div class="form-group">');
                                 if ($.inArray(property.type.toLowerCase(), boolean) > -1) {

@@ -20,6 +20,7 @@ public class HibernateConnector {
 
 	private static final Logger LOG = Logger.getLogger(HibernateConnector.class.getName());
 	private static HibernateConnector instance;
+	private static int instance_count = 0;
 	private SessionFactory mainFactory;
 
 	private HibernateConnector() {
@@ -31,6 +32,8 @@ public class HibernateConnector {
 		StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
 		try {
 			mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+			instance_count++;
+			LOG.info("Current Hibernate Instance Count : " + instance_count);
 		} catch (Exception e) {
 			LOG.error(e);
 			StandardServiceRegistryBuilder.destroy(registry);
@@ -46,10 +49,12 @@ public class HibernateConnector {
 		return instance.mainFactory;
 	}
 
-	public static void shutdown() {		
+	public static synchronized void shutdown() {		
 		if (instance != null) {
 			LOG.info("Shutting down hibernate session factory");
+			instance_count--;
 			instance.mainFactory.close();
+			LOG.info("Current Hibernate Instance Count : " + instance_count);
 		}
 	}
 }

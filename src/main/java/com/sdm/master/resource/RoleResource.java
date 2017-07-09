@@ -29,7 +29,7 @@ public class RoleResource extends RestResource<RoleEntity, Long> {
     @PostConstruct
     private void init() {
         if (this.mainDAO == null) {
-            this.mainDAO = new RoleDAO(getUserId());
+            this.mainDAO = new RoleDAO();
         }
     }
 

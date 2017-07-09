@@ -32,7 +32,7 @@ public class CustomerResource extends RestResource<CustomerEntity, Long> {
 
     @PostConstruct
     private void init() {
-        mainDAO = new CustomerDAO(getUserId());
+        mainDAO = new CustomerDAO();
     }
 
     @Override

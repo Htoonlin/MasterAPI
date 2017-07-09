@@ -17,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,194 +31,208 @@ import com.sdm.core.util.FileManager;
  *
  * @author Htoonlin
  */
+@Audited
 @Entity(name = "FileEntity")
 @Table(name = "tbl_file")
 public class FileEntity extends DefaultEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public static final char STORAGE = 'S';
-    public static final char EXTERNAL = 'E';
-    public static final char TRASH = 'T';
+	public static final char STORAGE = 'S';
+	public static final char EXTERNAL = 'E';
+	public static final char TRASH = 'T';
 
-    @JsonIgnore
-    @Formula(value = "concat(name, extension, type)")
-    private String search;
+	@JsonIgnore
+	@NotAudited
+	@Formula(value = "concat(name, extension, type)")
+	private String search;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false, columnDefinition = "BIGINT UNSIGNED")
-    @UIStructure(order = 0, label = "#", readOnly = true)
-    private BigInteger id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique = true, nullable = false, columnDefinition = "BIGINT UNSIGNED")
+	@UIStructure(order = 0, label = "#", readOnly = true)
+	private BigInteger id;
 
-    @UIStructure(order = 1, label = "Name")
-    @Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
-    private String name;
+	@UIStructure(order = 1, label = "Owner ID")
+	@Column(name = "owner", columnDefinition = "INT UNSIGNED", nullable = false)
+	private long ownerId;
 
-    @UIStructure(order = 2, label = "Ext.")
-    @Column(name = "extension", columnDefinition = "varchar(10)", length = 10, nullable = false)
-    private String extension;
+	@UIStructure(order = 2, label = "Name")
+	@Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
+	private String name;
 
-    @UIStructure(order = 3, label = "Type")
-    @Column(name = "type", columnDefinition = "varchar(50)", length = 50, nullable = false)
-    private String type;
+	@UIStructure(order = 3, label = "Ext.")
+	@Column(name = "extension", columnDefinition = "varchar(10)", length = 10, nullable = false)
+	private String extension;
 
-    @JsonIgnore
-    @Column(name = "size", columnDefinition = "INT UNSIGNED", nullable = false)
-    private long fileSize;
+	@UIStructure(order = 4, label = "Type")
+	@Column(name = "type", columnDefinition = "varchar(50)", length = 50, nullable = false)
+	private String type;
 
-    @JsonIgnore
-    @Column(name = "storagePath", columnDefinition = "varchar(1000)", length = 1000, nullable = true)
-    private String storagePath;
+	@JsonIgnore
+	@Column(name = "size", columnDefinition = "INT UNSIGNED", nullable = false)
+	private long fileSize;
 
-    @UIStructure(order = 4, label = "External URL")
-    @Column(name = "externalURL", columnDefinition = "varchar(1000)", length = 1000, nullable = true)
-    private String externalURL;
+	@JsonIgnore
+	@Column(name = "storagePath", columnDefinition = "varchar(1000)", length = 1000, nullable = true)
+	private String storagePath;
 
-    @JsonIgnore
-    @Column(name = "publicToken", columnDefinition = "char(25)", length = 25, nullable = true)
-    private String publicToken;
+	@UIStructure(order = 5, label = "External URL")
+	@Column(name = "externalURL", columnDefinition = "varchar(1000)", length = 1000, nullable = true)
+	private String externalURL;
 
-    @UIStructure(order = 5, label = "Status")
-    @Column(name = "status", columnDefinition = "char(1)", length = 1, nullable = false)
-    private char status;
+	@JsonIgnore
+	@Column(name = "publicToken", columnDefinition = "char(25)", length = 25, nullable = true)
+	private String publicToken;
 
-    public FileEntity() {
-        this.status = STORAGE;
-    }
+	@UIStructure(order = 6, label = "Status")
+	@Column(name = "status", columnDefinition = "char(1)", length = 1, nullable = false)
+	private char status;
 
-    public FileEntity(BigInteger id, String name, String extension, String type, long fileSize, String storagePath, String externalURL) {
-        if (externalURL == null || externalURL.length() <= 0) {
-            this.status = STORAGE;
-        } else {
-            this.status = EXTERNAL;
-        }
-        this.id = id;
-        this.name = name;
-        this.extension = extension;
-        this.type = type;
-        this.fileSize = fileSize;
-        this.storagePath = storagePath;
-    }
+	public FileEntity() {
+		this.status = STORAGE;
+	}
 
-    public String getSearch() {
-        return search;
-    }
+	public FileEntity(BigInteger id, long ownerId, String name, String extension, String type, long fileSize,
+			String storagePath, String externalURL) {
+		if (externalURL == null || externalURL.length() <= 0) {
+			this.status = STORAGE;
+		} else {
+			this.status = EXTERNAL;
+		}
+		this.ownerId = ownerId;
+		this.id = id;
+		this.name = name;
+		this.extension = extension;
+		this.type = type;
+		this.fileSize = fileSize;
+		this.storagePath = storagePath;
+	}
 
-    public void setSearch(String search) {
-        this.search = search;
-    }
+	public String getSearch() {
+		return search;
+	}
 
-    public BigInteger getId() {
-        return id;
-    }
+	public void setSearch(String search) {
+		this.search = search;
+	}
 
-    public void setId(BigInteger id) {
-        this.id = id;
-    }
+	public BigInteger getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setId(BigInteger id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public long getOwnerId() {
+		return ownerId;
+	}
 
-    public String getExtension() {
-        return extension;
-    }
+	public void setOwnerId(long ownerId) {
+		this.ownerId = ownerId;
+	}
 
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public String getExtension() {
+		return extension;
+	}
 
-    public long getFileSize() {
-        return fileSize;
-    }
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
 
-    public void setFileSize(long size) {
-        this.fileSize = size;
-    }
+	public String getType() {
+		return type;
+	}
 
-    @JsonGetter("size")
-    public String getSize() {
-        return FileManager.byteSize(fileSize);
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    @JsonSetter("size")
-    public void setSize() {
+	public long getFileSize() {
+		return fileSize;
+	}
 
-    }
+	public void setFileSize(long size) {
+		this.fileSize = size;
+	}
 
-    public String getStoragePath() {
-        return storagePath;
-    }
+	@JsonGetter("size")
+	public String getSize() {
+		return FileManager.byteSize(fileSize);
+	}
 
-    public void setStoragePath(String storagePath) {
-        this.storagePath = storagePath;
-    }
+	@JsonSetter("size")
+	public void setSize() {
 
-    public String getExternalURL() {
-        return externalURL;
-    }
+	}
 
-    public void setExternalURL(String externalURL) {
-        this.externalURL = externalURL;
-    }
+	public String getStoragePath() {
+		return storagePath;
+	}
 
-    public String getPublicToken() {
-        return publicToken;
-    }
+	public void setStoragePath(String storagePath) {
+		this.storagePath = storagePath;
+	}
 
-    public void setPublicToken(String publicToken) {
-        this.publicToken = publicToken;
-    }
+	public String getExternalURL() {
+		return externalURL;
+	}
 
-    public char getStatus() {
-        return status;
-    }
+	public void setExternalURL(String externalURL) {
+		this.externalURL = externalURL;
+	}
 
-    public void setStatus(char status) {
-        this.status = status;
-    }
+	public String getPublicToken() {
+		return publicToken;
+	}
 
-    /*@JsonGetter("public_url")
-    public String getPublicURL() {
-        if (externalURL != null && !externalURL.isEmpty()) {
-            return externalURL;
-        }
-        
-        return FileManager.publicFileURL(this.publicToken, this.extension);
-    }*/
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final FileEntity other = (FileEntity) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
-    }
+	public void setPublicToken(String publicToken) {
+		this.publicToken = publicToken;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 23 * hash + Objects.hashCode(this.id);
-        return hash;
-    }
+	public char getStatus() {
+		return status;
+	}
+
+	public void setStatus(char status) {
+		this.status = status;
+	}
+
+	/*
+	 * @JsonGetter("public_url") public String getPublicURL() { if (externalURL !=
+	 * null && !externalURL.isEmpty()) { return externalURL; }
+	 * 
+	 * return FileManager.publicFileURL(this.publicToken, this.extension); }
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final FileEntity other = (FileEntity) obj;
+		if (this.id != other.id) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 23 * hash + Objects.hashCode(this.id);
+		return hash;
+	}
 
 }
