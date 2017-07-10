@@ -76,10 +76,11 @@ public class UserResource extends RestResource<UserEntity, Long> {
 			String password = SecurityManager.md5String(request.getEmail(), rawPassword);
 			request.setPassword(password);
 			request.setStatus('A');
-			UserEntity createdUser = userDAO.insert(request, true);
 
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 			mailSend.welcomeUser(createdUser, rawPassword);
+			
+			UserEntity createdUser = userDAO.insert(request, true);
 			return new DefaultResponse<UserEntity>(createdUser);
 
 		} catch (Exception e) {
