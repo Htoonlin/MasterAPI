@@ -10,8 +10,5 @@ package com.sdm.core.response;
  * @author Htoonlin
  */
 public enum ResponseType {
-    SUCCESS,
-    INFO,
-    WARNING,
-    ERROR
+	SUCCESS, INFO, WARNING, ERROR
 }

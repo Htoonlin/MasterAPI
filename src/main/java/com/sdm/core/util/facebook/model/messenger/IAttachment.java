@@ -11,10 +11,10 @@ import com.fasterxml.jackson.annotation.JsonGetter;
  *
  * @author Htoonlin
  */
-public interface IAttachment{
-    @JsonGetter("type")
-    String getType();
-    
-    @JsonGetter("payload")
-    Object getPayload();
+public interface IAttachment {
+	@JsonGetter("type")
+	String getType();
+
+	@JsonGetter("payload")
+	Object getPayload();
 }

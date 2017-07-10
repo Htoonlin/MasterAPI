@@ -10,17 +10,16 @@ package com.sdm.core.request.model;
  * @author Htoonlin
  */
 public enum Logical {
-    SHOULD("OR"),
-    MUST("AND");
+	SHOULD("OR"), MUST("AND");
 
-    private final String value;
+	private final String value;
 
-    private Logical(String value) {
-        this.value = value;
-    }
+	private Logical(String value) {
+		this.value = value;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public String getValue() {
+		return value;
+	}
 
 }

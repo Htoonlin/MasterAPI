@@ -8,7 +8,7 @@
 		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/sundew_api?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=UTF-8</property>
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.connection.password">root</property>
-		<property name="hibernate.jdbc.batch_size">50</property>
+		<property name="hibernate.default_schema">sundew_api</property>
 		<property name="hibernate.hbm2ddl.auto">update</property>
 
 		<!-- Hibernate Enver properties -->
@@ -17,11 +17,14 @@
 		<property name="org.hibernate.envers.revision_type_field_name">action</property>
 
 		<!-- Hibernate C3P0 properties -->
-		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.min_size">3</property>
 		<property name="hibernate.c3p0.max_size">20</property>
-		<property name="hibernate.c3p0.timeout">300</property>
-		<property name="hibernate.c3p0.max_statements">50</property>
-		<property name="hibernate.c3p0.idle_test_period">3000</property>
+		<property name="hibernate.c3p0.max_statements">100</property>
+		<property name="hibernate.c3p0.timeout">180</property>
+		<property name="hibernate.c3p0.acquire_increment">1</property>
+		 <property name="hibernate.c3p0.acquireRetryAttempts">1</property>
+        <property name="hibernate.c3p0.acquireRetryDelay">250</property>
+		<property name="hibernate.c3p0.idle_test_period">1800</property>
 
 		<!-- Audit entity mapping -->
 		<mapping class="com.sdm.core.hibernate.entity.AuditEntity" />

@@ -25,19 +25,19 @@ import com.sdm.core.response.ResponseType;
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
-    @Override
-    public Response toResponse(WebApplicationException exception) {
-        Response exResponse = exception.getResponse();
-        MessageResponse message = new MessageResponse(exResponse.getStatus(), ResponseType.ERROR,
-                exception.getLocalizedMessage());
-        if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("StackTrace", exception.getStackTrace());
-            debug.put("Suppressed", exception.getSuppressed());
-            message.setDebug(debug);
-        }
+	@Override
+	public Response toResponse(WebApplicationException exception) {
+		Response exResponse = exception.getResponse();
+		MessageResponse message = new MessageResponse(exResponse.getStatus(), ResponseType.ERROR,
+				exception.getLocalizedMessage());
+		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+			Map<String, Object> debug = new HashMap<>();
+			debug.put("StackTrace", exception.getStackTrace());
+			debug.put("Suppressed", exception.getSuppressed());
+			message.setDebug(debug);
+		}
 
-        return Response.status(exResponse.getStatus()).entity(message).type(MediaType.APPLICATION_JSON).build();
-    }
+		return Response.status(exResponse.getStatus()).entity(message).type(MediaType.APPLICATION_JSON).build();
+	}
 
 }

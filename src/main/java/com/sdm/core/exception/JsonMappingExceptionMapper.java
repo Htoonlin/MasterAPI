@@ -23,17 +23,17 @@ import com.sdm.core.response.ResponseType;
  */
 public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingException> {
 
-    @Override
-    public Response toResponse(JsonMappingException exception) {
-        MessageResponse message = new MessageResponse(400, ResponseType.ERROR, exception.getOriginalMessage());
-        if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("StackTrace", exception.getStackTrace());
-            debug.put("Suppressed", exception.getSuppressed());
-            message.setDebug(debug);
-        }
+	@Override
+	public Response toResponse(JsonMappingException exception) {
+		MessageResponse message = new MessageResponse(400, ResponseType.ERROR, exception.getOriginalMessage());
+		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+			Map<String, Object> debug = new HashMap<>();
+			debug.put("StackTrace", exception.getStackTrace());
+			debug.put("Suppressed", exception.getSuppressed());
+			message.setDebug(debug);
+		}
 
-        return Response.status(400).entity(message).type(MediaType.APPLICATION_JSON).build();
-    }
+		return Response.status(400).entity(message).type(MediaType.APPLICATION_JSON).build();
+	}
 
 }

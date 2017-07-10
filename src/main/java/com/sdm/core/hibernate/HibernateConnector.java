@@ -49,7 +49,7 @@ public class HibernateConnector {
 		return instance.mainFactory;
 	}
 
-	public static synchronized void shutdown() {		
+	public static synchronized void shutdown() {
 		if (instance != null) {
 			LOG.info("Shutting down hibernate session factory");
 			instance_count--;

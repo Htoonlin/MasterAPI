@@ -15,13 +15,13 @@ import com.fasterxml.jackson.annotation.JsonSetter;
  *
  * @author Htoonlin
  */
-public interface IBaseRequest extends Serializable{
-    @JsonSetter("timestamp")
-    void setTimeStamp(long date);
+public interface IBaseRequest extends Serializable {
+	@JsonSetter("timestamp")
+	void setTimeStamp(long date);
 
-    @JsonIgnore
-    Map<String,String> getErrors();
+	@JsonIgnore
+	Map<String, String> getErrors();
 
-    @JsonIgnore
-    boolean isValid();    
+	@JsonIgnore
+	boolean isValid();
 }

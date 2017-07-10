@@ -35,7 +35,10 @@ import com.sdm.core.response.model.UIProperty;
  */
 public class DefaultEntity implements Serializable, IBaseRequest {
 
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1235673932545866165L;
 
 	private Date timestamp;
 

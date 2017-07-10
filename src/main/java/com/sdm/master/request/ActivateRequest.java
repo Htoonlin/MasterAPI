@@ -22,41 +22,44 @@ import com.sdm.core.hibernate.entity.DefaultEntity;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ActivateRequest extends DefaultEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4541648496908228267L;
 
-    private String email;
+	private String email;
 
-    private String token;
+	private String token;
 
-    private String deviceId;
+	private String deviceId;
 
-    @NotBlank(message = "DeviceID can't be blank.")
-    public String getDeviceId() {
-        return this.deviceId;
-    }
+	@NotBlank(message = "DeviceID can't be blank.")
+	public String getDeviceId() {
+		return this.deviceId;
+	}
 
-    public void setDeviceId(String value) {
-        this.deviceId = value;
-    }
+	public void setDeviceId(String value) {
+		this.deviceId = value;
+	}
 
-    @Email(message = "Ivalid email format.")
-    @NotBlank(message = "Email can't be blank.")
-    @Size(min = 6, max = 255)
-    public String getEmail() {
-        return this.email;
-    }
+	@Email(message = "Ivalid email format.")
+	@NotBlank(message = "Email can't be blank.")
+	@Size(min = 6, max = 255)
+	public String getEmail() {
+		return this.email;
+	}
 
-    @NotBlank(message = "Token can't be blank.")
-    @Size(min = 6, max = 255)
-    public String getToken() {
-        return this.token;
-    }
+	@NotBlank(message = "Token can't be blank.")
+	@Size(min = 6, max = 255)
+	public String getToken() {
+		return this.token;
+	}
 
-    public void setEmail(String value) {
-        this.email = value;
-    }
+	public void setEmail(String value) {
+		this.email = value;
+	}
 
-    public void setToken(String value) {
-        this.token = value;
-    }
+	public void setToken(String value) {
+		this.token = value;
+	}
 }

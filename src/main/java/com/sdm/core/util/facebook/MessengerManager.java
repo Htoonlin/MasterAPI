@@ -34,88 +34,85 @@ import com.sdm.core.util.facebook.model.messenger.Recipient;
  * @author Htoonlin
  */
 public class MessengerManager {
-    private static final Logger LOG = Logger.getLogger(MessengerManager.class.getName());
+	private static final Logger LOG = Logger.getLogger(MessengerManager.class.getName());
 
-    private final String FACEBOOK_API = "https://graph.facebook.com/v2.6/";
-    private final String MESSAGE_API = FACEBOOK_API + "me/messages?access_token=";
-    private final String PAGE_ACCESS_TOKEN;
+	private final String FACEBOOK_API = "https://graph.facebook.com/v2.6/";
+	private final String MESSAGE_API = FACEBOOK_API + "me/messages?access_token=";
+	private final String PAGE_ACCESS_TOKEN;
 
-    public MessengerManager(String token) {
-        this.PAGE_ACCESS_TOKEN = token;
-    }
+	public MessengerManager(String token) {
+		this.PAGE_ACCESS_TOKEN = token;
+	}
 
-    private Response getRequest(String url) {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(url);
-        return target.request().accept(MediaType.APPLICATION_JSON).get(Response.class);
-    }
+	private Response getRequest(String url) {
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(url);
+		return target.request().accept(MediaType.APPLICATION_JSON).get(Response.class);
+	}
 
-    private Response postRequest(String url, String data) {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(url);
-        return target.request().accept(MediaType.APPLICATION_JSON)
-                .post(Entity.json(data), Response.class);
-    }
+	private Response postRequest(String url, String data) {
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(url);
+		return target.request().accept(MediaType.APPLICATION_JSON).post(Entity.json(data), Response.class);
+	}
 
-    private void processResponse(Response response, IFacebookListener listener) {
-        if (listener == null) {
-            LOG.debug("Response Message : " + response.readEntity(String.class));
-            return;
-        }
+	private void processResponse(Response response, IFacebookListener listener) {
+		if (listener == null) {
+			LOG.debug("Response Message : " + response.readEntity(String.class));
+			return;
+		}
 
-        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-            String successString = response.readEntity(String.class);
-            LOG.info("Send Message : " + successString);
-            listener.success(response.getStatus(), successString);
-        } else {
-            String errorString = response.readEntity(String.class);
-            LOG.warn("Send Message : " + errorString);
-            listener.failed(response.getStatus(), errorString);
-        }
-    }
+		if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+			String successString = response.readEntity(String.class);
+			LOG.info("Send Message : " + successString);
+			listener.success(response.getStatus(), successString);
+		} else {
+			String errorString = response.readEntity(String.class);
+			LOG.warn("Send Message : " + errorString);
+			listener.failed(response.getStatus(), errorString);
+		}
+	}
 
-    public PageResponse getPageInfo() {
-        String url = FACEBOOK_API + "me?access_token=" + PAGE_ACCESS_TOKEN;
-        Response response = this.getRequest(url);
-        if (response.getStatus() == 200) {
-            String responseString = response.readEntity(String.class);
-            try {
-                return Globalizer.jsonMapper().readValue(responseString, PageResponse.class);
-            } catch (IOException exception) {
-                LOG.error("Invalid Response : " + responseString);
-            }
-        }
-        return null;
-    }
+	public PageResponse getPageInfo() {
+		String url = FACEBOOK_API + "me?access_token=" + PAGE_ACCESS_TOKEN;
+		Response response = this.getRequest(url);
+		if (response.getStatus() == 200) {
+			String responseString = response.readEntity(String.class);
+			try {
+				return Globalizer.jsonMapper().readValue(responseString, PageResponse.class);
+			} catch (IOException exception) {
+				LOG.error("Invalid Response : " + responseString);
+			}
+		}
+		return null;
+	}
 
-    public void sendMessage(Recipient recipient, Message message, IFacebookListener listener) {
-        try {
-            Map<String, Object> sendMessage = new HashMap<>();
-            sendMessage.put("recipient", recipient);
-            sendMessage.put("message", message);
-            String requestString = Globalizer.jsonMapper().writeValueAsString(sendMessage);
-            Response response = postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, requestString);
-            processResponse(response, listener);
-        } catch (JsonProcessingException ex) {
-            LOG.error(ex);
-        }
-    }
+	public void sendMessage(Recipient recipient, Message message, IFacebookListener listener) {
+		try {
+			Map<String, Object> sendMessage = new HashMap<>();
+			sendMessage.put("recipient", recipient);
+			sendMessage.put("message", message);
+			String requestString = Globalizer.jsonMapper().writeValueAsString(sendMessage);
+			Response response = postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, requestString);
+			processResponse(response, listener);
+		} catch (JsonProcessingException ex) {
+			LOG.error(ex);
+		}
+	}
 
-    public void sendJsonTemplate(String recipientId, String jsonFileURL, IFacebookListener listener) {
-        try {
-            JsonReader payload = Json.createReader(new FileReader(jsonFileURL));
-            JsonObject data = Json.createObjectBuilder()
-                    .add("recipient", Json.createObjectBuilder().add("id", recipientId))
-                    .add("message", Json.createObjectBuilder().add("attachment",
-                            Json.createObjectBuilder().add("type", "template")
-                                    .add("payload", payload.readObject()))
-                    ).build();
-            Response response = this.postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, data.toString());
-            processResponse(response, listener);
-        } catch (FileNotFoundException ex) {
-            this.sendMessage(new Recipient(recipientId),
-                    new Message("Invalid Template File."), listener);
-            LOG.error(ex);
-        }
-    }
+	public void sendJsonTemplate(String recipientId, String jsonFileURL, IFacebookListener listener) {
+		try {
+			JsonReader payload = Json.createReader(new FileReader(jsonFileURL));
+			JsonObject data = Json.createObjectBuilder()
+					.add("recipient", Json.createObjectBuilder().add("id", recipientId))
+					.add("message", Json.createObjectBuilder().add("attachment",
+							Json.createObjectBuilder().add("type", "template").add("payload", payload.readObject())))
+					.build();
+			Response response = this.postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, data.toString());
+			processResponse(response, listener);
+		} catch (FileNotFoundException ex) {
+			this.sendMessage(new Recipient(recipientId), new Message("Invalid Template File."), listener);
+			LOG.error(ex);
+		}
+	}
 }

@@ -11,43 +11,44 @@ import java.io.Serializable;
  *
  * @author htoonlin
  */
-public class Recipient implements Serializable{
-    /**
+public class Recipient implements Serializable {
+
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6226113458900356899L;
 	private String id;
-    private String phoneNumber;    
-    private String name;
+	private String phoneNumber;
+	private String name;
 
-    public Recipient(String id) {
-        this.id = id;
-    }
-    
-    public Recipient() {
-    }
-    
-    public String getId() {
-        return id;
-    }
+	public Recipient(String id) {
+		this.id = id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public Recipient() {
+	}
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

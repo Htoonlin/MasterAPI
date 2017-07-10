@@ -15,73 +15,72 @@ import com.sdm.core.util.MySQLManager;
  */
 public class Column implements Serializable {
 
-    /**
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 398208753923758899L;
 	private Aggregate aggregate;
-    private String name;
-    private String alias;
-    private boolean expression;
+	private String name;
+	private String alias;
+	private boolean expression;
 
-    public String defaultSQL() {
-        String sql = "";
-        if (aggregate != null && !aggregate.equals(Aggregate.NON)) {
-            sql += aggregate.getSQL(this.getName());
-        } else {
-            sql += this.getName();
-        }
+	public String defaultSQL() {
+		String sql = "";
+		if (aggregate != null && !aggregate.equals(Aggregate.NON)) {
+			sql += aggregate.getSQL(this.getName());
+		} else {
+			sql += this.getName();
+		}
 
-        if (alias != null && alias.length() > 0) {
-            sql += " AS " + MySQLManager.quoteName(alias);
-        }
+		if (alias != null && alias.length() > 0) {
+			sql += " AS " + MySQLManager.quoteName(alias);
+		}
 
-        return sql;
-    }
+		return sql;
+	}
 
-    public Column(String name) {
-        this.name = name;
-    }
+	public Column(String name) {
+		this.name = name;
+	}
 
-    public Column() {
-    }
+	public Column() {
+	}
 
-    public Column(String name, String alias) {
-        this.name = name;
-        this.alias = alias;
-    }
+	public Column(String name, String alias) {
+		this.name = name;
+		this.alias = alias;
+	}
 
-    public Aggregate getAggregate() {
-        return aggregate;
-    }
+	public Aggregate getAggregate() {
+		return aggregate;
+	}
 
-    public void setAggregate(Aggregate aggregate) {
-        this.aggregate = aggregate;
-    }
+	public void setAggregate(Aggregate aggregate) {
+		this.aggregate = aggregate;
+	}
 
-    public boolean isExpression() {
-        return expression;
-    }
+	public boolean isExpression() {
+		return expression;
+	}
 
-    public void setExpression(boolean expression) {
-        this.expression = expression;
-    }
+	public void setExpression(boolean expression) {
+		this.expression = expression;
+	}
 
-    public String getName() {
-        return "(" + (this.expression ? name : MySQLManager.quoteName(name)) + ")";
-    }
+	public String getName() {
+		return "(" + (this.expression ? name : MySQLManager.quoteName(name)) + ")";
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getAlias() {
-        return alias;
-    }
+	public String getAlias() {
+		return alias;
+	}
 
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
 
 }

@@ -15,44 +15,46 @@ import java.util.List;
  */
 public class Message implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8935280308330954156L;
+	private String text;
+	private List<QuickReply> quickReplies;
+	private IAttachment attachment;
 
-    private String text;
-    private List<QuickReply> quickReplies;
-    private IAttachment attachment;
+	public Message(String text) {
+		this.text = text;
+	}
 
-    public Message(String text) {
-        this.text = text;
-    }
+	public Message(IAttachment attachment) {
+		this.attachment = attachment;
+	}
 
-    public Message(IAttachment attachment) {
-        this.attachment = attachment;
-    }
+	public String getText() {
+		return text;
+	}
 
-    public String getText() {
-        return text;
-    }
+	public void setText(String text) {
+		this.text = text;
+	}
 
-    public void setText(String text) {
-        this.text = text;
-    }
+	public List<QuickReply> getQuickReplies() {
+		return quickReplies;
+	}
 
-    public List<QuickReply> getQuickReplies() {
-        return quickReplies;
-    }
+	public IAttachment getAttachment() {
+		return attachment;
+	}
 
-    public IAttachment getAttachment() {
-        return attachment;
-    }
+	public void setAttachment(IAttachment attachment) {
+		this.attachment = attachment;
+	}
 
-    public void setAttachment(IAttachment attachment) {
-        this.attachment = attachment;
-    }
-
-    public void addQuickReply(QuickReply quickReply) {
-        if (quickReplies == null) {
-            quickReplies = new ArrayList<>();
-        }        
-        quickReplies.add(quickReply);
-    }
+	public void addQuickReply(QuickReply quickReply) {
+		if (quickReplies == null) {
+			quickReplies = new ArrayList<>();
+		}
+		quickReplies.add(quickReply);
+	}
 }

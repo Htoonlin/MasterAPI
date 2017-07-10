@@ -12,21 +12,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import com.sdm.core.response.IBaseResponse;
+
 /**
  *
  * @author Htoonlin
  */
 public interface IBaseResource {
-    public Object getHttpSession();
-    
-    public int getUserId();
+	public Object getHttpSession();
 
-    public UriInfo getUriInfo();
+	public int getUserId();
 
-    public void setUriInfo(UriInfo uriInfo);
+	public UriInfo getUriInfo();
 
-    @GET
-    @Path("route")
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getRoutes();
+	public void setUriInfo(UriInfo uriInfo);
+
+	@GET
+	@Path("route")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getRoutes();
 }

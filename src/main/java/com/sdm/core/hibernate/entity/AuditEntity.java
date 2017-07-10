@@ -21,7 +21,7 @@ public class AuditEntity implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4287015242983266529L;
 
 	@Id
 	@GeneratedValue

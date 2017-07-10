@@ -18,48 +18,48 @@ import com.sdm.core.hibernate.entity.DefaultEntity;
  */
 public class SyncRequest<T extends Serializable> extends DefaultEntity implements Serializable {
 
-    /**
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 8588501696126454404L;
 	private long lastSync;
-    private List<T> insert;
-    private List<T> update;
-    private List<T> remove;
+	private List<T> insert;
+	private List<T> update;
+	private List<T> remove;
 
-    public SyncRequest() {}
+	public SyncRequest() {
+	}
 
-    @NotNull
-    public long getLastSync() {
-        return lastSync;
-    }
+	@NotNull
+	public long getLastSync() {
+		return lastSync;
+	}
 
-    public void setLastSync(long lastSync) {
-        this.lastSync = lastSync;
-    }
+	public void setLastSync(long lastSync) {
+		this.lastSync = lastSync;
+	}
 
-    public List<T> getInsert() {
-        return insert;
-    }
+	public List<T> getInsert() {
+		return insert;
+	}
 
-    public void setInsert(List<T> insert) {
-        this.insert = insert;
-    }
+	public void setInsert(List<T> insert) {
+		this.insert = insert;
+	}
 
-    public List<T> getUpdate() {
-        return update;
-    }
+	public List<T> getUpdate() {
+		return update;
+	}
 
-    public void setUpdate(List<T> update) {
-        this.update = update;
-    }
+	public void setUpdate(List<T> update) {
+		this.update = update;
+	}
 
-    public List<T> getRemove() {
-        return remove;
-    }
+	public List<T> getRemove() {
+		return remove;
+	}
 
-    public void setRemove(List<T> remove) {
-        this.remove = remove;
-    }
+	public void setRemove(List<T> remove) {
+		this.remove = remove;
+	}
 }

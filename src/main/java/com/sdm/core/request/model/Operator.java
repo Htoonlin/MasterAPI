@@ -10,24 +10,16 @@ package com.sdm.core.request.model;
  * @author Htoonlin
  */
 public enum Operator {
-    EQ("="),
-    NEQ("!="),
-    GT(">"),
-    GTE(">="),
-    LT("<"),
-    LTE("<="),
-    IN("IN"),
-    NIN("NOT IN"),
-    LIKE("LIKE"),
-    NLIKE("NOT LIKE");
+	EQ("="), NEQ("!="), GT(">"), GTE(">="), LT("<"), LTE("<="), IN("IN"), NIN("NOT IN"), LIKE("LIKE"), NLIKE(
+			"NOT LIKE");
 
-    private final String value;
+	private final String value;
 
-    Operator(String value) {
-        this.value = value;
-    }
-    
-    public String getValue(){
-        return this.value;
-    }
+	Operator(String value) {
+		this.value = value;
+	}
+
+	public String getValue() {
+		return this.value;
+	}
 }

@@ -79,7 +79,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 			UserEntity createdUser = userDAO.insert(request, true);
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 			mailSend.welcomeUser(createdUser, rawPassword);
-			
+
 			return new DefaultResponse<UserEntity>(createdUser);
 
 		} catch (Exception e) {

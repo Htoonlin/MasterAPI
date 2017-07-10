@@ -13,47 +13,48 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder(value = {"path", "method", "resource_class", "resource_method"})
-public class RouteInfo implements Serializable{
-    /**
+@JsonPropertyOrder(value = { "path", "method", "resource_class", "resource_method" })
+public class RouteInfo implements Serializable {
+
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6757987371372221883L;
 	private String resourceClass;
-    private String resourceMethod;
-    private String path;
-    private String method;
+	private String resourceMethod;
+	private String path;
+	private String method;
 
-    public String getResourceClass() {
-        return resourceClass;
-    }
+	public String getResourceClass() {
+		return resourceClass;
+	}
 
-    public void setResourceClass(String resourceClass) {
-        this.resourceClass = resourceClass;
-    }
+	public void setResourceClass(String resourceClass) {
+		this.resourceClass = resourceClass;
+	}
 
-    public String getResourceMethod() {
-        return resourceMethod;
-    }
+	public String getResourceMethod() {
+		return resourceMethod;
+	}
 
-    public void setResourceMethod(String resourceMethod) {
-        this.resourceMethod = resourceMethod;
-    }
-    
-    public String getMethod() {
-        return method;
-    }
+	public void setResourceMethod(String resourceMethod) {
+		this.resourceMethod = resourceMethod;
+	}
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
+	public String getMethod() {
+		return method;
+	}
 
-    public String getPath() {
-        return path;
-    }
+	public void setMethod(String method) {
+		this.method = method;
+	}
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 }

@@ -40,7 +40,6 @@ public class DefaultDAO {
 		if (this.mainSession == null || !this.mainSession.isOpen()) {
 			return HibernateConnector.getFactory().getCurrentSession();
 		}
-		AuditStorage.INSTANCE.set(this.USER_ID);
 		return this.mainSession;
 	}
 
@@ -50,6 +49,7 @@ public class DefaultDAO {
 	}
 
 	public void beginTransaction() {
+		AuditStorage.INSTANCE.set(this.USER_ID);
 		this.getSession().beginTransaction();
 	}
 

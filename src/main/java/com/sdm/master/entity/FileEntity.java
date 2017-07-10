@@ -36,8 +36,10 @@ import com.sdm.core.util.FileManager;
 @Table(name = "tbl_file")
 public class FileEntity extends DefaultEntity implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2692423129475255385L;
 	public static final char STORAGE = 'S';
 	public static final char EXTERNAL = 'E';
 	public static final char TRASH = 'T';

@@ -23,16 +23,16 @@ import com.sdm.core.response.IBaseResponse;
  */
 public interface IUtilResource {
 
-    @POST
-    @Path("query")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse queryData(QueryRequest request) throws Exception;
+	@POST
+	@Path("query")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse queryData(QueryRequest request) throws Exception;
 
-    @POST
-    @Path("sync")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public <T extends Serializable> IBaseResponse syncData(SyncRequest<T> request) throws Exception;
+	@POST
+	@Path("sync")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public <T extends Serializable> IBaseResponse syncData(SyncRequest<T> request) throws Exception;
 
 }

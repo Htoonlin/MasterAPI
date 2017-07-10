@@ -37,88 +37,84 @@ import com.sdm.master.request.ChangePasswordRequest;
 @Path("/me")
 public class ProfileResource extends DefaultResource {
 
-    private static final Logger LOG = Logger.getLogger(ProfileResource.class.getName());
+	private static final Logger LOG = Logger.getLogger(ProfileResource.class.getName());
 
-    private UserDAO userDAO;
+	private UserDAO userDAO;
 
-    @PostConstruct
-    protected void init() {
-        userDAO = new UserDAO(getUserId());
-    }
+	@PostConstruct
+	protected void init() {
+		userDAO = new UserDAO(getUserId());
+	}
 
-    @RolesAllowed("user")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getProfile() throws Exception {
-        UserEntity user = userDAO.fetchById(getUserId());
-        if (user == null) {
-            return new MessageResponse(204, ResponseType.WARNING,
-                    "There is no user. (or) User is not active.");
-        }
-        return new DefaultResponse<UserEntity>(user);
-    }
+	@RolesAllowed("user")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getProfile() throws Exception {
+		UserEntity user = userDAO.fetchById(getUserId());
+		if (user == null) {
+			return new MessageResponse(204, ResponseType.WARNING, "There is no user. (or) User is not active.");
+		}
+		return new DefaultResponse<UserEntity>(user);
+	}
 
-    @RolesAllowed("user")
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public IBaseResponse setProfile(UserEntity request) throws Exception {
-        try {
-            UserEntity currentUser = userDAO.fetchById(getUserId());
-            if (currentUser == null) {
-                return new MessageResponse(204, ResponseType.WARNING,
-                        "There is no user. (or) User is not active.");
-            }
-            request.setPassword(currentUser.getPassword());
+	@RolesAllowed("user")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public IBaseResponse setProfile(UserEntity request) throws Exception {
+		try {
+			UserEntity currentUser = userDAO.fetchById(getUserId());
+			if (currentUser == null) {
+				return new MessageResponse(204, ResponseType.WARNING, "There is no user. (or) User is not active.");
+			}
+			request.setPassword(currentUser.getPassword());
 
-            /*if (!request.isValid()) {
-                return new ErrorResponse(request.getErrors());
-            }*/
-            currentUser.setDisplayName(request.getDisplayName());
-            currentUser.setOnline(request.isOnline());
-            currentUser.setCountryCode(request.getCountryCode());
-            currentUser.setProfileImage(request.getProfileImage());
-            currentUser = userDAO.update(currentUser, true);
-            return new DefaultResponse<UserEntity>(currentUser);
-        } catch (Exception e) {
-            LOG.error(e);
-            throw e;
-        }
-    }
+			/*
+			 * if (!request.isValid()) { return new ErrorResponse(request.getErrors()); }
+			 */
+			currentUser.setDisplayName(request.getDisplayName());
+			currentUser.setOnline(request.isOnline());
+			currentUser.setCountryCode(request.getCountryCode());
+			currentUser.setProfileImage(request.getProfileImage());
+			currentUser = userDAO.update(currentUser, true);
+			return new DefaultResponse<UserEntity>(currentUser);
+		} catch (Exception e) {
+			LOG.error(e);
+			throw e;
+		}
+	}
 
-    @RolesAllowed("user")
-    @Path("changePassword")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse changePassword(ChangePasswordRequest request) throws Exception {
-        try {
-            if (!request.isValid()) {
-                Map<String, String> errors = request.getErrors();
-                return new ErrorResponse(errors);
-            }
+	@RolesAllowed("user")
+	@Path("changePassword")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse changePassword(ChangePasswordRequest request) throws Exception {
+		try {
+			if (!request.isValid()) {
+				Map<String, String> errors = request.getErrors();
+				return new ErrorResponse(errors);
+			}
 
-            String oldPassword = SecurityManager.md5String(request.getEmail(), request.getOldPassword());
-            UserEntity user = userDAO.userAuth(request.getEmail(), oldPassword);
+			String oldPassword = SecurityManager.md5String(request.getEmail(), request.getOldPassword());
+			UserEntity user = userDAO.userAuth(request.getEmail(), oldPassword);
 
-            if (user == null || user.getId() != getUserId()) {
-                return new MessageResponse(204, ResponseType.WARNING,
-                        "There is no data for your request.");
-            }
+			if (user == null || user.getId() != getUserId()) {
+				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+			}
 
-            if (!(user.getEmail().equalsIgnoreCase(request.getEmail())
-                    && user.getPassword().equals(oldPassword))) {
-                return new MessageResponse(400, ResponseType.WARNING,
-                        "Hey! your old password is wrong. pls try again.");
-            }
-            String newPassword = SecurityManager.md5String(request.getEmail(), request.getNewPassword());
-            user.setPassword(newPassword);
-            userDAO.update(user, true);
-            return new MessageResponse(202, ResponseType.SUCCESS,
-                    "We updated the new password on your request successfully.");
-        } catch (Exception e) {
-            LOG.error(e);
-            throw e;
-        }
-    }
+			if (!(user.getEmail().equalsIgnoreCase(request.getEmail()) && user.getPassword().equals(oldPassword))) {
+				return new MessageResponse(400, ResponseType.WARNING,
+						"Hey! your old password is wrong. pls try again.");
+			}
+			String newPassword = SecurityManager.md5String(request.getEmail(), request.getNewPassword());
+			user.setPassword(newPassword);
+			userDAO.update(user, true);
+			return new MessageResponse(202, ResponseType.SUCCESS,
+					"We updated the new password on your request successfully.");
+		} catch (Exception e) {
+			LOG.error(e);
+			throw e;
+		}
+	}
 }

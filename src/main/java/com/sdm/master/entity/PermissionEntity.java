@@ -33,7 +33,11 @@ import com.sdm.core.hibernate.entity.UIStructure;
 @Entity(name = "PermissionEntity")
 @Table(name = "tbl_permission")
 public class PermissionEntity extends DefaultEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 231291254158536747L;
 
 	@JsonIgnore
 	@NotAudited

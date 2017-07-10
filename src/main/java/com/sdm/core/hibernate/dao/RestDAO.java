@@ -54,8 +54,8 @@ public class RestDAO extends DefaultDAO {
 
 	public List<?> paging(String filter, int pageId, int pageSize, String sortString) {
 		String hql = fetchHQL();
-		
-		//Init Filter
+
+		// Init Filter
 		HashMap<String, Object> params = new HashMap<>();
 		if (filter != null && filter.length() > 0) {
 			params.put("filter", "%" + filter + "%");

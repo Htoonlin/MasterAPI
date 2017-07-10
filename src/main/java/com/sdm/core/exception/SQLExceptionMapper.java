@@ -25,17 +25,17 @@ import com.sdm.core.response.ResponseType;
 @Provider
 public class SQLExceptionMapper implements ExceptionMapper<SQLException> {
 
-    @Override
-    public Response toResponse(SQLException exception) {
-        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
-        if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("StackTrace", exception.getStackTrace());
-            debug.put("Suppressed", exception.getSuppressed());
-            message.setDebug(debug);
-        }
+	@Override
+	public Response toResponse(SQLException exception) {
+		MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
+		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+			Map<String, Object> debug = new HashMap<>();
+			debug.put("StackTrace", exception.getStackTrace());
+			debug.put("Suppressed", exception.getSuppressed());
+			message.setDebug(debug);
+		}
 
-        return Response.serverError().entity(message).type(MediaType.APPLICATION_JSON).build();
-    }
+		return Response.serverError().entity(message).type(MediaType.APPLICATION_JSON).build();
+	}
 
 }

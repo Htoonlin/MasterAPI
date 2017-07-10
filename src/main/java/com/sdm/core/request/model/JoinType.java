@@ -10,5 +10,5 @@ package com.sdm.core.request.model;
  * @author Htoonlin
  */
 public enum JoinType {
-    INNER, LEFT, CROSS;
+	INNER, LEFT, CROSS;
 }

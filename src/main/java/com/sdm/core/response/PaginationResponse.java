@@ -22,8 +22,10 @@ import com.sdm.core.request.QueryRequest;
 		"content", "extra", "timestamp" })
 public class PaginationResponse<T extends Serializable> extends DefaultResponse<T> implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5020402341964835561L;
 	private List<T> data;
 	private long total;
 	private int currentPage;

@@ -24,16 +24,16 @@ import com.sdm.core.response.ResponseType;
  */
 public class HibernateExceptionMapper implements ExceptionMapper<HibernateException> {
 
-    @Override
-    public Response toResponse(HibernateException exception) {
-        MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getLocalizedMessage());
-        if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("StackTrace", exception.getStackTrace());
-            debug.put("Suppressed", exception.getSuppressed());
-            message.setDebug(debug);
-        }
-        return Response.status(500).entity(message).type(MediaType.APPLICATION_JSON).build();
-    }
+	@Override
+	public Response toResponse(HibernateException exception) {
+		MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getLocalizedMessage());
+		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+			Map<String, Object> debug = new HashMap<>();
+			debug.put("StackTrace", exception.getStackTrace());
+			debug.put("Suppressed", exception.getSuppressed());
+			message.setDebug(debug);
+		}
+		return Response.status(500).entity(message).type(MediaType.APPLICATION_JSON).build();
+	}
 
 }

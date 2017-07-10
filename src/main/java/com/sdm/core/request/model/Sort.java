@@ -10,6 +10,5 @@ package com.sdm.core.request.model;
  * @author Htoonlin
  */
 public enum Sort {
-    ASC,
-    DESC
+	ASC, DESC
 }

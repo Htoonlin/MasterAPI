@@ -12,5 +12,5 @@ import java.util.Map;
  * @author Htoonlin
  */
 public interface ITemplateManager {
-    String buildTemplate(String template, Map<String, Object> data);
+	String buildTemplate(String template, Map<String, Object> data);
 }

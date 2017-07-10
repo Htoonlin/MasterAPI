@@ -17,35 +17,35 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class MediaAttachment implements IAttachment, Serializable {
 
-    public enum Type {
-        IMAGE,
-        AUDIO,
-        VIDEO,
-        FILE;
-    }
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2362817535413517369L;
 
-    private static final long serialVersionUID = 1L;
+	public enum Type {
+		IMAGE, AUDIO, VIDEO, FILE;
+	}
 
-    @JsonIgnore
-    private final Type type;
+	@JsonIgnore
+	private final Type type;
 
-    @JsonIgnore
-    private final String url;
+	@JsonIgnore
+	private final String url;
 
-    public MediaAttachment(Type type, String url) {
-        this.type = type;
-        this.url = url;
-    }
+	public MediaAttachment(Type type, String url) {
+		this.type = type;
+		this.url = url;
+	}
 
-    @Override
-    public String getType() {
-        return type.toString().toLowerCase();
-    }
+	@Override
+	public String getType() {
+		return type.toString().toLowerCase();
+	}
 
-    @Override
-    public Object getPayload() {
-        Map<String, String> payload = new HashMap<>();
-        payload.put("url", url);
-        return payload;
-    }
+	@Override
+	public Object getPayload() {
+		Map<String, String> payload = new HashMap<>();
+		payload.put("url", url);
+		return payload;
+	}
 }

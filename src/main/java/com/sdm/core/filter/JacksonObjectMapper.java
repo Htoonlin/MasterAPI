@@ -16,15 +16,15 @@ import com.sdm.core.Globalizer;
  */
 public class JacksonObjectMapper implements ContextResolver<ObjectMapper> {
 
-    final ObjectMapper defaultObjectMapper;
+	final ObjectMapper defaultObjectMapper;
 
-    public JacksonObjectMapper() {
-        defaultObjectMapper = Globalizer.jsonMapper();
-    }
+	public JacksonObjectMapper() {
+		defaultObjectMapper = Globalizer.jsonMapper();
+	}
 
-    @Override
-    public ObjectMapper getContext(final Class<?> type) {
-        return defaultObjectMapper;
-    }
+	@Override
+	public ObjectMapper getContext(final Class<?> type) {
+		return defaultObjectMapper;
+	}
 
 }

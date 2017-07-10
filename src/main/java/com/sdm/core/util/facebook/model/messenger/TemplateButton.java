@@ -14,88 +14,85 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Htoonlin
  */
-public class TemplateButton implements Serializable{
+public class TemplateButton implements Serializable {
 
-    /**
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 8386357143415731276L;
 
 	public enum ButtonType {
-        WEB_URL,
-        POSTBACK,
-        PHONE_NUMBER,
-        ELEMENT_SHARE;
-    }
+		WEB_URL, POSTBACK, PHONE_NUMBER, ELEMENT_SHARE;
+	}
 
-    @JsonIgnore
-    private ButtonType type;
-    private String title;
-    private String url;
-    private String payload;
-    private String webviewHeightRatio;
-    private boolean messengerExtensions;
-    private String fallbackUrl;
+	@JsonIgnore
+	private ButtonType type;
+	private String title;
+	private String url;
+	private String payload;
+	private String webviewHeightRatio;
+	private boolean messengerExtensions;
+	private String fallbackUrl;
 
-    public ButtonType getType() {
-        return type;
-    }
+	public ButtonType getType() {
+		return type;
+	}
 
-    @JsonGetter("type")
-    public String getTypeString() {
-        return type.toString().toLowerCase();
-    }
+	@JsonGetter("type")
+	public String getTypeString() {
+		return type.toString().toLowerCase();
+	}
 
-    public void setType(ButtonType type) {
-        this.type = type;
-    }
+	public void setType(ButtonType type) {
+		this.type = type;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public String getPayload() {
-        return payload;
-    }
+	public String getPayload() {
+		return payload;
+	}
 
-    public void setPayload(String payload) {
-        this.payload = payload;
-    }
+	public void setPayload(String payload) {
+		this.payload = payload;
+	}
 
-    public String getWebviewHeightRatio() {
-        return webviewHeightRatio;
-    }
+	public String getWebviewHeightRatio() {
+		return webviewHeightRatio;
+	}
 
-    public void setWebviewHeightRatio(String webviewHeightRatio) {
-        this.webviewHeightRatio = webviewHeightRatio;
-    }
+	public void setWebviewHeightRatio(String webviewHeightRatio) {
+		this.webviewHeightRatio = webviewHeightRatio;
+	}
 
-    public boolean isMessengerExtensions() {
-        return messengerExtensions;
-    }
+	public boolean isMessengerExtensions() {
+		return messengerExtensions;
+	}
 
-    public void setMessengerExtensions(boolean messengerExtensions) {
-        this.messengerExtensions = messengerExtensions;
-    }
+	public void setMessengerExtensions(boolean messengerExtensions) {
+		this.messengerExtensions = messengerExtensions;
+	}
 
-    public String getFallbackUrl() {
-        return fallbackUrl;
-    }
+	public String getFallbackUrl() {
+		return fallbackUrl;
+	}
 
-    public void setFallbackUrl(String fallbackUrl) {
-        this.fallbackUrl = fallbackUrl;
-    }
+	public void setFallbackUrl(String fallbackUrl) {
+		this.fallbackUrl = fallbackUrl;
+	}
 
 }

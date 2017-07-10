@@ -19,16 +19,16 @@ import com.sdm.core.util.mail.MailInfo;
  */
 public interface IMailManager {
 
-    public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
-    
-    public boolean checkMail(String email) throws IOException;
+	public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
 
-    Response sendAttachment(MailInfo mailInfo, File attachment);
+	public boolean checkMail(String email) throws IOException;
 
-    Response sendAttachments(MailInfo mailInfo, List<File> attachments);
+	Response sendAttachment(MailInfo mailInfo, File attachment);
 
-    Response sendHTML(MailInfo mailInfo) throws Exception;
+	Response sendAttachments(MailInfo mailInfo, List<File> attachments);
 
-    Response sendRaw(MailInfo mailInfo) throws Exception;
+	Response sendHTML(MailInfo mailInfo) throws Exception;
+
+	Response sendRaw(MailInfo mailInfo) throws Exception;
 
 }

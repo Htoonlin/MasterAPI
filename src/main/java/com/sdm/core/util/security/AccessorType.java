@@ -10,7 +10,5 @@ package com.sdm.core.util.security;
  * @author Htoonlin
  */
 public enum AccessorType {
-    OWNER,
-    ROLE,
-    PUBLIC;
+	OWNER, ROLE, PUBLIC;
 }

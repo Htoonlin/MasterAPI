@@ -51,7 +51,7 @@ public class ApplicationConfig extends Application {
 		// Inject HttpSession
 		Injections.addBinding(Injections.newFactoryBinder(HttpSessionFactory.class).to(HttpSession.class).proxy(true)
 				.proxyForSameScope(false).in(RequestScoped.class), dc);
-		
+
 		// Inject AccessManager
 		Injections.addBinding(Injections.newBinder(AccessManager.class).to(IAccessManager.class), dc);
 
@@ -64,7 +64,7 @@ public class ApplicationConfig extends Application {
 		} else {
 			Injections.addBinding(Injections.newBinder(WebMailService.class).to(IMailManager.class), dc);
 		}
-		
+
 		dc.commit();
 		LOG.info("Successfully loaded Dependency Injections....");
 	}

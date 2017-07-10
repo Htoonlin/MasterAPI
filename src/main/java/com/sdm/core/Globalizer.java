@@ -27,96 +27,91 @@ import com.sdm.core.util.security.AccessorType;
  */
 public class Globalizer {
 
-    public static final String AUTH_SUBJECT_PREFIX = "USER-";
-    public static final String AUTH_TYPE = "Bearer";
-    public static final String SESSION_USER_ID = "com.sdm.session.auth_user_id";
-    public static final String SESSION_USER_TOKEN = "com.sdm.session.user_token";
+	public static final String AUTH_SUBJECT_PREFIX = "USER-";
+	public static final String AUTH_TYPE = "Bearer";
+	public static final String SESSION_USER_ID = "com.sdm.session.auth_user_id";
+	public static final String SESSION_USER_TOKEN = "com.sdm.session.user_token";
 
-    public static ObjectMapper jsonMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        //mapper.setDateFormat(Setting.getInstance().DATE_TIME_FORMAT);
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
-        return mapper;
-    }
+	public static ObjectMapper jsonMapper() {
+		ObjectMapper mapper = new ObjectMapper();
+		// mapper.setDateFormat(Setting.getInstance().DATE_TIME_FORMAT);
+		mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+		mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+		return mapper;
+	}
 
-    public static String camelToLowerUnderScore(String input) {
-        /*String regex = "([a-z])([A-Z]+)";
-        String replacement = "$1_$2";
-        return input.replaceAll(regex, replacement).toLowerCase();*/
-        return (new PropertyNamingStrategy.SnakeCaseStrategy()).translate(input);
-    }
+	public static String camelToLowerUnderScore(String input) {
+		/*
+		 * String regex = "([a-z])([A-Z]+)"; String replacement = "$1_$2"; return
+		 * input.replaceAll(regex, replacement).toLowerCase();
+		 */
+		return (new PropertyNamingStrategy.SnakeCaseStrategy()).translate(input);
+	}
 
-    public static String camelToReadable(String input) {
-        return input.replaceAll(
-                String.format("%s|%s|%s",
-                        "(?<=[A-Z])(?=[A-Z][a-z])",
-                        "(?<=[^A-Z])(?=[A-Z])",
-                        "(?<=[A-Za-z])(?=[^A-Za-z])"
-                ),
-                " "
-        );
-    }
+	public static String camelToReadable(String input) {
+		return input.replaceAll(String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
+				"(?<=[A-Za-z])(?=[^A-Za-z])"), " ");
+	}
 
-    public static boolean isHttpSuccess(String code) {
-        if (code.matches("\\d{3}")) {
-            int status = Integer.parseInt(code);
-            return (status >= 100 && status <= 511);
-        }
-        return false;
-    }
+	public static boolean isHttpSuccess(String code) {
+		if (code.matches("\\d{3}")) {
+			int status = Integer.parseInt(code);
+			return (status >= 100 && status <= 511);
+		}
+		return false;
+	}
 
-    public static String getBasePath(HttpServletRequest request) {
-        String url = "";
-        String schema = request.getScheme();
-        String server = request.getServerName();
-        String contextPath = request.getContextPath();
-        int port = request.getServerPort();
-        if (port == 80 || port == 443) {
-            url = String.format("%s://%s", schema, server);
-        } else {
-            url = String.format("%s://%s:%s", schema, server, port);
-        }
+	public static String getBasePath(HttpServletRequest request) {
+		String url = "";
+		String schema = request.getScheme();
+		String server = request.getServerName();
+		String contextPath = request.getContextPath();
+		int port = request.getServerPort();
+		if (port == 80 || port == 443) {
+			url = String.format("%s://%s", schema, server);
+		} else {
+			url = String.format("%s://%s:%s", schema, server, port);
+		}
 
-        return url + contextPath;
-    }
+		return url + contextPath;
+	}
 
-    public static String getDateString(String format, Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat(format);
-        return formatter.format(date);
-    }
+	public static String getDateString(String format, Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		return formatter.format(date);
+	}
 
-    public static Date getTokenExpired() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_MONTH, Setting.getInstance().AUTH_TOKEN_LIFE);
-        return cal.getTime();
-    }
+	public static Date getTokenExpired() {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH, Setting.getInstance().AUTH_TOKEN_LIFE);
+		return cal.getTime();
+	}
 
-    public static boolean validTimeStamp(Date timestamp) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(timestamp);
-        cal.add(Calendar.MINUTE, Setting.getInstance().SECURITY_TIMESTAMP_LIFE);
-        Date checkDate = cal.getTime();
-        return checkDate.after(new Date());
-    }
+	public static boolean validTimeStamp(Date timestamp) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(timestamp);
+		cal.add(Calendar.MINUTE, Setting.getInstance().SECURITY_TIMESTAMP_LIFE);
+		Date checkDate = cal.getTime();
+		return checkDate.after(new Date());
+	}
 
-    public static String generateToken(String chars, int length) {
-        SecureRandom rnd = new SecureRandom();
-        StringBuilder pass = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            pass.append(chars.charAt(rnd.nextInt(chars.length())));
-        }
+	public static String generateToken(String chars, int length) {
+		SecureRandom rnd = new SecureRandom();
+		StringBuilder pass = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			pass.append(chars.charAt(rnd.nextInt(chars.length())));
+		}
 
-        return pass.toString();
-    }
+		return pass.toString();
+	}
 
-    public static boolean hacAccess(String permission, AccessorType accessor, AccessType type) {
-        byte allow = (byte) Character.digit(permission.charAt(accessor.ordinal()), 16);
-        byte access = (byte) type.getValue();
-        return ((allow & access) == access);
-    }
+	public static boolean hacAccess(String permission, AccessorType accessor, AccessType type) {
+		byte allow = (byte) Character.digit(permission.charAt(accessor.ordinal()), 16);
+		byte access = (byte) type.getValue();
+		return ((allow & access) == access);
+	}
 }

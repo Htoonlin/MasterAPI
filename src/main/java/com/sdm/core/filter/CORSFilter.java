@@ -25,18 +25,19 @@ import com.sdm.core.Setting;
 @Priority(Priorities.HEADER_DECORATOR)
 public class CORSFilter implements ContainerResponseFilter {
 
-    @Override
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        MultivaluedMap<String, Object> headers = responseContext.getHeaders();        
-        headers.add("Access-Control-Allow-Origin", Setting.getInstance().CORS_ORIGIN); 	
-        headers.add("Access-Control-Allow-Headers", Setting.getInstance().CORS_HEADERS);
-        headers.add("Access-Control-Allow-Credentials", true);
-        headers.add("Access-Control-Allow-Methods", Setting.getInstance().CORS_METHODS);
-        headers.add("Access-Control-Max-Age", Setting.getInstance().CORS_MAX_AGE);
-        headers.add("Access-Control-Expose-Headers", "xsrf-token");
-        if("OPTIONS".equals(requestContext.getMethod())){
-            responseContext.setStatus(200);            
-        }
-    }
+	@Override
+	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+			throws IOException {
+		MultivaluedMap<String, Object> headers = responseContext.getHeaders();
+		headers.add("Access-Control-Allow-Origin", Setting.getInstance().CORS_ORIGIN);
+		headers.add("Access-Control-Allow-Headers", Setting.getInstance().CORS_HEADERS);
+		headers.add("Access-Control-Allow-Credentials", true);
+		headers.add("Access-Control-Allow-Methods", Setting.getInstance().CORS_METHODS);
+		headers.add("Access-Control-Max-Age", Setting.getInstance().CORS_MAX_AGE);
+		headers.add("Access-Control-Expose-Headers", "xsrf-token");
+		if ("OPTIONS".equals(requestContext.getMethod())) {
+			responseContext.setStatus(200);
+		}
+	}
 
 }

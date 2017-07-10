@@ -25,7 +25,7 @@ public class MessageResponse implements IBaseResponse, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -459150304625745739L;
 
 	public MessageResponse(int code, ResponseType type, String message) {
 		this.code = code;
@@ -41,7 +41,7 @@ public class MessageResponse implements IBaseResponse, Serializable {
 
 	@JsonIgnore
 	private String message;
-	
+
 	@JsonIgnore
 	private Map<String, Object> debug;
 
@@ -86,7 +86,7 @@ public class MessageResponse implements IBaseResponse, Serializable {
 	@Override
 	public Object getContent() {
 		Map<String, Object> content = new HashMap<>();
-		if(this.debug != null) {
+		if (this.debug != null) {
 			content.put("trace", this.debug);
 		}
 		content.put("message", this.message);

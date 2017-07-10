@@ -31,99 +31,98 @@ import com.sdm.core.response.model.RouteInfo;
  */
 public class DefaultResource implements IBaseResource {
 
-    private static final Logger LOG = Logger.getLogger(DefaultResource.class.getName());
+	private static final Logger LOG = Logger.getLogger(DefaultResource.class.getName());
 
-    @Context
-    private UriInfo uriInfo;
+	@Context
+	private UriInfo uriInfo;
 
-    @Inject
-    private HttpSession httpSession;
+	@Inject
+	private HttpSession httpSession;
 
-    @Override
-    public HttpSession getHttpSession() {
-        return this.httpSession;
-    }
+	@Override
+	public HttpSession getHttpSession() {
+		return this.httpSession;
+	}
 
-    @Override
-    public int getUserId() {
-        try {
-            return (int) this.getHttpSession().getAttribute(Globalizer.SESSION_USER_ID);
-        } catch (Exception e) {
-            LOG.error("There is no session. <" + e.getLocalizedMessage() + ">");
-            return 0;
-        }
-    }
+	@Override
+	public int getUserId() {
+		try {
+			return (int) this.getHttpSession().getAttribute(Globalizer.SESSION_USER_ID);
+		} catch (Exception e) {
+			LOG.error("There is no session. <" + e.getLocalizedMessage() + ">");
+			return 0;
+		}
+	}
 
-    @Override
-    public UriInfo getUriInfo() {
-        return uriInfo;
-    }
+	@Override
+	public UriInfo getUriInfo() {
+		return uriInfo;
+	}
 
-    @Override
-    public void setUriInfo(UriInfo uriInfo) {
-        this.uriInfo = uriInfo;
-    }
+	@Override
+	public void setUriInfo(UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
+	}
 
-    public String getBaseURI() {
-        String[] baseURI = getUriInfo().getAbsolutePath().toString().split("/api/", 2);
-        if (baseURI.length > 1) {
-            return baseURI[0] + "/";
-        }
-        return getUriInfo().getAbsolutePath().toString();
-    }
+	public String getBaseURI() {
+		String[] baseURI = getUriInfo().getAbsolutePath().toString().split("/api/", 2);
+		if (baseURI.length > 1) {
+			return baseURI[0] + "/";
+		}
+		return getUriInfo().getAbsolutePath().toString();
+	}
 
-    protected List<RouteInfo> collectRoute(Resource resource, String basePath) {
-        List<RouteInfo> routeList = new ArrayList<>();
-        String parentPath = "";
-        for (ResourceMethod method : resource.getResourceMethods()) {
-            Invocable invocable = method.getInvocable();
+	protected List<RouteInfo> collectRoute(Resource resource, String basePath) {
+		List<RouteInfo> routeList = new ArrayList<>();
+		String parentPath = "";
+		for (ResourceMethod method : resource.getResourceMethods()) {
+			Invocable invocable = method.getInvocable();
 
-            //Skip Routes
-            if (invocable.getHandlingMethod().getName().equalsIgnoreCase("getRoutes")) {
-                continue;
-            }
+			// Skip Routes
+			if (invocable.getHandlingMethod().getName().equalsIgnoreCase("getRoutes")) {
+				continue;
+			}
 
-            RouteInfo route = new RouteInfo();
-            //Set Resource Class
-            route.setResourceClass(this.getClass().getName());
+			RouteInfo route = new RouteInfo();
+			// Set Resource Class
+			route.setResourceClass(this.getClass().getName());
 
-            //Set Resource Method            
-            route.setResourceMethod(invocable.getHandlingMethod().getName());
+			// Set Resource Method
+			route.setResourceMethod(invocable.getHandlingMethod().getName());
 
-            //Set Path
-            if (!basePath.endsWith("/")) {
-                basePath += "/";
-            }
-            parentPath = (basePath + resource.getPath()).replaceAll("//", "/");
-            route.setPath(parentPath);
+			// Set Path
+			if (!basePath.endsWith("/")) {
+				basePath += "/";
+			}
+			parentPath = (basePath + resource.getPath()).replaceAll("//", "/");
+			route.setPath(parentPath);
 
-            //Set HTTP Method
-            route.setMethod(method.getHttpMethod());
+			// Set HTTP Method
+			route.setMethod(method.getHttpMethod());
 
-            routeList.add(route);
-        }
+			routeList.add(route);
+		}
 
-        for (Resource childResource : resource.getChildResources()) {
-            routeList.addAll(collectRoute(childResource, parentPath));
-        }
+		for (Resource childResource : resource.getChildResources()) {
+			routeList.addAll(collectRoute(childResource, parentPath));
+		}
 
-        return routeList;
-    }
+		return routeList;
+	}
 
-    @Override
-    public IBaseResponse getRoutes() {
-        try {
-            Resource resource = Resource.from(this.getClass());
-            if (resource == null) {
-                return new MessageResponse(204, ResponseType.WARNING,
-                        "There is no data for your request.");
-            }
-            List<RouteInfo> routeList = collectRoute(resource, "/");
-            ListResponse<RouteInfo> response = new ListResponse<RouteInfo>(routeList);
+	@Override
+	public IBaseResponse getRoutes() {
+		try {
+			Resource resource = Resource.from(this.getClass());
+			if (resource == null) {
+				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+			}
+			List<RouteInfo> routeList = collectRoute(resource, "/");
+			ListResponse<RouteInfo> response = new ListResponse<RouteInfo>(routeList);
 			return response;
-        } catch (Exception e) {
-            LOG.error(e);
-            throw e;
-        }
-    }
+		} catch (Exception e) {
+			LOG.error(e);
+			throw e;
+		}
+	}
 }

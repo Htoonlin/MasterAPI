@@ -9,64 +9,65 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  *
  * @author Htoonlin
  * @param <T>
  */
-@JsonPropertyOrder(value = {"code", "status", "content", "timestamp"})
-public class DefaultResponse<T extends Serializable> implements IBaseResponse{
-    
-    private int code;
-    private ResponseType status;
-    
-    public DefaultResponse() {
-        this.code = 200;
-        this.status = ResponseType.SUCCESS;
-    }
+@JsonPropertyOrder(value = { "code", "status", "content", "timestamp" })
+public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 
-    public DefaultResponse(int code, ResponseType status, T content) {
-        this.code = code;
-        this.status = status;
-        this.content = content;
-    }
+	private int code;
+	private ResponseType status;
 
-    public DefaultResponse(T content) {
-        this();
-        this.content = content;
-    }
-    
-    private T content;
-    
-    public void setContent(T content) {
-        this.content = content;
-    }
+	public DefaultResponse() {
+		this.code = 200;
+		this.status = ResponseType.SUCCESS;
+	}
 
-    @Override    
-    public long getTimestamp() {
-        return (new Date()).getTime();
-    }
+	public DefaultResponse(int code, ResponseType status, T content) {
+		this.code = code;
+		this.status = status;
+		this.content = content;
+	}
 
-    @Override
-    public int getCode() {
-        return code;
-    }
+	public DefaultResponse(T content) {
+		this();
+		this.content = content;
+	}
 
-    public void setCode(int code) {
-        this.code = code;
-    }
+	private T content;
 
-    @Override
-    public ResponseType getStatus() {
-        return status;
-    }
+	public void setContent(T content) {
+		this.content = content;
+	}
 
-    public void setStatus(ResponseType status) {
-        this.status = status;
-    }
+	@Override
+	public long getTimestamp() {
+		return (new Date()).getTime();
+	}
 
-    @Override
-    public Object getContent() {
-        return this.content;
-    }
+	@Override
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	@Override
+	public ResponseType getStatus() {
+		return status;
+	}
+
+	public void setStatus(ResponseType status) {
+		this.status = status;
+	}
+
+	@Override
+	public Object getContent() {
+		return this.content;
+	}
 }

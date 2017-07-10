@@ -16,8 +16,7 @@ public class PageResponse implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = -2743712408793107176L;
 	private String id;
 	private String name;
 

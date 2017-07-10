@@ -22,63 +22,66 @@ import com.sdm.core.hibernate.entity.DefaultEntity;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ChangePasswordRequest extends DefaultEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6890755299063523487L;
+	private String email;
 
-    private String email;
+	@Email(message = "Invalid email format.")
+	@NotBlank(message = "Email field can't be blank.")
+	@Size(min = 6, max = 255)
+	public String getEmail() {
+		return this.email;
+	}
 
-    @Email(message = "Invalid email format.")
-    @NotBlank(message = "Email field can't be blank.")
-    @Size(min = 6, max = 255)
-    public String getEmail() {
-        return this.email;
-    }
+	public void setEmail(String value) {
+		this.email = value;
+	}
 
-    public void setEmail(String value) {
-        this.email = value;
-    }
+	private String oldPassword;
 
-    private String oldPassword;
+	@NotBlank(message = "Password field can't be blank.")
+	@Size(min = 6, max = 255)
+	public String getOldPassword() {
+		return this.oldPassword;
+	}
 
-    @NotBlank(message = "Password field can't be blank.")
-    @Size(min = 6, max = 255)
-    public String getOldPassword() {
-        return this.oldPassword;
-    }
+	public void setOldPassword(String value) {
+		this.oldPassword = value;
+	}
 
-    public void setOldPassword(String value) {
-        this.oldPassword = value;
-    }
+	private String newPassword;
 
-    private String newPassword;
+	@NotBlank(message = "New password field can't be blank.")
+	@Size(min = 6, max = 255)
+	public String getNewPassword() {
+		return this.newPassword;
+	}
 
-    @NotBlank(message = "New password field can't be blank.")
-    @Size(min = 6, max = 255)
-    public String getNewPassword() {
-        return this.newPassword;
-    }
+	public void setNewPassword(String value) {
+		this.newPassword = value;
+	}
 
-    public void setNewPassword(String value) {
-        this.newPassword = value;
-    }
-    
-        private String token;
+	private String token;
 
-    /**
-     * Get the value of token
-     *
-     * @return the value of token
-     */
-    public String getToken() {
-        return token;
-    }
+	/**
+	 * Get the value of token
+	 *
+	 * @return the value of token
+	 */
+	public String getToken() {
+		return token;
+	}
 
-    /**
-     * Set the value of token
-     *
-     * @param token new value of token
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
+	/**
+	 * Set the value of token
+	 *
+	 * @param token
+	 *            new value of token
+	 */
+	public void setToken(String token) {
+		this.token = token;
+	}
 
 }

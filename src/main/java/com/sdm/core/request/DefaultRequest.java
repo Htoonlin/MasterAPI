@@ -24,48 +24,50 @@ import com.sdm.core.Setting;
  */
 public class DefaultRequest implements Serializable, IBaseRequest {
 
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8881597082622307013L;
+	private Date timestamp;
 
-    private Date timestamp;
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
 
-    public Date getTimestamp() {
-        return this.timestamp;
-    }
+	@Override
+	public void setTimeStamp(long date) {
+		this.timestamp = new Date(date);
+	}
 
-    @Override
-    public void setTimeStamp(long date) {
-        this.timestamp = new Date(date);
-    }
+	private Map<String, String> errors;
 
-    private Map<String, String> errors;
+	protected void addError(String key, String value) {
+		if (errors == null) {
+			errors = new HashMap<>();
+		}
+		errors.put(key, value);
+	}
 
-    protected void addError(String key, String value) {
-        if (errors == null) {
-            errors = new HashMap<>();
-        }
-        errors.put(key, value);
-    }
+	@Override
+	public Map<String, String> getErrors() {
+		return errors;
+	}
 
-    @Override
-    public Map<String, String> getErrors() {
-        return errors;
-    }
+	@Override
+	public boolean isValid() {
+		if (!Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+			if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
+				addError("timestamp", "Invalid timestamp.");
+				return false;
+			}
+		}
+		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+		Set<ConstraintViolation<DefaultRequest>> violoationSet = validator.validate(this);
+		for (ConstraintViolation<DefaultRequest> v : violoationSet) {
+			String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
+			addError(propertyName, v.getMessage());
+		}
 
-    @Override
-    public boolean isValid() {
-        if (!Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
-            if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
-                addError("timestamp", "Invalid timestamp.");
-                return false;
-            }
-        }
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<DefaultRequest>> violoationSet = validator.validate(this);
-        for (ConstraintViolation<DefaultRequest> v : violoationSet) {
-            String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
-            addError(propertyName, v.getMessage());
-        }
-
-        return violoationSet.isEmpty();
-    }
+		return violoationSet.isEmpty();
+	}
 }

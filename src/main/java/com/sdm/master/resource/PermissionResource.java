@@ -34,56 +34,57 @@ import com.sdm.master.entity.PermissionEntity;
 @Path("permission")
 public class PermissionResource extends RestResource<PermissionEntity, Long> {
 
-    private static final Logger LOG = Logger.getLogger(PermissionResource.class.getName());
+	private static final Logger LOG = Logger.getLogger(PermissionResource.class.getName());
 
-    private PermissionDAO mainDAO;
+	private PermissionDAO mainDAO;
 
-    @PostConstruct
-    protected void init() {
-        if (this.mainDAO == null) {
-            mainDAO = new PermissionDAO(getUserId());
-        }
-    }
+	@PostConstruct
+	protected void init() {
+		if (this.mainDAO == null) {
+			mainDAO = new PermissionDAO(getUserId());
+		}
+	}
 
-    @Override
-    protected RestDAO getDAO() {
-        return this.mainDAO;
-    }
+	@Override
+	protected RestDAO getDAO() {
+		return this.mainDAO;
+	}
 
-    @POST
-    @Path("/multi")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public IBaseResponse multiPermissions(List<PermissionEntity> permissionList) throws Exception {
-        try {
-            mainDAO.beginTransaction();
-            for (PermissionEntity permission : permissionList) {
-                mainDAO.insert(permission, false);
-            }
-            mainDAO.commitTransaction();
+	@POST
+	@Path("/multi")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public IBaseResponse multiPermissions(List<PermissionEntity> permissionList) throws Exception {
+		try {
+			mainDAO.beginTransaction();
+			for (PermissionEntity permission : permissionList) {
+				mainDAO.insert(permission, false);
+			}
+			mainDAO.commitTransaction();
 
-            return new MessageResponse(202, ResponseType.SUCCESS, "We updated the record with your request successfully.");
-        } catch (Exception e) {
-            mainDAO.rollbackTransaction();
-            LOG.error(e);
-            throw e;
-        }
-    }
+			return new MessageResponse(202, ResponseType.SUCCESS,
+					"We updated the record with your request successfully.");
+		} catch (Exception e) {
+			mainDAO.rollbackTransaction();
+			LOG.error(e);
+			throw e;
+		}
+	}
 
-    @GET
-    @Path("/role/{roleId:\\d+}")
-    public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
-        try {
-            List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
-            return new ListResponse<PermissionEntity>(permissions);
-        } catch (Exception e) {
-            LOG.error(e);
-            throw e;
-        }
-    }
+	@GET
+	@Path("/role/{roleId:\\d+}")
+	public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
+		try {
+			List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
+			return new ListResponse<PermissionEntity>(permissions);
+		} catch (Exception e) {
+			LOG.error(e);
+			throw e;
+		}
+	}
 
-    @Override
-    protected Logger getLogger() {
-        return PermissionResource.LOG;
-    }
+	@Override
+	protected Logger getLogger() {
+		return PermissionResource.LOG;
+	}
 }

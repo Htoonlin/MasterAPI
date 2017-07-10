@@ -24,17 +24,17 @@ import com.sdm.core.response.ResponseType;
 @Provider
 public class IllegalStateExceptionMapper implements ExceptionMapper<IllegalStateException> {
 
-    @Override
-    public Response toResponse(IllegalStateException exception) {
-        MessageResponse message =  new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
-        if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("StackTrace", exception.getStackTrace());
-            debug.put("Suppressed", exception.getSuppressed());
-            message.setDebug(debug);
-        } 
-        
-        return Response.serverError().entity(message).type(MediaType.APPLICATION_JSON).build();
-    }
+	@Override
+	public Response toResponse(IllegalStateException exception) {
+		MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
+		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+			Map<String, Object> debug = new HashMap<>();
+			debug.put("StackTrace", exception.getStackTrace());
+			debug.put("Suppressed", exception.getSuppressed());
+			message.setDebug(debug);
+		}
+
+		return Response.serverError().entity(message).type(MediaType.APPLICATION_JSON).build();
+	}
 
 }

@@ -30,42 +30,40 @@ import com.sdm.core.response.IBaseResponse;
  */
 public interface IRestResource<T extends IBaseRequest, PK extends Serializable> {
 
-    @GET
-    @Path("all")
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getAll() throws Exception;
+	@GET
+	@Path("all")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getAll() throws Exception;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getPaging(
-            @DefaultValue("") @QueryParam("filter") String filter,
-            @DefaultValue("1") @QueryParam("page") int pageId,
-            @DefaultValue("10") @QueryParam("size") int pageSize,
-            @DefaultValue("id:ASC") @QueryParam("sort") String sort) throws Exception;
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getPaging(@DefaultValue("") @QueryParam("filter") String filter,
+			@DefaultValue("1") @QueryParam("page") int pageId, @DefaultValue("10") @QueryParam("size") int pageSize,
+			@DefaultValue("id:ASC") @QueryParam("sort") String sort) throws Exception;
 
-    @GET
-    @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getById(@PathParam("id") PK id) throws Exception;
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getById(@PathParam("id") PK id) throws Exception;
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse create(T request) throws Exception;
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse create(T request) throws Exception;
 
-    @PUT
-    @Path("{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse update(T request, @PathParam("id") PK id) throws Exception;
+	@PUT
+	@Path("{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse update(T request, @PathParam("id") PK id) throws Exception;
 
-    @DELETE
-    @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse remove(@PathParam("id") PK id) throws Exception;
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse remove(@PathParam("id") PK id) throws Exception;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("struct")
-    public IBaseResponse getStructure() throws Exception;
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("struct")
+	public IBaseResponse getStructure() throws Exception;
 }

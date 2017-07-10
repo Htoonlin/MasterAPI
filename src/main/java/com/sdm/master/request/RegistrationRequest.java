@@ -23,54 +23,57 @@ import com.sdm.core.hibernate.entity.DefaultEntity;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RegistrationRequest extends DefaultEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6887685772544814783L;
 
-    private String email;
+	private String email;
 
-    private String displayName;
+	private String displayName;
 
-    private String password;
+	private String password;
 
-    private String country;
+	private String country;
 
-    @NotNull(message = "Display name is required.")
-    @Size(min = 1, max = 255)
-    public String getDisplayName() {
-        return this.displayName;
-    }
-    
-    public void setDisplayName(String value) {
-        this.displayName = value;
-    }
-    
-    @Email(message = "Ivalid email format.")
-    @NotBlank(message = "Email can't be blank.")
-    @Size(min = 6, max = 255)
-    public String getEmail() {
-        return this.email;
-    }
-    
-    public void setEmail(String value) {
-        this.email = value;
-    }
+	@NotNull(message = "Display name is required.")
+	@Size(min = 1, max = 255)
+	public String getDisplayName() {
+		return this.displayName;
+	}
 
-    @NotNull(message = "Password is required.")
-    @Size(min = 6, max = 255)
-    public String getPassword() {
-        return this.password;
-    }
+	public void setDisplayName(String value) {
+		this.displayName = value;
+	}
 
-    public void setPassword(String value) {
-        this.password = value;
-    }
+	@Email(message = "Ivalid email format.")
+	@NotBlank(message = "Email can't be blank.")
+	@Size(min = 6, max = 255)
+	public String getEmail() {
+		return this.email;
+	}
 
-    @NotNull(message = "Country is required.")
-    @Size(min = 2, max = 2, message = "Invalid country code.")
-    public String getCountry() {
-        return this.country;
-    }  
+	public void setEmail(String value) {
+		this.email = value;
+	}
 
-    public void setCountry(String value) {
-        this.country = value;
-    }
+	@NotNull(message = "Password is required.")
+	@Size(min = 6, max = 255)
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String value) {
+		this.password = value;
+	}
+
+	@NotNull(message = "Country is required.")
+	@Size(min = 2, max = 2, message = "Invalid country code.")
+	public String getCountry() {
+		return this.country;
+	}
+
+	public void setCountry(String value) {
+		this.country = value;
+	}
 }
