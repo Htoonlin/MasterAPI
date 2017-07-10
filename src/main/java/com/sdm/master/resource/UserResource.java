@@ -33,7 +33,7 @@ import com.sdm.master.util.AuthMailSend;
  * @author Htoonlin
  */
 @Path("user")
-public class UserResource extends RestResource<UserEntity, Long> {
+public class UserResource extends RestResource<UserEntity, Integer> {
 
 	private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
@@ -76,11 +76,10 @@ public class UserResource extends RestResource<UserEntity, Long> {
 			String password = SecurityManager.md5String(request.getEmail(), rawPassword);
 			request.setPassword(password);
 			request.setStatus('A');
-
+			UserEntity createdUser = userDAO.insert(request, true);
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 			mailSend.welcomeUser(createdUser, rawPassword);
 			
-			UserEntity createdUser = userDAO.insert(request, true);
 			return new DefaultResponse<UserEntity>(createdUser);
 
 		} catch (Exception e) {
@@ -90,7 +89,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
 	}
 
 	@Override
-	public IBaseResponse update(UserEntity request, Long id) throws Exception {
+	public IBaseResponse update(UserEntity request, Integer id) throws Exception {
 		try {
 			request.setPassword("temp-password");
 			request.setEmail("temp@temp.com");
