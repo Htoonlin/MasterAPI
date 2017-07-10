@@ -6,7 +6,7 @@
 
 <%@page import="com.sdm.core.Globalizer"%>
 <%@page import="com.sdm.master.request.ActivateRequest"%>
-<%@page import="com.sdm.core.util.SecurityManager"%>
+<%@page import="com.sdm.core.util.SecurityManager;"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     boolean isReset = false;

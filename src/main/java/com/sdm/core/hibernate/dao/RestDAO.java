@@ -27,12 +27,12 @@ public class RestDAO extends DefaultDAO {
 
 	protected final String ENTITY_NAME;
 
-	public RestDAO(String entityName, long userId) {
+	public RestDAO(String entityName, int userId) {
 		super(userId);
 		this.ENTITY_NAME = entityName;
 	}
 
-	public RestDAO(Session session, String entityName, long userId) {
+	public RestDAO(Session session, String entityName, int userId) {
 		super(session, userId);
 		this.ENTITY_NAME = entityName;
 	}

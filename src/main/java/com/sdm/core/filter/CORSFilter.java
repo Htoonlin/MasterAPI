@@ -28,11 +28,11 @@ public class CORSFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
         MultivaluedMap<String, Object> headers = responseContext.getHeaders();        
-        headers.add("Access-Control-Allow-Origin", Setting.getInstance().ACCESS_CONTROL_ALLOW_ORIGIN); 	
-        headers.add("Access-Control-Allow-Headers", Setting.getInstance().ACCESS_CONTROL_ALLOW_HEADERS);
+        headers.add("Access-Control-Allow-Origin", Setting.getInstance().CORS_ORIGIN); 	
+        headers.add("Access-Control-Allow-Headers", Setting.getInstance().CORS_HEADERS);
         headers.add("Access-Control-Allow-Credentials", true);
-        headers.add("Access-Control-Allow-Methods", Setting.getInstance().ACCESS_CONTROL_ALLOW_METHOD);
-        headers.add("Access-Control-Max-Age", Setting.getInstance().ACCESS_CONTROL_MAX_AGE);
+        headers.add("Access-Control-Allow-Methods", Setting.getInstance().CORS_METHODS);
+        headers.add("Access-Control-Max-Age", Setting.getInstance().CORS_MAX_AGE);
         headers.add("Access-Control-Expose-Headers", "xsrf-token");
         if("OPTIONS".equals(requestContext.getMethod())){
             responseContext.setStatus(200);            

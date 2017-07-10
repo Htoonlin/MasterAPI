@@ -12,7 +12,7 @@
 		<property name="hibernate.hbm2ddl.auto">update</property>
 
 		<!-- Hibernate Enver properties -->
-		<property name="org.hibernate.envers.audit_table_suffix">_log</property>
+		<property name="org.hibernate.envers.audit_table_suffix">_history</property>
 		<property name="org.hibernate.envers.revision_field_name">version</property>
 		<property name="org.hibernate.envers.revision_type_field_name">action</property>
 

@@ -29,22 +29,22 @@ public class TokenDAO extends RestDAO {
 	private final String CLEAN_TOKEN = "DELETE FROM TokenEntity t WHERE t.userId = :userId";
 	private final String UPDATE_EXPIRED_BY_TOKEN = "UPDATE TokenEntity t SET t.tokenExpired = :expired WHERE t.token = :token";
 
-	public TokenDAO(long userId) {
+	public TokenDAO(int userId) {
 		super(TokenEntity.class.getName(), userId);
 		LOG.info("Start TokenDAO");
 	}
 
-	public TokenDAO(Session session, long userId) {
+	public TokenDAO(Session session, int userId) {
 		super(session, TokenEntity.class.getName(), userId);
 	}
 
-	public void cleanToken(long userId) throws Exception {
+	public void cleanToken(int userId) throws Exception {
 		Map<String, Object> params = new HashMap<>();
 		params.put("userId", userId);
 		super.execute(CLEAN_TOKEN, params);
 	}
 
-	public TokenEntity getTokenByUserInfo(long userId, String deviceId, String deviceOS) throws Exception {
+	public TokenEntity getTokenByUserInfo(int userId, String deviceId, String deviceOS) throws Exception {
 		Map<String, Object> params = new HashMap<>();
 		params.put("userId", userId);
 		params.put("deviceId", deviceId);
@@ -59,7 +59,7 @@ public class TokenDAO extends RestDAO {
 		execute(UPDATE_EXPIRED_BY_TOKEN, params);
 	}
 
-	public TokenEntity generateToken(long userId, String deviceId, String deviceOS) throws Exception {
+	public TokenEntity generateToken(int userId, String deviceId, String deviceOS) throws Exception {
 		boolean isNew = false;
 		TokenEntity token = this.getTokenByUserInfo(userId, deviceId, deviceOS);
 		if (token == null) {

@@ -45,9 +45,9 @@ public class DefaultResource implements IBaseResource {
     }
 
     @Override
-    public long getUserId() {
+    public int getUserId() {
         try {
-            return (long) this.getHttpSession().getAttribute(Globalizer.SESSION_USER_ID);
+            return (int) this.getHttpSession().getAttribute(Globalizer.SESSION_USER_ID);
         } catch (Exception e) {
             LOG.error("There is no session. <" + e.getLocalizedMessage() + ">");
             return 0;

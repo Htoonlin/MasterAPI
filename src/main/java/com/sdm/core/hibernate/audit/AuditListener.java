@@ -11,9 +11,9 @@ public class AuditListener implements RevisionListener {
 
 	@Override
 	public void newRevision(Object entity) {
-		LOG.info("Creating audit log.");
 		AuditEntity auditEntity = (AuditEntity) entity;
-		auditEntity.setUserId(AuditStorage.getInstance().get());
-		LOG.info("Successfully created the audit log.");
+		int userId = AuditStorage.INSTANCE.get();
+		auditEntity.setUserId(userId);
+		LOG.debug("Successfully created the audit log <"  + userId + ">.");
 	}
 }

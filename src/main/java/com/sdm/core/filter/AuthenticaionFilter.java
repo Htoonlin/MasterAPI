@@ -122,7 +122,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 					}
 
 					// Separate UserID and Save
-					long userId = Long.parseLong(
+					int userId = Integer.parseInt(
 							authorizeToken.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
 					this.saveUserId(userId);
 				} catch (ClaimJwtException ex) {
@@ -156,7 +156,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 		return Response.status(code).entity(message).build();
 	}
 
-	private void saveUserId(long userId) {
+	private void saveUserId(int userId) {
 		this.httpSession.setAttribute(Globalizer.SESSION_USER_ID, userId);
 	}
 }

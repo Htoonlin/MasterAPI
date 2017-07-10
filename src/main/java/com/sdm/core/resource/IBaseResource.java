@@ -19,7 +19,7 @@ import com.sdm.core.response.IBaseResponse;
 public interface IBaseResource {
     public Object getHttpSession();
     
-    public long getUserId();
+    public int getUserId();
 
     public UriInfo getUriInfo();
 

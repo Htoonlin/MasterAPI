@@ -56,8 +56,8 @@ public class UserEntity extends DefaultEntity implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @UIStructure(order = 0, label = "#", readOnly = true)
-    @Column(name = "id", unique = true, nullable = false, columnDefinition = "INT UNSIGNED")
-    private long id;
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+    private int id;
 
     @UIStructure(order = 1, label = "E-mail")
     @Column(name = "email", nullable = false, length = 255)
@@ -67,19 +67,21 @@ public class UserEntity extends DefaultEntity implements java.io.Serializable {
     @Column(name = "displayName", nullable = false, length = 255)
     private String displayName;
 
-    @UIStructure(order = 3, label = "Roles", hideInGrid = true)
+    @UIStructure(order = 7, label = "Roles", hideInGrid = true)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tbl_user_role",
             joinColumns = {
-                @JoinColumn(name = "userId", columnDefinition = "INT UNSIGNED")},
+                @JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED")},
             inverseJoinColumns = {
                 @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<RoleEntity> roles;
 
+    @UIStructure(order = 3, label = "Password", inputType="password")
     @Column(name = "password", nullable = false)
     private String password;
 
+    @NotAudited
     @UIStructure(order = 4, label = "Is online?")
     @Column(name = "isOnline", nullable = false)
     private boolean online;
@@ -135,11 +137,11 @@ public class UserEntity extends DefaultEntity implements java.io.Serializable {
         this.search = search;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

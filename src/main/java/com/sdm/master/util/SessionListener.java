@@ -25,11 +25,11 @@ public class SessionListener implements HttpSessionListener {
 
     private static final Logger LOG = Logger.getLogger(SessionListener.class.getName());
 
-    private long sessionRecording(String prefix, HttpSessionEvent hse) {
+    private int sessionRecording(String prefix, HttpSessionEvent hse) {
         HttpSession session = hse.getSession();
-        long userId = 0;
+        int userId = 0;
         if (session.getAttribute(Globalizer.SESSION_USER_ID) != null) {
-            userId = (long) session.getAttribute(Globalizer.SESSION_USER_ID);
+            userId = (int) session.getAttribute(Globalizer.SESSION_USER_ID);
         }
         LOG.debug(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
         return userId;
@@ -42,7 +42,7 @@ public class SessionListener implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent hse) {
-        long userId = sessionRecording("Destroyed a session.", hse);
+        int userId = sessionRecording("Destroyed a session.", hse);
         UserDAO userDAO = new UserDAO(userId);
         try {
             UserEntity user = userDAO.fetchById(userId);

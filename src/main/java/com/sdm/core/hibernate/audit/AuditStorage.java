@@ -3,30 +3,24 @@ package com.sdm.core.hibernate.audit;
 import org.apache.log4j.Logger;
 
 
-public class AuditStorage{
+public final class AuditStorage{
 	private static final Logger LOG = Logger.getLogger(AuditStorage.class.getName());
 			
-	private static AuditStorage instance;
+	public static AuditStorage INSTANCE = new AuditStorage();
 	
-	public static synchronized AuditStorage getInstance() {
-		if(instance == null) {
-			instance = new AuditStorage();
-			LOG.info("Create new audit storage.");
-		}
-		return instance;
-	}
+	private static final ThreadLocal<Integer> storage = new ThreadLocal<>();
 	
-	private static final ThreadLocal<Long> storage = new ThreadLocal<>();
-	
-	public void set(Long value) {
+	public void set(Integer value) {
+		LOG.info("Set value " + value);
 		storage.set(value);
 	}
 	
 	public void clean() {
+		LOG.info("Clean vlaue");
 		storage.remove();
 	}
 	
-	public Long get() {
+	public Integer get() {
 		return storage.get();
 	}
 }

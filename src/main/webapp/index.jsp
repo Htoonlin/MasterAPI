@@ -219,13 +219,13 @@
                         var date = ['date', 'datetime'];
                         var content = response.content;
                         $.each(content, function (index, property) {
-                            if ($.inArray(property.name, hide_columns) === -1) {
+                            if (property.request_name && $.inArray(property.request_name, hide_columns) === -1) {
                                 var form_group = $('<div class="form-group">');
                                 if ($.inArray(property.type.toLowerCase(), boolean) > -1) {
-                                    form_group.append('<label><input type="checkbox" id="' + property.name + '"/> ' + property.name + '?</label>');
+                                    form_group.append('<label><input type="checkbox" id="' + property.request_name + '"/> ' + property.label + '?</label>');
                                 } else {
-                                    form_group.append('<label for="' + property.name + '">' + property.name + ' : </label>');
-                                    var input = $('<input type="text" class="form-control" id="' + property.name + '" placeholder="Enter ' + property.name + '"/>');
+                                    form_group.append('<label for="' + property.request_name + '">' + property.label + ' : </label>');
+                                    var input = $('<input type="text" class="form-control" id="' + property.request_name + '" placeholder="Enter ' + property.label + '"/>');
                                     if ($.inArray(property.type.toLowerCase(), numbers) > -1) {
                                         input.attr('type', 'number');
                                     } else if ($.inArray(property.type.toLowerCase(), date) > -1) {
@@ -234,7 +234,7 @@
                                         input.attr('type', 'text');
                                         input.attr('placeholder', 'Enter ' + property.name + ' Identity');
                                     }
-                                    if (property.primary_key) {
+                                    if (property.read_only === true) {
                                         input.attr('readonly', 'readonly');
                                     }
                                     form_group.append(input);

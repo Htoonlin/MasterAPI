@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  *
  * @author Htoonlin
  */
-public final class Setting {
+public final class Setting implements ISetting{
 
     private static final Logger LOG = Logger.getLogger(Setting.class.getName());
     
@@ -38,7 +38,7 @@ public final class Setting {
     public int OTP_LIFE;
     public int SECURITY_TIMESTAMP_LIFE;
     public String ENCRYPT_SALT;
-    public String TOKEN_CHAR;
+    public String TOKEN_CHARS;
     public int AUTH_FAILED_COUNT;
 
     /* Date Time Setting */
@@ -47,10 +47,10 @@ public final class Setting {
     public SimpleDateFormat TIME_FORMAT;
 
     /* CORS Setting */
-    public String ACCESS_CONTROL_ALLOW_ORIGIN;
-    public String ACCESS_CONTROL_ALLOW_METHOD;
-    public String ACCESS_CONTROL_ALLOW_HEADERS;
-    public String ACCESS_CONTROL_MAX_AGE;
+    public String CORS_ORIGIN;
+    public String CORS_METHODS;
+    public String CORS_HEADERS;
+    public String CORS_MAX_AGE;
 
     /* Mail Setting */
     public String MAIL_SERVICE;
@@ -59,6 +59,12 @@ public final class Setting {
     public String MAIL_NEED_AUTH;
     public String MAIL_USER;
     public String MAIL_PASSWORD;
+    
+    /* Mailgun Setting */
+    public String MAILGUN_PRI_API_KEY;
+    public String MAILGUN_PUB_API_KEY;
+    public String MAILGUN_DOMAIN;
+    public String MAILGUN_DEF_MAIL_SENDER;
 
     private static final String FILE_NAME = "setting.properties";
 
@@ -111,34 +117,39 @@ public final class Setting {
         if (inputStream != null) {
             try {
                 settingProps.load(inputStream);
-                ENVIRONMENT = settingProps.getProperty("SYSTEM_ENVIRONMENT", "BETA");
-                STORAGE_PATH = settingProps.getProperty("STORAGE_PATH", "");
-                TEMPLATE_PATH = settingProps.getProperty("TEMPLATE_PATH", "/WEB-INF/");
+                ENVIRONMENT = settingProps.getProperty(PROP_ENV, "BETA");
+                STORAGE_PATH = settingProps.getProperty(PROP_STORAGE_PATH, "");
+                TEMPLATE_PATH = settingProps.getProperty(PROP_TEMPLATE_PATH, "/WEB-INF/");
 
-                DATE_TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_TIME_FORMAT", "yyyy-MM-dd HH:mm:ss"));
-                DATE_FORMAT = new SimpleDateFormat(settingProps.getProperty("DATE_FORMAT", "yyyy-MM-dd"));
-                TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty("TIME_FORMAT", "HH:mm:ss"));
+                DATE_TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty(PROP_DATE_TIME_FORMAT, "yyyy-MM-dd HH:mm:ss"));
+                DATE_FORMAT = new SimpleDateFormat(settingProps.getProperty(PROP_DATE_FORMAT, "yyyy-MM-dd"));
+                TIME_FORMAT = new SimpleDateFormat(settingProps.getProperty(PROP_TIME_FORMAT, "HH:mm:ss"));
 
-                ROOT_ID = Integer.parseInt(settingProps.getProperty("ROOT_ID", "1"));
-                AUTH_TOKEN_LIFE = Integer.parseInt(settingProps.getProperty("AUTH_TOKEN_LIFE", "7"));
-                JWT_KEY = settingProps.getProperty("JWT_KEY", "iMyohUD3G1BE8BXxOpg5qoPdbT1DvB2ihyNYFQm1VLPvrErmeLEtGT74GqOeQClGbSSuIcjYMh+3m+mqCucH3A==");
-                OTP_LIFE = Integer.parseInt(settingProps.getProperty("OTP_LIFE", "10"));
-                SECURITY_TIMESTAMP_LIFE = Integer.parseInt(settingProps.getProperty("SECURITY_TIMESTAMP_LIFE", "5"));
-                ENCRYPT_SALT = settingProps.getProperty("ENCRYPT_SALT", "s4qYAxH0SqiHAwrgwWPSI6DVm");
-                TOKEN_CHAR = settingProps.getProperty("TOKEN_CHAR", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-                AUTH_FAILED_COUNT = Integer.parseInt(settingProps.getProperty("AUTH_FAILED_COUNT", "3"));
+                ROOT_ID = Integer.parseInt(settingProps.getProperty(PROP_ROOT_ID, "1"));
+                AUTH_TOKEN_LIFE = Integer.parseInt(settingProps.getProperty(PROP_AUTH_TOKEN_LIFE, "7"));
+                JWT_KEY = settingProps.getProperty(PROP_JWT_KEY, "iMyohUD3G1BE8BXxOpg5qoPdbT1DvB2ihyNYFQm1VLPvrErmeLEtGT74GqOeQClGbSSuIcjYMh+3m+mqCucH3A==");
+                OTP_LIFE = Integer.parseInt(settingProps.getProperty(PROP_OTP_LIFE, "10"));
+                SECURITY_TIMESTAMP_LIFE = Integer.parseInt(settingProps.getProperty(PROP_SECURITY_TIMESTAMP_LIFE, "5"));
+                ENCRYPT_SALT = settingProps.getProperty(PROP_ENCRYPT_SALT, "s4qYAxH0SqiHAwrgwWPSI6DVm");
+                TOKEN_CHARS = settingProps.getProperty(PROP_TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+                AUTH_FAILED_COUNT = Integer.parseInt(settingProps.getProperty(PROP_AUTH_FAILED_COUNT, "3"));
 
-                ACCESS_CONTROL_ALLOW_ORIGIN = settingProps.getProperty("ACCESS_CONTROL_ALLOW_ORIGIN", "*");
-                ACCESS_CONTROL_ALLOW_METHOD = settingProps.getProperty("ACCESS_CONTROL_ALLOW_METHOD", "GET, POST, DELETE, PUT, OPTIONS");
-                ACCESS_CONTROL_ALLOW_HEADERS = settingProps.getProperty("ACCESS_CONTROL_ALLOW_HEADERS", "authorization, content-type, xsrf-token");
-                ACCESS_CONTROL_MAX_AGE = settingProps.getProperty("ACCESS_CONTROL_MAX_AGE", "0");
+                CORS_ORIGIN = settingProps.getProperty(PROP_CORS_ORIGIN, "*");
+                CORS_METHODS = settingProps.getProperty(PROP_CORS_METHODS, "GET, POST, DELETE, PUT, OPTIONS");
+                CORS_HEADERS = settingProps.getProperty(PROP_CORS_HEADERS, "authorization, content-type, xsrf-token");
+                CORS_MAX_AGE = settingProps.getProperty(PROP_CORS_MAX_AGE, "0");
 
-                MAIL_SERVICE = settingProps.getProperty("MAIL_SERVICE", "webmail");
-                MAIL_HOST = settingProps.getProperty("MAIL_HOST", "smtp.gmail.com");
-                MAIL_PORT = settingProps.getProperty("MAIL_PORT", "465");
-                MAIL_NEED_AUTH = settingProps.getProperty("MAIL_NEED_AUTH", "true");
-                MAIL_USER = settingProps.getProperty("MAIL_USER", "example@gmail.com");
-                MAIL_PASSWORD = settingProps.getProperty("MAIL_PASSWORD", "3x@mp13");
+                MAIL_SERVICE = settingProps.getProperty(PROP_MAIL_TYPE, "webmail");
+                MAIL_HOST = settingProps.getProperty(PROP_MAIL_HOST, "smtp.gmail.com");
+                MAIL_PORT = settingProps.getProperty(PROP_MAIL_PORT, "465");
+                MAIL_NEED_AUTH = settingProps.getProperty(PROP_MAIL_IS_AUTH, "true");
+                MAIL_USER = settingProps.getProperty(PROP_MAIL_USER, "example@gmail.com");
+                MAIL_PASSWORD = settingProps.getProperty(PROP_MAIL_PASSWORD, "3x@mp13");
+                
+                MAILGUN_PRI_API_KEY = settingProps.getProperty(PROP_MAILGUN_PRI_KEY, "");
+                MAILGUN_PUB_API_KEY = settingProps.getProperty(PROP_MAILGUN_PUB_KEY, "");
+                MAILGUN_DOMAIN = settingProps.getProperty(PROP_MAILGUN_DOMAIN, "");
+                MAILGUN_DEF_MAIL_SENDER = settingProps.getProperty(PROP_MAILGUN_DEFAULT_MAIL, "");
             } catch (IOException ex) {
                 LOG.error(ex);
             }

@@ -47,7 +47,7 @@ public class AccessManager implements IAccessManager {
         String token = request.getId();
         String deviceId = request.get("device_id").toString();
         String deviceOS = request.get("device_os").toString();
-        long userId = Long.parseLong(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+        int userId = Integer.parseInt(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
 
         TokenDAO tokenDao = new TokenDAO(userId);
         try {
@@ -84,7 +84,7 @@ public class AccessManager implements IAccessManager {
 
     @Override
     public boolean checkPermission(Claims request, Method method, String httpMethod) {
-        long authUserId = Long.parseLong(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+        int authUserId = Integer.parseInt(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
 
         if (currentToken == null || currentToken.getUserId() != authUserId) {
             return false;

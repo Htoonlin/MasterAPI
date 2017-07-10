@@ -32,11 +32,11 @@ public class FileDAO extends RestDAO {
     private static final Logger LOG = Logger.getLogger(FileDAO.class.getName());
     private final String GET_BY_TOKEN = "FROM FileEntity f WHERE f.publicToken = :token AND f.extension = :extension";
 
-    public FileDAO(long userId) {
+    public FileDAO(int userId) {
         super(FileEntity.class.getName(), userId);
     }
 
-    public FileDAO(Session session, long userId) {
+    public FileDAO(Session session, int userId) {
         super(session, FileEntity.class.getName(), userId);
     }
 

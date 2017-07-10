@@ -11,6 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sdm.core.hibernate.entity.DefaultEntity;
@@ -33,8 +34,8 @@ public class TokenEntity extends DefaultEntity implements java.io.Serializable {
     private String token;
 
     @UIStructure(order = 1, label = "User ID")
-    @Column(name = "userId", columnDefinition = "INT UNSIGNED", nullable = false)
-    private long userId;
+    @Column(name = "userId", nullable = false)
+    private int userId;
 
     @UIStructure(order = 2, label = "Device-ID")
     @Column(name = "deviceId", nullable = false, length = 255)
@@ -44,11 +45,13 @@ public class TokenEntity extends DefaultEntity implements java.io.Serializable {
     @Column(name = "deviceOS", nullable = false, length = 10)
     private String deviceOs;
 
+    @NotAudited
     @Temporal(TemporalType.TIMESTAMP)
     @UIStructure(order = 4, label = "Lasted Login")
     @Column(name = "lastedLogin", nullable = false, length = 19, updatable = true)
     private Date lastLogin;
 
+    @NotAudited
     @Temporal(TemporalType.TIMESTAMP)
     @UIStructure(order = 5, label = "Expired")
     @Column(name = "tokenExpired", nullable = false, length = 19)
@@ -82,11 +85,11 @@ public class TokenEntity extends DefaultEntity implements java.io.Serializable {
         this.token = token;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 

@@ -195,9 +195,9 @@ public class AuthResource extends DefaultResource {
             user = new UserEntity(request.getEmail(),
                     request.getDisplayName(), password, true,
                     request.getCountry(), UserEntity.PENDING);
+            userDao.insert(user, true);
             AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
             mailSend.activateLink(user, userAgentString);
-            userDao.insert(user, true);
             return new MessageResponse(200, ResponseType.SUCCESS, "Thank you for your registration. Pls check your mail for activation.");
         } catch (Exception e) {
             LOG.error(e);
@@ -256,9 +256,9 @@ public class AuthResource extends DefaultResource {
             }
 
             if (user.getOtpExpired().before(new Date())) {
+                userDao.update(user, true);
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.activateLink(user, userAgentString);
-                userDao.update(user, true);
                 return new MessageResponse(400, ResponseType.WARNING,
                         "Sorry! Your token has expired. We send new token to your email.");
             }
@@ -302,9 +302,9 @@ public class AuthResource extends DefaultResource {
             }
 
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
+                userDao.update(user, true);
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.forgetPasswordLink(user);
-                userDao.update(user, true);
                 message = new MessageResponse(400, ResponseType.WARNING,
                         "Sorry! Your token has expired. We send new link to your email.");
             } else if (user.getEmail().equalsIgnoreCase(request.getEmail())
@@ -341,9 +341,9 @@ public class AuthResource extends DefaultResource {
                 if (user == null) {
                     message = new MessageResponse(400, ResponseType.WARNING, "Invalid email address");
                 } else {
+                    userDao.update(user, true);
                     AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                     mailSend.forgetPasswordLink(user);
-                    userDao.update(user, true);
                     message = new MessageResponse(200, ResponseType.SUCCESS, "We send the reset password link to your e-mail.");
                 }
             }

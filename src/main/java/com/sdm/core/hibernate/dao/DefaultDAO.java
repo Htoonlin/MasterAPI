@@ -25,29 +25,28 @@ import com.sdm.core.hibernate.audit.AuditStorage;
 public class DefaultDAO {
 
 	private final Session mainSession;
-	protected final long USER_ID;
+	protected final int USER_ID;
 
-	public DefaultDAO(long userId) {
+	public DefaultDAO(int userId) {
 		this(HibernateConnector.getFactory().openSession(), userId);
 	}
 
-	public DefaultDAO(Session session, long userId) {
+	public DefaultDAO(Session session, int userId) {
 		this.USER_ID = userId;
 		this.mainSession = session;
 	}
 
 	public Session getSession() {
-		AuditStorage.getInstance().set(this.USER_ID);
 		if (this.mainSession == null || !this.mainSession.isOpen()) {
 			return HibernateConnector.getFactory().getCurrentSession();
 		}
-
+		AuditStorage.INSTANCE.set(this.USER_ID);
 		return this.mainSession;
 	}
 
 	public void closeSession() {
 		this.mainSession.close();
-		AuditStorage.getInstance().clean();
+		AuditStorage.INSTANCE.clean();
 	}
 
 	public void beginTransaction() {

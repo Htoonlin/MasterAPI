@@ -34,7 +34,7 @@ public class AuthMailSend {
     }
 
     private UserEntity setToken(UserEntity user) {
-        user.setOtpToken(Globalizer.generateToken(Setting.getInstance().TOKEN_CHAR,
+        user.setOtpToken(Globalizer.generateToken(Setting.getInstance().TOKEN_CHARS,
                 UserEntity.TOKEN_LENGTH));
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());

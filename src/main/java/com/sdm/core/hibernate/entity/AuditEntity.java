@@ -16,7 +16,7 @@ import com.sdm.core.hibernate.audit.AuditListener;
 @Entity
 @Table(name = "tbl_audit_info")
 @RevisionEntity(AuditListener.class)
-public class AuditEntity implements Serializable{
+public class AuditEntity implements Serializable {
 
 	/**
 	 * 
@@ -27,11 +27,11 @@ public class AuditEntity implements Serializable{
 	@GeneratedValue
 	@RevisionNumber
 	private long id;
-	
+
 	@RevisionTimestamp
 	private long timestamp;
-	
-	private long userId;
+
+	private int userId;
 
 	public long getId() {
 		return id;
@@ -49,11 +49,11 @@ public class AuditEntity implements Serializable{
 		this.timestamp = timestamp;
 	}
 
-	public long getUserId() {
+	public int getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 }
