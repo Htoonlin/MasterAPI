@@ -29,13 +29,13 @@ public class TokenDAO extends RestDAO {
 	private final String CLEAN_TOKEN = "DELETE FROM TokenEntity t WHERE t.userId = :userId";
 	private final String UPDATE_EXPIRED_BY_TOKEN = "UPDATE TokenEntity t SET t.tokenExpired = :expired WHERE t.token = :token";
 
-	public TokenDAO() {
-		super(TokenEntity.class.getName());
+	public TokenDAO(long userId) {
+		super(TokenEntity.class.getName(), userId);
 		LOG.info("Start TokenDAO");
 	}
 
-	public TokenDAO(Session session) {
-		super(session, TokenEntity.class.getName());
+	public TokenDAO(Session session, long userId) {
+		super(session, TokenEntity.class.getName(), userId);
 	}
 
 	public void cleanToken(long userId) throws Exception {

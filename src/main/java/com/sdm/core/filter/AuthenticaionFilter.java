@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
-import com.sdm.core.hibernate.audit.AuditStorage;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 
@@ -121,8 +120,6 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 						requestContext.abortWith(buildResponse(403));
 						return;
 					}
-
-					AuditStorage.getInstance().set(authorizeToken.getId());
 
 					// Separate UserID and Save
 					long userId = Long.parseLong(

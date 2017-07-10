@@ -32,12 +32,12 @@ public class FileDAO extends RestDAO {
     private static final Logger LOG = Logger.getLogger(FileDAO.class.getName());
     private final String GET_BY_TOKEN = "FROM FileEntity f WHERE f.publicToken = :token AND f.extension = :extension";
 
-    public FileDAO() {
-        super(FileEntity.class.getName());
+    public FileDAO(long userId) {
+        super(FileEntity.class.getName(), userId);
     }
 
-    public FileDAO(Session session) {
-        super(session, FileEntity.class.getName());
+    public FileDAO(Session session, long userId) {
+        super(session, FileEntity.class.getName(), userId);
     }
 
     public FileEntity fetchByToken(String token, String ext) throws Exception {
@@ -59,7 +59,7 @@ public class FileDAO extends RestDAO {
         super.delete(entity, commit);
     }
 
-    public FileEntity saveFile(long ownerId, InputStream fileStream, FormDataContentDisposition fileDetail) throws IOException, Exception {
+    public FileEntity saveFile(InputStream fileStream, FormDataContentDisposition fileDetail) throws IOException, Exception {
         String[] fileInfo = FileManager.fileNameSplitter(fileDetail.getFileName());
         FileEntity entity = new FileEntity();
         entity.setName(fileInfo[0]);
@@ -67,7 +67,7 @@ public class FileDAO extends RestDAO {
             entity.setExtension(fileInfo[1]);
         }
         String token = FileManager.generateToken();
-        File saveFile = FileManager.generateFile(ownerId, token, entity.getExtension());
+        File saveFile = FileManager.generateFile(USER_ID, token, entity.getExtension());
 
         try (OutputStream out = new FileOutputStream(saveFile)) {
             int read;

@@ -43,7 +43,7 @@ public class ProfileResource extends DefaultResource {
 
     @PostConstruct
     protected void init() {
-        userDAO = new UserDAO();
+        userDAO = new UserDAO(getUserId());
     }
 
     @RolesAllowed("user")

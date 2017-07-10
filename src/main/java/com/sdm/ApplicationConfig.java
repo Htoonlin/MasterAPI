@@ -57,10 +57,6 @@ public class ApplicationConfig extends Application {
 		// Inject HttpSession
 		Injections.addBinding(Injections.newFactoryBinder(HttpSessionFactory.class).to(HttpSession.class).proxy(true)
 				.proxyForSameScope(false).in(RequestScoped.class), dc);
-		
-		//Inject Audit Listener
-		Injections.addBinding(Injections.newBinder(AuditListener.class).to(ContainerRequestContext.class).proxy(true)
-				.proxyForSameScope(false).in(RequestScoped.class), dc);
 
 		// Inject AccessManager
 		Injections.addBinding(Injections.newBinder(AccessManager.class).to(IAccessManager.class), dc);

@@ -86,7 +86,7 @@ public class AuthResource extends DefaultResource {
 
     @PostConstruct
     public void init() {
-        userDao = new UserDAO();
+        userDao = new UserDAO(getUserId());
     }
 
     @HeaderParam("user-agent")
@@ -131,7 +131,7 @@ public class AuthResource extends DefaultResource {
                 if (authUser != null && authUser.getStatus() == UserEntity.ACTIVE
                         && request.isAuth(authUser)) {
                     userDao.beginTransaction();
-                    TokenDAO tokenDAO = new TokenDAO(userDao.getSession());
+                    TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
                     if (cleanToken) {
                         tokenDAO.cleanToken(authUser.getId());
                     }
@@ -268,7 +268,7 @@ public class AuthResource extends DefaultResource {
             user.setOtpExpired(null);
             user.setStatus(UserEntity.ACTIVE);
             userDao.update(user, false);
-            TokenDAO tokenDAO = new TokenDAO(userDao.getSession());
+            TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
             TokenEntity authToken = tokenDAO.generateToken(user.getId(), request.getDeviceId(), this.getDeviceOS());
             String token = generateJWT(authToken);
             user.setCurrentToken(token);

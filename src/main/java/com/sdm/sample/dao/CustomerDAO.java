@@ -16,11 +16,11 @@ import com.sdm.sample.entity.CustomerEntity;
  */
 public class CustomerDAO extends RestDAO {
 
-    public CustomerDAO() {
-        super(CustomerEntity.class.getName());
+    public CustomerDAO(long userId) {
+        super(CustomerEntity.class.getName(), userId);
     }
 
-    public CustomerDAO(Session session) {
-        super(session, CustomerEntity.class.getName());
+    public CustomerDAO(Session session, long userId) {
+        super(session, CustomerEntity.class.getName(), userId);
     }
 }

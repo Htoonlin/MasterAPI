@@ -27,12 +27,12 @@ public class PermissionDAO extends RestDAO {
     private final String CHECK_ROLE = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.resourceClass = :class "
             + "AND p.resoureMethod = :method AND p.requestMethod like :request";
 
-    public PermissionDAO() {
-        super(PermissionEntity.class.getName());
+    public PermissionDAO(long userId) {
+        super(PermissionEntity.class.getName(), userId);
     }
 
-    public PermissionDAO(Session session) {
-        super(session, PermissionEntity.class.getName());
+    public PermissionDAO(Session session, long userId) {
+        super(session, PermissionEntity.class.getName(), userId);
     }
 
     public List<PermissionEntity> fetchByRole(int roleId) throws Exception {

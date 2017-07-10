@@ -41,7 +41,7 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
     @PostConstruct
     protected void init() {
         if (this.mainDAO == null) {
-            mainDAO = new PermissionDAO();
+            mainDAO = new PermissionDAO(getUserId());
         }
     }
 

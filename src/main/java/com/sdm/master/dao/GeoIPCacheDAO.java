@@ -20,11 +20,11 @@ public class GeoIPCacheDAO extends RestDAO {
     private static final Logger LOG = Logger.getLogger(GeoIPCacheDAO.class.getName());
 
     public GeoIPCacheDAO() {
-        super(GeoIPCacheEntity.class.getName());
+        super(GeoIPCacheEntity.class.getName(), 0);
         LOG.info("Start DAO");
     }
 
     public GeoIPCacheDAO(Session session) {
-        super(session, GeoIPCacheEntity.class.getName());
+        super(session, GeoIPCacheEntity.class.getName(), 0);
     }
 }

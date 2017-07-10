@@ -43,7 +43,7 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent hse) {
         long userId = sessionRecording("Destroyed a session.", hse);
-        UserDAO userDAO = new UserDAO();
+        UserDAO userDAO = new UserDAO(userId);
         try {
             UserEntity user = userDAO.fetchById(userId);
             if (user != null) {

@@ -47,93 +47,93 @@ import com.sdm.master.entity.UserEntity;
 @Path("file")
 public class FileResource extends RestResource<FileEntity, Long> {
 
-    private static final Logger LOG = Logger.getLogger(FileResource.class.getName());
-    private FileDAO mainDAO;
+	private static final Logger LOG = Logger.getLogger(FileResource.class.getName());
+	private FileDAO mainDAO;
 
-    @Override
-    protected RestDAO getDAO() {
-        return this.mainDAO;
-    }
+	@Override
+	protected RestDAO getDAO() {
+		return this.mainDAO;
+	}
 
-    @PostConstruct
-    protected void init() {
-        if (this.mainDAO == null) {
-            mainDAO = new FileDAO();
-        }
-    }
+	@PostConstruct
+	protected void init() {
+		if (this.mainDAO == null) {
+			mainDAO = new FileDAO(getUserId());
+		}
+	}
 
-    private Response downloadFile(final FileEntity entity) {
-        StreamingOutput fileStream = new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
-                try {
-                    String filePath = Setting.getInstance().STORAGE_PATH + entity.getStoragePath();
-                    File savedFile = new File(filePath);
-                    if (savedFile.exists()) {
-                        byte[] data = Files.readAllBytes(savedFile.toPath());
-                        output.write(data);
-                        output.flush();
-                    }
-                } catch (Exception e) {
-                    throw new WebApplicationException("File not found!");
-                }
-            }
-        };
+	private Response downloadFile(final FileEntity entity) {
+		StreamingOutput fileStream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream output) throws IOException, WebApplicationException {
+				try {
+					String filePath = Setting.getInstance().STORAGE_PATH + entity.getStoragePath();
+					File savedFile = new File(filePath);
+					if (savedFile.exists()) {
+						byte[] data = Files.readAllBytes(savedFile.toPath());
+						output.write(data);
+						output.flush();
+					}
+				} catch (Exception e) {
+					throw new WebApplicationException("File not found!");
+				}
+			}
+		};
 
-        String fileName = entity.getName() + "." + entity.getExtension();
-        return Response.ok(fileStream, entity.getType())
-                .header("content-disposition", "attachment; filename=\"" + fileName + "\"")
-                .build();
-    }
+		String fileName = entity.getName() + "." + entity.getExtension();
+		return Response.ok(fileStream, entity.getType())
+				.header("content-disposition", "attachment; filename=\"" + fileName + "\"").build();
+	}
 
-    @POST
-    @Path("upload")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse uploadFile(
-            @FormDataParam("uploadedFile") InputStream inputFile,
-            @FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
-        try {
-            UserDAO userDAO = new UserDAO(mainDAO.getSession());
-            UserEntity currentUser = userDAO.fetchById(getUserId());
-            if (currentUser == null) {
-                return new MessageResponse(401, ResponseType.WARNING,
-                        "Invalid user. You neeed to register new account to upload file.");
-            }
-            FileEntity entity = mainDAO.saveFile(getUserId(), inputFile, fileDetail);
-            return new DefaultResponse<FileEntity>(entity);
-        } catch (Exception e) {
-            LOG.error(e);
-            throw e;
-        }
-    }
+	@POST
+	@Path("upload")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse uploadFile(@FormDataParam("uploadedFile") InputStream inputFile,
+			@FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
+		try {
+			UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
+			UserEntity currentUser = userDAO.fetchById(getUserId());
+			if (currentUser == null) {
+				return new MessageResponse(401, ResponseType.WARNING,
+						"Invalid user. You neeed to register new account to upload file.");
+			}
+			FileEntity entity = mainDAO.saveFile(inputFile, fileDetail);
+			return new DefaultResponse<FileEntity>(entity);
+		} catch (Exception e) {
+			LOG.error(e);
+			throw e;
+		}
+	}
 
-    @PermitAll
-    @GET
-    @Path("public/{token}.{ext}")
-    public Response publicDownload(@PathParam("token") String token, @PathParam("ext") String ext) throws Exception {
-        FileEntity entity = mainDAO.fetchByToken(token, ext);
-        if (entity != null) {
-            return this.downloadFile(entity);
-        }
-        MessageResponse message = new MessageResponse(204, ResponseType.WARNING, "There is no file for your requested token.");
-        return Response.ok(message, MediaType.APPLICATION_JSON).build();
-    }
+	@PermitAll
+	@GET
+	@Path("public/{token}.{ext}")
+	public Response publicDownload(@PathParam("token") String token, @PathParam("ext") String ext) throws Exception {
+		FileEntity entity = mainDAO.fetchByToken(token, ext);
+		if (entity != null) {
+			return this.downloadFile(entity);
+		}
+		MessageResponse message = new MessageResponse(204, ResponseType.WARNING,
+				"There is no file for your requested token.");
+		return Response.ok(message, MediaType.APPLICATION_JSON).build();
+	}
 
-    @GET
-    @Path("{id:\\d+}/download")
-    public Response privateDownload(@PathParam("id") double id) throws Exception {
-        FileEntity entity = mainDAO.fetchById(id);
-        if (entity == null) {
-            MessageResponse message = new MessageResponse(204, ResponseType.WARNING, "There is no file for your request.");
-            return Response.ok(message, MediaType.APPLICATION_JSON).build();
-        }
+	@GET
+	@Path("{id:\\d+}/download")
+	public Response privateDownload(@PathParam("id") double id) throws Exception {
+		FileEntity entity = mainDAO.fetchById(id);
+		if (entity == null) {
+			MessageResponse message = new MessageResponse(204, ResponseType.WARNING,
+					"There is no file for your request.");
+			return Response.ok(message, MediaType.APPLICATION_JSON).build();
+		}
 
-        return this.downloadFile(entity);
-    }
+		return this.downloadFile(entity);
+	}
 
-    @Override
-    protected Logger getLogger() {
-        return FileResource.LOG;
-    }
+	@Override
+	protected Logger getLogger() {
+		return FileResource.LOG;
+	}
 }

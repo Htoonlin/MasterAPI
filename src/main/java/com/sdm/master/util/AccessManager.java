@@ -43,8 +43,13 @@ public class AccessManager implements IAccessManager {
         if (request.getId().length() != 36) {
             return false;
         }
+        
+        String token = request.getId();
+        String deviceId = request.get("device_id").toString();
+        String deviceOS = request.get("device_os").toString();
+        long userId = Long.parseLong(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
 
-        TokenDAO tokenDao = new TokenDAO();
+        TokenDAO tokenDao = new TokenDAO(userId);
         try {
             currentToken = tokenDao.fetchById(request.getId());
         } catch (Exception ex) {
@@ -59,11 +64,6 @@ public class AccessManager implements IAccessManager {
         if (currentToken.getTokenExpired().before(new Date())) {
             return false;
         }
-
-        String token = request.getId();
-        String deviceId = request.get("device_id").toString();
-        String deviceOS = request.get("device_os").toString();
-        long userId = Long.parseLong(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
 
         boolean result = (currentToken.getToken().equalsIgnoreCase(token)
                 && currentToken.getDeviceId().equalsIgnoreCase(deviceId)
@@ -91,7 +91,7 @@ public class AccessManager implements IAccessManager {
         }
 
         //Check User Status
-        UserDAO userDAO = new UserDAO();
+        UserDAO userDAO = new UserDAO(authUserId);
         UserEntity user;
         try {
             user = userDAO.fetchById(authUserId);
@@ -130,7 +130,7 @@ public class AccessManager implements IAccessManager {
 
         //Check Permission by User Roles
         String className = method.getDeclaringClass().getName();
-        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession());
+        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), authUserId);
         boolean permission = false;
         for (RoleEntity role : user.getRoles()) {
             permission = permissionDAO.checkRole(role.getId(), className, method.getName(), httpMethod);
