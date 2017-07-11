@@ -26,7 +26,7 @@ import com.sdm.core.util.SecurityManager;
 public final class Setting implements ISetting {
 
 	private static final Logger LOG = Logger.getLogger(Setting.class.getName());
-	private static final String SETTING_FILE = "setting.properties";
+	private static final String SETTING_FILE = "master-api.properties";
 
 	private static Setting instance;
 
@@ -60,14 +60,14 @@ public final class Setting implements ISetting {
 	public void loadSetting() {
 		File settingFile = new File(SETTING_FILE);
 		if (!settingFile.exists()) {
-			LOG.info("Generating setting.properties at" + settingFile.getAbsolutePath() + ".");
+			LOG.info("Generating setting.properties => " + settingFile.getAbsolutePath() + ".");
 			defaultSetting();
 			save();
 		}
 
 		try (InputStream inputStream = new FileInputStream(settingFile)) {
 			this.settingProps.load(inputStream);
-			LOG.info("Loaded setting.properties <" + settingFile.getAbsolutePath() + "> .");
+			LOG.info("Loaded setting.properties => " + settingFile.getAbsolutePath() + ".");
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -93,7 +93,7 @@ public final class Setting implements ISetting {
 		File settingFile = new File(SETTING_FILE);
 		try (OutputStream outputStream = new FileOutputStream(settingFile)) {
 			this.settingProps.store(outputStream, comments);
-			LOG.info("Generated setting.properties file at [" + comments + "] in " + settingFile.getAbsolutePath()
+			LOG.info("Generated setting.properties file at [" + comments + "] => " + settingFile.getAbsolutePath()
 					+ ".");
 		} catch (IOException ex) {
 			LOG.error(ex);
