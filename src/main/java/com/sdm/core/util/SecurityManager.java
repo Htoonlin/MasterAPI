@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 import com.sdm.core.Setting;
@@ -22,9 +23,17 @@ import io.jsonwebtoken.impl.crypto.MacProvider;
  */
 public class SecurityManager {
 
+	public static String generateSalt(int length) {
+		final SecureRandom random = new SecureRandom();
+		byte salt[] = new byte[length];
+		random.nextBytes(salt);
+		return new String(salt);
+	}
+
 	public static String md5String(String salt, String input) {
 		try {
-			String saltString = (salt + input + Setting.getInstance().ENCRYPT_SALT);
+			String saltString = (salt + input
+					+ Setting.getInstance().get(Setting.ENCRYPT_SALT, SecurityManager.generateSalt(16)));
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			digest.update(saltString.getBytes(), 0, saltString.length());
 			return new BigInteger(1, digest.digest()).toString(16);

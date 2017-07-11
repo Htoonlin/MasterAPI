@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 
-import com.sdm.core.Globalizer;
+import com.sdm.core.Constants;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 
@@ -28,8 +28,8 @@ public class SessionListener implements HttpSessionListener {
 	private int sessionRecording(String prefix, HttpSessionEvent hse) {
 		HttpSession session = hse.getSession();
 		int userId = 0;
-		if (session.getAttribute(Globalizer.SESSION_USER_ID) != null) {
-			userId = (int) session.getAttribute(Globalizer.SESSION_USER_ID);
+		if (session.getAttribute(Constants.SESSION_USER_ID) != null) {
+			userId = (int) session.getAttribute(Constants.SESSION_USER_ID);
 		}
 		LOG.info(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
 		return userId;

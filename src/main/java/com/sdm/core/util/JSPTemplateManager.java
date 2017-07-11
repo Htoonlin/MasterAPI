@@ -60,7 +60,7 @@ public class JSPTemplateManager implements ITemplateManager {
 				request.setAttribute(entry.getKey(), entry.getValue());
 			}
 			TemplateWriter writer = new TemplateWriter(response);
-			template = Setting.getInstance().TEMPLATE_PATH + template;
+			template = Setting.getInstance().get(Setting.TEMPLATE_PATH, "/WEB-INF/template/") + template;
 			request.getRequestDispatcher(template).forward(request, writer);
 			return writer.getContent();
 		} catch (ServletException | IOException ex) {

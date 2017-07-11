@@ -27,14 +27,8 @@ import com.sdm.core.util.security.AccessorType;
  */
 public class Globalizer {
 
-	public static final String AUTH_SUBJECT_PREFIX = "USER-";
-	public static final String AUTH_TYPE = "Bearer";
-	public static final String SESSION_USER_ID = "com.sdm.session.auth_user_id";
-	public static final String SESSION_USER_TOKEN = "com.sdm.session.user_token";
-
 	public static ObjectMapper jsonMapper() {
 		ObjectMapper mapper = new ObjectMapper();
-		// mapper.setDateFormat(Setting.getInstance().DATE_TIME_FORMAT);
 		mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 		mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
@@ -44,10 +38,6 @@ public class Globalizer {
 	}
 
 	public static String camelToLowerUnderScore(String input) {
-		/*
-		 * String regex = "([a-z])([A-Z]+)"; String replacement = "$1_$2"; return
-		 * input.replaceAll(regex, replacement).toLowerCase();
-		 */
 		return (new PropertyNamingStrategy.SnakeCaseStrategy()).translate(input);
 	}
 
@@ -87,14 +77,16 @@ public class Globalizer {
 	public static Date getTokenExpired() {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.add(Calendar.DAY_OF_MONTH, Setting.getInstance().AUTH_TOKEN_LIFE);
+		int day = Setting.getInstance().getInt(Setting.AUTH_TOKEN_LIFE, "30");
+		cal.add(Calendar.DAY_OF_YEAR, day);
 		return cal.getTime();
 	}
 
 	public static boolean validTimeStamp(Date timestamp) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(timestamp);
-		cal.add(Calendar.MINUTE, Setting.getInstance().SECURITY_TIMESTAMP_LIFE);
+		int minute = Setting.getInstance().getInt(Setting.SECURITY_TIMESTAMP_LIFE, "5");
+		cal.add(Calendar.MINUTE, minute);
 		Date checkDate = cal.getTime();
 		return checkDate.after(new Date());
 	}

@@ -25,11 +25,13 @@ public class SundewServletContextListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		LOG.info("System is starting ....");
+		Setting.getInstance();
+		HibernateConnector.init();		
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		LOG.info("System is stopping ....");
+		LOG.info("System is shutting down ...");
 		HibernateConnector.shutdown();
 		LOG.info("Good bye!");
 	}

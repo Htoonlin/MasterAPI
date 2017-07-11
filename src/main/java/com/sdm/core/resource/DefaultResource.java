@@ -18,7 +18,7 @@ import org.glassfish.jersey.server.model.Invocable;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.ResourceMethod;
 
-import com.sdm.core.Globalizer;
+import com.sdm.core.Constants;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ListResponse;
 import com.sdm.core.response.MessageResponse;
@@ -47,7 +47,7 @@ public class DefaultResource implements IBaseResource {
 	@Override
 	public int getUserId() {
 		try {
-			return (int) this.getHttpSession().getAttribute(Globalizer.SESSION_USER_ID);
+			return (int) this.getHttpSession().getAttribute(Constants.SESSION_USER_ID);
 		} catch (Exception e) {
 			LOG.error("There is no session. <" + e.getLocalizedMessage() + ">");
 			return 0;

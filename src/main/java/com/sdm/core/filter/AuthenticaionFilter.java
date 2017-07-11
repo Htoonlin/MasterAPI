@@ -27,11 +27,12 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.log4j.Logger;
 
-import com.sdm.core.Globalizer;
+import com.sdm.core.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
+import com.sdm.core.util.SecurityManager;
 
 import io.jsonwebtoken.ClaimJwtException;
 import io.jsonwebtoken.Claims;
@@ -49,7 +50,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 public class AuthenticaionFilter implements ContainerRequestFilter {
 
 	private static final Logger LOG = Logger.getLogger(AuthenticaionFilter.class);
-	public final String FAILED_COUNT = "AUTHORIZATION_FAILED_COUNT";
 
 	@Context
 	private ResourceInfo resourceInfo;
@@ -62,12 +62,13 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 
 	private int getFailed() {
 		try {
-			return (int) httpSession.getAttribute(FAILED_COUNT);
+			return (int) httpSession.getAttribute(Constants.SESSION_FAILED_COUNT);
 		} catch (Exception e) {
-			return 0;
+			LOG.error(e);
+			return 9999;
 		}
 	}
-
+	
 	private int blockTime() {
 		int seconds = httpSession.getMaxInactiveInterval() * 2;
 		return (seconds / 60);
@@ -77,14 +78,15 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		Method method = resourceInfo.getResourceMethod();
 		if (!method.isAnnotationPresent(PermitAll.class)) {
-			if (getFailed() >= Setting.getInstance().AUTH_FAILED_COUNT) {
+			int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
+			if (this.getFailed() >= limit) {
 				requestContext.abortWith(buildResponse(403,
 						"Sorry! Server blocked your request. You need to wait " + blockTime() + " minutes."));
 				return;
 			}
 
 			if (method.isAnnotationPresent(DenyAll.class)) {
-				requestContext.abortWith(buildResponse(403));
+				requestContext.abortWith(errorResponse(403));
 				return;
 			}
 
@@ -93,7 +95,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 			final List<String> userAgents = headers.get(HttpHeaders.USER_AGENT);
 
 			if (authorization == null || authorization.isEmpty() || userAgents == null || userAgents.isEmpty()) {
-				requestContext.abortWith(buildResponse(401));
+				requestContext.abortWith(errorResponse(401));
 				return;
 			}
 
@@ -104,26 +106,27 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 
 			try {
 				// Clean Token
-				String tokenString = authorization.get(0).substring(Globalizer.AUTH_TYPE.length()).trim();
-				byte[] jwtKey = Base64.getDecoder().decode(Setting.getInstance().JWT_KEY);
+				String settingKey = Setting.getInstance().get(Setting.JWT_KEY, SecurityManager.generateJWTKey());
+				String tokenString = authorization.get(0).substring(Constants.AUTH_TYPE.length()).trim();
+				byte[] jwtKey = Base64.getDecoder().decode(settingKey);
 
 				try {
 					Claims authorizeToken = Jwts.parser().setSigningKey(jwtKey).requireIssuer(userAgents.get(0))
 							.parseClaimsJws(tokenString).getBody();
 
 					if (!accessManager.validateToken(authorizeToken)) {
-						requestContext.abortWith(buildResponse(403));
+						requestContext.abortWith(errorResponse(403));
 						return;
 					}
 
 					if (!accessManager.checkPermission(authorizeToken, method, requestContext.getMethod())) {
-						requestContext.abortWith(buildResponse(403));
+						requestContext.abortWith(errorResponse(403));
 						return;
 					}
 
 					// Separate UserID and Save
 					int userId = Integer.parseInt(
-							authorizeToken.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+							authorizeToken.getSubject().substring(Constants.AUTH_SUBJECT_PREFIX.length()).trim());
 					this.saveUserId(userId);
 				} catch (ClaimJwtException ex) {
 					requestContext.abortWith(buildResponse(403, ex.getLocalizedMessage()));
@@ -137,9 +140,9 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 		}
 	}
 
-	private Response buildResponse(int code) {
+	private Response errorResponse(int code) {
 		String description = "";
-		httpSession.setAttribute(FAILED_COUNT, getFailed() + 1);
+		this.httpSession.setAttribute(Constants.SESSION_FAILED_COUNT, getFailed() + 1);
 		switch (code) {
 		case 401:
 			description = "Hmmm! Your authorization is failed. If you are trying to hack server, don't do it again.";
@@ -157,6 +160,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 	}
 
 	private void saveUserId(int userId) {
-		this.httpSession.setAttribute(Globalizer.SESSION_USER_ID, userId);
+		this.httpSession.setAttribute(Constants.SESSION_FAILED_COUNT, 0);
+		this.httpSession.setAttribute(Constants.SESSION_USER_ID, userId);
 	}
 }

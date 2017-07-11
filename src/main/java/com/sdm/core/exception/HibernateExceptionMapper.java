@@ -27,7 +27,8 @@ public class HibernateExceptionMapper implements ExceptionMapper<HibernateExcept
 	@Override
 	public Response toResponse(HibernateException exception) {
 		MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getLocalizedMessage());
-		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
+		if (env.equalsIgnoreCase("dev")) {
 			Map<String, Object> debug = new HashMap<>();
 			debug.put("StackTrace", exception.getStackTrace());
 			debug.put("Suppressed", exception.getSuppressed());

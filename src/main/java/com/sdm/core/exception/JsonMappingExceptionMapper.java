@@ -26,7 +26,8 @@ public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingEx
 	@Override
 	public Response toResponse(JsonMappingException exception) {
 		MessageResponse message = new MessageResponse(400, ResponseType.ERROR, exception.getOriginalMessage());
-		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
+		if (env.equalsIgnoreCase("dev"))  {
 			Map<String, Object> debug = new HashMap<>();
 			debug.put("StackTrace", exception.getStackTrace());
 			debug.put("Suppressed", exception.getSuppressed());

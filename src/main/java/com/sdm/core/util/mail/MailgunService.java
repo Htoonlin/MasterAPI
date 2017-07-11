@@ -43,17 +43,29 @@ public class MailgunService implements IMailManager {
 	// "/messages";
 	private final String VALIDATE_PATH = "address/validate";
 
+	private final String DEFAULT_SENDER;
+	private final String DOMAIN;
+	private final String PRIVATE_KEY;
+	private final String PUBLIC_KEY;
+	
+	public MailgunService() {
+		this.DEFAULT_SENDER = Setting.getInstance().get(Setting.MAILGUN_DEFAULT_MAIL, "");
+		this.DOMAIN = Setting.getInstance().get(Setting.MAILGUN_DOMAIN, "");
+		this.PUBLIC_KEY = Setting.getInstance().get(Setting.MAILGUN_PUB_KEY, "");
+		this.PRIVATE_KEY = Setting.getInstance().get(Setting.MAILGUN_PRI_KEY, "");
+	}
+
 	@Override
-	public boolean checkMail(String email) throws IOException {
+	public boolean checkMail(String email) {
 		ValidateResponse response = validateMail(email);
 		return response.isValid();
 	}
 
-	private MultivaluedMap<String, String> createFormData(MailInfo mailInfo) throws Exception {
+	private MultivaluedMap<String, String> createFormData(MailInfo mailInfo) {
+		MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
 		try {
-			MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
 			if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
-				mailInfo.setFrom(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER);
+				mailInfo.setFrom(this.DEFAULT_SENDER);
 			}
 			formData.add("from", mailInfo.getFrom());
 
@@ -68,37 +80,35 @@ public class MailgunService implements IMailManager {
 			}
 
 			formData.add("subject", mailInfo.getSubject());
-
-			return formData;
 		} catch (Exception e) {
 			LOG.error(e);
-			throw e;
 		}
+		return formData;
 	}
 
-	public ValidateResponse validateMail(String email) throws IOException {
+	public ValidateResponse validateMail(String email) {
 		try {
 			Client client = ClientBuilder.newClient();
 			WebTarget target = client.target(MAILGUN_URL).path(VALIDATE_PATH);
-			target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PUB_API_KEY));
+			target.register(HttpAuthenticationFeature.basic("api", PUBLIC_KEY));
 			String result = target.queryParam("address", email).request().get(String.class);
 			return Globalizer.jsonMapper().readValue(result, ValidateResponse.class);
 		} catch (IOException e) {
-			LOG.error(e);
-			throw e;
+			LOG.error(e);			
 		}
+		return null;
 	}
 
 	@Override
 	public Response sendAttachments(MailInfo mailInfo, List<File> attachments) {
 		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(MAILGUN_URL).path(Setting.getInstance().MAILGUN_DOMAIN + "/messages");
+		WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
 		target.register(MultiPartFeature.class);
-		target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PRI_API_KEY));
+		target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
 
 		FormDataMultiPart formData = new FormDataMultiPart();
 		if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
-			mailInfo.setFrom(Setting.getInstance().MAILGUN_DEF_MAIL_SENDER);
+			mailInfo.setFrom(DEFAULT_SENDER);
 		}
 		formData.field("from", mailInfo.getFrom());
 
@@ -135,11 +145,11 @@ public class MailgunService implements IMailManager {
 	}
 
 	@Override
-	public Response sendHTML(MailInfo mailInfo) throws Exception {
+	public Response sendHTML(MailInfo mailInfo) {
 		try {
 			Client client = ClientBuilder.newClient();
-			WebTarget target = client.target(MAILGUN_URL).path(Setting.getInstance().MAILGUN_DOMAIN + "/messages");
-			target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PRI_API_KEY));
+			WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
+			target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
 
 			MultivaluedMap<String, String> formData = createFormData(mailInfo);
 			formData.add("html", mailInfo.getBody());
@@ -156,11 +166,11 @@ public class MailgunService implements IMailManager {
 	}
 
 	@Override
-	public Response sendRaw(MailInfo mailInfo) throws Exception {
+	public Response sendRaw(MailInfo mailInfo){
 		try {
 			Client client = ClientBuilder.newClient();
-			WebTarget target = client.target(MAILGUN_URL).path(Setting.getInstance().MAILGUN_DOMAIN + "/messages");
-			target.register(HttpAuthenticationFeature.basic("api", Setting.getInstance().MAILGUN_PRI_API_KEY));
+			WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
+			target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
 
 			MultivaluedMap<String, String> formData = createFormData(mailInfo);
 			formData.add("text", mailInfo.getBody());

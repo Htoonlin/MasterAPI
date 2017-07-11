@@ -55,7 +55,8 @@ public class DefaultRequest implements Serializable, IBaseRequest {
 
 	@Override
 	public boolean isValid() {
-		if (!Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
+		if (!env.equalsIgnoreCase("dev")) {
 			if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
 				addError("timestamp", "Invalid timestamp.");
 				return false;

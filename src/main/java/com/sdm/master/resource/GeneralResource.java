@@ -6,7 +6,6 @@
 package com.sdm.master.resource;
 
 import java.util.HashMap;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -22,7 +21,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 
-import com.sdm.core.Setting;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
@@ -51,19 +49,6 @@ public class GeneralResource extends DefaultResource {
 	public IBaseResponse welcome() throws Exception {
 		return new MessageResponse(200, ResponseType.SUCCESS,
 				"Welcome! from sundew API. Never give up to be a warrior!");
-	}
-
-	@GET
-	@Path("setting")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getAllSetting() {
-		HashMap<String, String> response = new HashMap<>();
-		Properties props = Setting.getInstance().getProperties();
-		for (String key : props.stringPropertyNames()) {
-			String value = props.getProperty(key, "");
-			response.put(key.toLowerCase(), value);
-		}
-		return new DefaultResponse<HashMap<String, String>>(response);
 	}
 
 	@PermitAll

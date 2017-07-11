@@ -12,7 +12,7 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
 
-import com.sdm.core.Globalizer;
+import com.sdm.core.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.master.dao.PermissionDAO;
@@ -47,7 +47,7 @@ public class AccessManager implements IAccessManager {
 		String token = request.getId();
 		String deviceId = request.get("device_id").toString();
 		String deviceOS = request.get("device_os").toString();
-		int userId = Integer.parseInt(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+		int userId = Integer.parseInt(request.getSubject().substring(Constants.AUTH_SUBJECT_PREFIX.length()).trim());
 
 		TokenDAO tokenDao = new TokenDAO(userId);
 		try {
@@ -84,7 +84,7 @@ public class AccessManager implements IAccessManager {
 	@Override
 	public boolean checkPermission(Claims request, Method method, String httpMethod) {
 		int authUserId = Integer
-				.parseInt(request.getSubject().substring(Globalizer.AUTH_SUBJECT_PREFIX.length()).trim());
+				.parseInt(request.getSubject().substring(Constants.AUTH_SUBJECT_PREFIX.length()).trim());
 
 		if (currentToken == null || currentToken.getUserId() != authUserId) {
 			return false;
@@ -114,7 +114,7 @@ public class AccessManager implements IAccessManager {
 		}
 
 		// Skip Permission for ROOT USER
-		if ((user.getId()) == Setting.getInstance().ROOT_ID) {
+		if ((user.getId()) == Setting.getInstance().getInt(Setting.ROOT_ID, "1")) {
 			return true;
 		}
 

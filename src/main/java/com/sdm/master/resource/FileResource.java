@@ -67,7 +67,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
 				try {
-					String filePath = Setting.getInstance().STORAGE_PATH + entity.getStoragePath();
+					String filePath = Setting.getInstance().get(Setting.FILE_STORAGE_PATH, "/var/www/master-api/upload/") + entity.getStoragePath();
 					File savedFile = new File(filePath);
 					if (savedFile.exists()) {
 						byte[] data = Files.readAllBytes(savedFile.toPath());

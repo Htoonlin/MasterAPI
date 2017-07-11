@@ -25,7 +25,8 @@ public class NullExceptionMapper implements ExceptionMapper<NullPointerException
 	@Override
 	public Response toResponse(NullPointerException exception) {
 		MessageResponse message = new MessageResponse(400, ResponseType.WARNING, exception.getMessage());
-		if (Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
+		if (env.equalsIgnoreCase("dev"))  {
 			Map<String, Object> debug = new HashMap<>();
 			debug.put("StackTrace", exception.getStackTrace());
 			debug.put("Suppressed", exception.getSuppressed());

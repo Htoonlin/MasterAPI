@@ -16,18 +16,13 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
  *
  * @author Htoonlin
  */
-public class HibernateConnector {
+public final class HibernateConnector {
 
 	private static final Logger LOG = Logger.getLogger(HibernateConnector.class.getName());
-	private static HibernateConnector instance;
 	private static int instance_count = 0;
-	private SessionFactory mainFactory;
+	private static SessionFactory mainFactory;
 
-	private HibernateConnector() {
-		this.setup();
-	}
-
-	private void setup() {
+	public static synchronized void init() {
 		LOG.info("Creating new hibernate instance....");
 		StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
 		try {
@@ -37,23 +32,22 @@ public class HibernateConnector {
 		} catch (Exception e) {
 			LOG.error(e);
 			StandardServiceRegistryBuilder.destroy(registry);
-			instance = null;
 			throw e;
 		}
 	}
 
 	public static synchronized SessionFactory getFactory() throws HibernateException {
-		if (instance == null) {
-			instance = new HibernateConnector();
+		if (mainFactory == null || mainFactory.isClosed()) {
+			init();
 		}
-		return instance.mainFactory;
+		return mainFactory;
 	}
 
 	public static synchronized void shutdown() {
-		if (instance != null) {
+		if (mainFactory != null && mainFactory.isOpen()) {
 			LOG.info("Shutting down hibernate session factory");
 			instance_count--;
-			instance.mainFactory.close();
+			mainFactory.close();
 			LOG.info("Current Hibernate Instance Count : " + instance_count);
 		}
 	}

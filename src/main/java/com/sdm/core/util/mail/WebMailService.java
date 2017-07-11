@@ -6,7 +6,6 @@
 package com.sdm.core.util.mail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -40,31 +39,31 @@ public class WebMailService implements IMailManager {
 	private static final Logger LOG = Logger.getLogger(WebMailService.class.getName());
 
 	private final String MAIL_SOCKET_FACTORY = "javax.net.ssl.SSLSocketFactory";
-
 	private Session mailSession;
 
-	public WebMailService() throws IOException {
+	public WebMailService() {
 		Properties settingProps = new Properties();
-		settingProps.put("mail.smtp.host", Setting.getInstance().MAIL_HOST);
-		settingProps.put("mail.smtp.socketFactory.port", Setting.getInstance().MAIL_PORT);
+		settingProps.put("mail.smtp.host", Setting.getInstance().get(Setting.MAIL_HOST, "smtp.gmail.com"));
+		settingProps.put("mail.smtp.socketFactory.port", Setting.getInstance().get(Setting.MAIL_PORT, "465"));
 		settingProps.put("mail.smtp.socketFactory.class", MAIL_SOCKET_FACTORY);
-		settingProps.put("mail.smtp.auth", Setting.getInstance().MAIL_NEED_AUTH);
-		settingProps.put("mail.smtp.port", Setting.getInstance().MAIL_PORT);
+		settingProps.put("mail.smtp.auth", Setting.getInstance().get(Setting.MAIL_IS_AUTH, "true"));
+		settingProps.put("mail.smtp.port", Setting.getInstance().get(Setting.MAIL_PORT, "465"));
 
 		mailSession = Session.getDefaultInstance(settingProps, new javax.mail.Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(Setting.getInstance().MAIL_USER, Setting.getInstance().MAIL_PASSWORD);
+				return new PasswordAuthentication(Setting.getInstance().get(Setting.MAIL_USER, ""),
+						Setting.getInstance().get(Setting.MAIL_PASSWORD, ""));
 			}
 		});
 	}
 
-	private Message buildMessage(MailInfo mailInfo) throws MessagingException {
+	private Message buildMessage(MailInfo mailInfo) {
 		try {
 			Message message = new MimeMessage(mailSession);
 			message.setHeader("X-Priority", "1");
 			if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
-				mailInfo.setFrom(Setting.getInstance().MAIL_USER);
+				mailInfo.setFrom(Setting.getInstance().get(Setting.MAIL_USER, ""));
 			}
 			message.setFrom(new InternetAddress(mailInfo.getFrom()));
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailInfo.getTo()));
@@ -82,8 +81,8 @@ public class WebMailService implements IMailManager {
 			return message;
 		} catch (MessagingException ex) {
 			LOG.error(ex);
-			throw ex;
 		}
+		return null;
 	}
 
 	@Override
@@ -124,35 +123,35 @@ public class WebMailService implements IMailManager {
 	}
 
 	@Override
-	public Response sendHTML(MailInfo mailInfo) throws Exception {
+	public Response sendHTML(MailInfo mailInfo) {
 		Response response = Response.ok().build();
 		try {
 			Message message = buildMessage(mailInfo);
 			message.setContent(mailInfo.getBody(), "text/html; charset=utf-8");
 			Transport.send(message);
 		} catch (MessagingException ex) {
+			LOG.error(ex);
 			response = Response.serverError().build();
-			throw ex;
 		}
 		return response;
 	}
 
 	@Override
-	public Response sendRaw(MailInfo mailInfo) throws Exception {
+	public Response sendRaw(MailInfo mailInfo) {
 		Response response = Response.ok().build();
 		try {
 			Message message = buildMessage(mailInfo);
 			message.setText(mailInfo.getBody());
 			Transport.send(message);
 		} catch (MessagingException ex) {
+			LOG.error(ex);
 			response = Response.serverError().build();
-			throw ex;
 		}
 		return response;
 	}
 
 	@Override
-	public boolean checkMail(String email) throws IOException {
+	public boolean checkMail(String email) {
 		return email.matches(EMAIL_PATTERN);
 	}
 

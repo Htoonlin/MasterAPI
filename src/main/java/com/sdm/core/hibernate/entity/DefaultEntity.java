@@ -67,7 +67,8 @@ public class DefaultEntity implements Serializable, IBaseRequest {
 
 	@Override
 	public boolean isValid() {
-		if (!Setting.getInstance().ENVIRONMENT.equalsIgnoreCase("dev")) {
+		String env = Setting.getInstance().get(Setting.SECURITY_TIMESTAMP_LIFE, "beta");
+		if (!env.equalsIgnoreCase("dev")) {
 			if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
 				addError("timestamp", "Invalid timestamp.");
 				return false;

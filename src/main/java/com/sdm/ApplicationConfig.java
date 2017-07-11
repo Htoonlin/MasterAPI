@@ -59,7 +59,8 @@ public class ApplicationConfig extends Application {
 		Injections.addBinding(Injections.newBinder(JSPTemplateManager.class).to(ITemplateManager.class), dc);
 
 		// Inject MailManager
-		if (Setting.getInstance().MAIL_SERVICE.equalsIgnoreCase("mailgun")) {
+		String mailType = Setting.getInstance().get(Setting.MAIL_TYPE, "webmail");
+		if (mailType.equalsIgnoreCase("mailgun")) {
 			Injections.addBinding(Injections.newBinder(MailgunService.class).to(IMailManager.class), dc);
 		} else {
 			Injections.addBinding(Injections.newBinder(WebMailService.class).to(IMailManager.class), dc);

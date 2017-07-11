@@ -1,45 +1,143 @@
 package com.sdm.core;
 
 interface ISetting {
-	/* System Setting */
-	String PROP_ENV = "com.sdm.system.env";
 
-	/* Storage Settings */
-	String PROP_STORAGE_PATH = "com.sdm.path.storage";
-	String PROP_TEMPLATE_PATH = "com.sdm.path.template";
+	/**
+	 * SYSTEM_ENV: Supported variables => DEV, BETA, LIVE
+	 */
+	String SYSTEM_ENV = "com.sdm.system.env";
 
-	/* Security Setting */
-	String PROP_ROOT_ID = "com.sdm.security.root_id";
-	String PROP_AUTH_TOKEN_LIFE = "com.sdm.security.auth_token_life";
-	String PROP_JWT_KEY = "com.sdm.security.jwt_key";
-	String PROP_OTP_LIFE = "com.sdm.security.otp_life";
-	String PROP_SECURITY_TIMESTAMP_LIFE = "com.sdm.security.timestamp_life";
-	String PROP_ENCRYPT_SALT = "com.sdm.security.encrypt_salt";
-	String PROP_TOKEN_CHARS = "com.sdm.security.token_chars";
-	String PROP_AUTH_FAILED_COUNT = "com.sdm.security.auth_failed_count";
+	/**
+	 * Root directory to upload.
+	 */
+	String FILE_STORAGE_PATH = "com.sdm.path.storage";
 
-	/* Date Time Setting */
-	String PROP_DATE_TIME_FORMAT = "com.sdm.format.date_time";
-	String PROP_DATE_FORMAT = "com.sdm.format.date";
-	String PROP_TIME_FORMAT = "com.sdm.format.time";
+	/**
+	 * JSP Template file path to use ITemplate Engine.
+	 */
+	String TEMPLATE_PATH = "com.sdm.path.template";
 
-	/* CORS Setting */
-	String PROP_CORS_ORIGIN = "com.sdm.cors.origin";
-	String PROP_CORS_METHODS = "com.sdm.cors.methods";
-	String PROP_CORS_HEADERS = "com.sdm.cors.headers";
-	String PROP_CORS_MAX_AGE = "com.sdm.cors.age";
+	/**
+	 * Root User account ID. It will be access full permission of API.
+	 */
+	String ROOT_ID = "com.sdm.security.root_id";
 
-	/* Mail Setting */
-	String PROP_MAIL_TYPE = "com.sdm.mail";
+	/**
+	 * Expired [Day] time of generated token.
+	 */
+	String AUTH_TOKEN_LIFE = "com.sdm.security.auth_token_life";
 
-	String PROP_MAIL_HOST = "com.sdm.mail.host";
-	String PROP_MAIL_PORT = "com.sdm.mail.port";
-	String PROP_MAIL_IS_AUTH = "com.sdm.mail.is_auth";
-	String PROP_MAIL_USER = "com.sdm.mail.user";
-	String PROP_MAIL_PASSWORD = "com.sdm.mail.password";
+	/**
+	 * Cryptography KEY for JWT. It will generate from SecurityManager.
+	 */
+	String JWT_KEY = "com.sdm.security.jwt_key";
 
-	String PROP_MAILGUN_PRI_KEY = "com.sdm.mailgun.private_key";
-	String PROP_MAILGUN_PUB_KEY = "com.sdm.mailgun.public_key";
-	String PROP_MAILGUN_DOMAIN = "com.sdm.mailgun.domain";
-	String PROP_MAILGUN_DEFAULT_MAIL = "com.sdm.mailgun.default_mail";
+	/**
+	 * Expired [Minute] time for new user registration.
+	 */
+	String OTP_LIFE = "com.sdm.security.otp_life";
+
+	/**
+	 * Expired [Minute] time to request api server. Don't need on SYSTEM_ENV => DEV.
+	 */
+	String SECURITY_TIMESTAMP_LIFE = "com.sdm.security.timestamp_life";
+
+	/**
+	 * User password encryption salt key.
+	 */
+	String ENCRYPT_SALT = "com.sdm.security.encrypt_salt";
+
+	/**
+	 * These chars will include in Randomize token such as OTP.
+	 */
+	String TOKEN_CHARS = "com.sdm.security.token_chars";
+
+	/**
+	 * How many time user can try auth by token.
+	 */
+	String AUTH_FAILED_COUNT = "com.sdm.security.auth_failed_count";
+
+	/**
+	 * Display date time format.
+	 */
+	String DATE_TIME_FORMAT = "com.sdm.format.date_time";
+
+	/**
+	 * Display date format.
+	 */
+	String DATE_FORMAT = "com.sdm.format.date";
+
+	/**
+	 * Display time format.
+	 */
+	String TIME_FORMAT = "com.sdm.format.time";
+
+	/**
+	 * CORS allow origin value.
+	 */
+	String CORS_ORIGIN = "com.sdm.cors.origin";
+
+	/**
+	 * CORS allow methods such as (GET, POST, PUT, DELETE).
+	 */
+	String CORS_METHODS = "com.sdm.cors.methods";
+
+	/**
+	 * CORS allow headers such as (authorization, content-type).
+	 */
+	String CORS_HEADERS = "com.sdm.cors.headers";
+
+	/**
+	 * CORS max age.
+	 */
+	String CORS_MAX_AGE = "com.sdm.cors.age";
+
+	/**
+	 * Supported mail type => webmail, mailgun
+	 */
+	String MAIL_TYPE = "com.sdm.mail";
+
+	/**
+	 * Web mail host name. example => smtp.gmail.com
+	 */
+	String MAIL_HOST = "com.sdm.mail.host";
+	/**
+	 * Web mail port number. example => 465
+	 */
+	String MAIL_PORT = "com.sdm.mail.port";
+
+	/**
+	 * Web mail server need auth?
+	 */
+	String MAIL_IS_AUTH = "com.sdm.mail.is_auth";
+
+	/**
+	 * If webmail server need auth, enter user name.
+	 */
+	String MAIL_USER = "com.sdm.mail.user";
+
+	/**
+	 * If webmail server need auth, enter password.
+	 */
+	String MAIL_PASSWORD = "com.sdm.mail.password";
+
+	/**
+	 * Mailgun private key to access mailgun server.
+	 */
+	String MAILGUN_PRI_KEY = "com.sdm.mailgun.private_key";
+
+	/**
+	 * Mailgun public key to access mailgun server.
+	 */
+	String MAILGUN_PUB_KEY = "com.sdm.mailgun.public_key";
+
+	/**
+	 * Mailgun domain name for mail.
+	 */
+	String MAILGUN_DOMAIN = "com.sdm.mailgun.domain";
+
+	/**
+	 * Mailgun default mail sender.
+	 */
+	String MAILGUN_DEFAULT_MAIL = "com.sdm.mailgun.default_mail";
 }

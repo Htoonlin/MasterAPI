@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
+import com.sdm.core.Constants;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
@@ -69,11 +70,10 @@ public class AuthResource extends DefaultResource {
 	private IMailManager mailManager;
 
 	private UserDAO userDao;
-	public static final String LOGIN_FAILED_COUNT = "LOGIN_FAILED_COUNT";
 
 	private int getFailed() {
 		try {
-			return (int) getHttpSession().getAttribute(LOGIN_FAILED_COUNT);
+			return (int) getHttpSession().getAttribute(Constants.SESSION_FAILED_COUNT);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -98,13 +98,14 @@ public class AuthResource extends DefaultResource {
 	}
 
 	private String generateJWT(TokenEntity currentToken) {
-		String compactJWT = Jwts.builder().setSubject(Globalizer.AUTH_SUBJECT_PREFIX + currentToken.getUserId())
+		String jwtKey = Setting.getInstance().get(Setting.JWT_KEY, SecurityManager.generateJWTKey());
+		String compactJWT = Jwts.builder().setSubject(Constants.AUTH_SUBJECT_PREFIX + currentToken.getUserId())
 				.setIssuer(userAgentString).setIssuedAt(new Date()).setExpiration(currentToken.getTokenExpired())
 				.setId(currentToken.getToken()).claim("device_id", currentToken.getDeviceId())
 				.claim("device_os", currentToken.getDeviceOs()).compressWith(CompressionCodecs.DEFLATE)
-				.signWith(SignatureAlgorithm.HS512, Setting.getInstance().JWT_KEY).compact();
+				.signWith(SignatureAlgorithm.HS512, jwtKey).compact();
 
-		getHttpSession().setAttribute(Globalizer.SESSION_USER_TOKEN, compactJWT);
+		getHttpSession().setAttribute(Constants.SESSION_USER_TOKEN, compactJWT);
 		return compactJWT;
 	}
 
@@ -116,8 +117,8 @@ public class AuthResource extends DefaultResource {
 
 			MessageResponse message = new MessageResponse(401, ResponseType.ERROR,
 					"Opp! Request email or password is something wrong");
-
-			if (getFailed() >= Setting.getInstance().AUTH_FAILED_COUNT) {
+			int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
+			if (getFailed() >= limit) {
 				message = new MessageResponse(401, ResponseType.WARNING,
 						"Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
 			} else {
@@ -133,11 +134,15 @@ public class AuthResource extends DefaultResource {
 					String token = this.generateJWT(authToken);
 					authUser.setCurrentToken(token);
 					userDao.commitTransaction();
+
+					// Reset failed count
+					getHttpSession().setAttribute(Constants.SESSION_FAILED_COUNT, 0);
+
 					return new DefaultResponse<UserEntity>(authUser);
 				}
 			}
 			// Increase failed count
-			getHttpSession().setAttribute(LOGIN_FAILED_COUNT, getFailed() + 1);
+			getHttpSession().setAttribute(Constants.SESSION_FAILED_COUNT, getFailed() + 1);
 			return message;
 		} catch (Exception e) {
 			userDao.rollbackTransaction();
@@ -251,9 +256,9 @@ public class AuthResource extends DefaultResource {
 			}
 
 			if (user.getOtpExpired().before(new Date())) {
-				userDao.update(user, true);
 				AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 				mailSend.activateLink(user, userAgentString);
+				userDao.update(user, true);
 				return new MessageResponse(400, ResponseType.WARNING,
 						"Sorry! Your token has expired. We send new token to your email.");
 			}

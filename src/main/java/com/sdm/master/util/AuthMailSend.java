@@ -27,17 +27,21 @@ public class AuthMailSend {
 
 	private final ITemplateManager templateManager;
 	private final IMailManager mailManager;
+	private final int OTP_MINUTE;
+	private final String TOKEN_CHARS;
 
 	public AuthMailSend(IMailManager mailManager, ITemplateManager templateManager) {
 		this.mailManager = mailManager;
 		this.templateManager = templateManager;
+		this.OTP_MINUTE = Setting.getInstance().getInt(Setting.OTP_LIFE, "10");
+		this.TOKEN_CHARS = Setting.getInstance().get(Setting.TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
 	}
 
 	private UserEntity setToken(UserEntity user) {
-		user.setOtpToken(Globalizer.generateToken(Setting.getInstance().TOKEN_CHARS, UserEntity.TOKEN_LENGTH));
+		user.setOtpToken(Globalizer.generateToken(TOKEN_CHARS, UserEntity.TOKEN_LENGTH));
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.add(Calendar.MINUTE, Setting.getInstance().OTP_LIFE);
+		cal.add(Calendar.MINUTE, this.OTP_MINUTE);
 		user.setOtpExpired(cal.getTime());
 		return user;
 	}
@@ -57,7 +61,7 @@ public class AuthMailSend {
 
 		// Build mail with Forget Password Link
 		Map<String, Object> data = new HashMap<>();
-		data.put("expire", Setting.getInstance().OTP_LIFE);
+		data.put("expire", this.OTP_MINUTE);
 		data.put("user", user.getDisplayName());
 		data.put("token", SecurityManager.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
 		data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
@@ -72,7 +76,7 @@ public class AuthMailSend {
 
 		// Build mail with activation link
 		Map<String, Object> data = new HashMap<>();
-		data.put("expire", Setting.getInstance().OTP_LIFE);
+		data.put("expire", this.OTP_MINUTE);
 		data.put("user", user.getDisplayName());
 		data.put("token", SecurityManager.base64Encode(Globalizer.jsonMapper().writeValueAsString(request)));
 		data.put("current_year", Globalizer.getDateString("yyyy", new Date()));

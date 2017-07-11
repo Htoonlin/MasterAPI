@@ -6,7 +6,6 @@
 package com.sdm.core.di;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -21,14 +20,14 @@ public interface IMailManager {
 
 	public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
 
-	public boolean checkMail(String email) throws IOException;
+	public boolean checkMail(String email);
 
 	Response sendAttachment(MailInfo mailInfo, File attachment);
 
 	Response sendAttachments(MailInfo mailInfo, List<File> attachments);
 
-	Response sendHTML(MailInfo mailInfo) throws Exception;
+	Response sendHTML(MailInfo mailInfo);
 
-	Response sendRaw(MailInfo mailInfo) throws Exception;
+	Response sendRaw(MailInfo mailInfo);
 
 }
