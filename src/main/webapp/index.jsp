@@ -5,11 +5,12 @@
 --%>
 
 <%@page import="com.sdm.core.Globalizer"%>
+<%@page import="com.sdm.core.Constants"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
 	String accessToken = "";
 	try {
-		accessToken = session.getAttribute(Globalizer.SESSION_USER_TOKEN).toString();
+		accessToken = session.getAttribute(Constants.SESSION_USER_TOKEN).toString();
 	} catch (Exception e) {
 		accessToken = "";
 	}
