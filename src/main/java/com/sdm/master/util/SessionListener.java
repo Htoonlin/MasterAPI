@@ -31,7 +31,7 @@ public class SessionListener implements HttpSessionListener {
 		if (session.getAttribute(Globalizer.SESSION_USER_ID) != null) {
 			userId = (int) session.getAttribute(Globalizer.SESSION_USER_ID);
 		}
-		LOG.debug(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
+		LOG.info(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
 		return userId;
 	}
 

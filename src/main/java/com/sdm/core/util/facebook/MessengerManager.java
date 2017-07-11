@@ -58,7 +58,7 @@ public class MessengerManager {
 
 	private void processResponse(Response response, IFacebookListener listener) {
 		if (listener == null) {
-			LOG.debug("Response Message : " + response.readEntity(String.class));
+			LOG.info("Response Message : " + response.readEntity(String.class));
 			return;
 		}
 

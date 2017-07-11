@@ -14,6 +14,6 @@ public class AuditListener implements RevisionListener {
 		AuditEntity auditEntity = (AuditEntity) entity;
 		int userId = AuditStorage.INSTANCE.get();
 		auditEntity.setUserId(userId);
-		LOG.debug("Successfully created the audit log by <" + userId + ">.");
+		LOG.info("Successfully created the audit log by <" + userId + ">.");
 	}
 }
