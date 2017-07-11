@@ -27,7 +27,7 @@ public class IOExceptionMapper implements ExceptionMapper<IOException> {
 	public Response toResponse(IOException exception) {
 		MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getLocalizedMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
-		if (env.equalsIgnoreCase("dev"))  {
+		if (env.equalsIgnoreCase("dev")) {
 			Map<String, Object> debug = new HashMap<>();
 			debug.put("StackTrace", exception.getStackTrace());
 			debug.put("Suppressed", exception.getSuppressed());

@@ -51,7 +51,8 @@ public class FileManager {
 	 */
 
 	public static String generateToken() {
-		return Globalizer.generateToken(Setting.getInstance().get(Setting.TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 10) + "-"
+		return Globalizer.generateToken(
+				Setting.getInstance().get(Setting.TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 10) + "-"
 				+ Globalizer.getDateString("yyyyMMddHHmmss", new Date());
 	}
 
@@ -59,7 +60,8 @@ public class FileManager {
 		String uploadPath = "/User-" + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
 		String fileName = token + "." + ext;
 
-		File baseDir = new File(Setting.getInstance().get(Setting.FILE_STORAGE_PATH, "/var/www/master-api/upload/") + uploadPath);
+		File baseDir = new File(
+				Setting.getInstance().get(Setting.FILE_STORAGE_PATH, "/var/www/master-api/upload/") + uploadPath);
 		if (!baseDir.exists()) {
 			baseDir.mkdirs();
 		}

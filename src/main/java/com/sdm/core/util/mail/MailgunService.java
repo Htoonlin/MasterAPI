@@ -47,7 +47,7 @@ public class MailgunService implements IMailManager {
 	private final String DOMAIN;
 	private final String PRIVATE_KEY;
 	private final String PUBLIC_KEY;
-	
+
 	public MailgunService() {
 		this.DEFAULT_SENDER = Setting.getInstance().get(Setting.MAILGUN_DEFAULT_MAIL, "");
 		this.DOMAIN = Setting.getInstance().get(Setting.MAILGUN_DOMAIN, "");
@@ -94,7 +94,7 @@ public class MailgunService implements IMailManager {
 			String result = target.queryParam("address", email).request().get(String.class);
 			return Globalizer.jsonMapper().readValue(result, ValidateResponse.class);
 		} catch (IOException e) {
-			LOG.error(e);			
+			LOG.error(e);
 		}
 		return null;
 	}
@@ -166,7 +166,7 @@ public class MailgunService implements IMailManager {
 	}
 
 	@Override
-	public Response sendRaw(MailInfo mailInfo){
+	public Response sendRaw(MailInfo mailInfo) {
 		try {
 			Client client = ClientBuilder.newClient();
 			WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");

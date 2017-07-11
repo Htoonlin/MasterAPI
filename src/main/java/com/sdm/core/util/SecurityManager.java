@@ -32,10 +32,10 @@ public class SecurityManager {
 
 	public static String md5String(String salt, String input) {
 		try {
-			String saltString = (salt + input
-					+ Setting.getInstance().get(Setting.ENCRYPT_SALT, SecurityManager.generateSalt(16)));
+			String staticSalt = Setting.getInstance().get(Setting.ENCRYPT_SALT, SecurityManager.generateSalt(16));
+			String saltedString = (salt + input + staticSalt);
 			MessageDigest digest = MessageDigest.getInstance("MD5");
-			digest.update(saltString.getBytes(), 0, saltString.length());
+			digest.update(saltedString.getBytes(), 0, saltedString.length());
 			return new BigInteger(1, digest.digest()).toString(16);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

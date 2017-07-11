@@ -28,7 +28,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 	public Response toResponse(Throwable exception) {
 		MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
-		if (env.equalsIgnoreCase("dev"))  {
+		if (env.equalsIgnoreCase("dev")) {
 			Map<String, Object> debug = new HashMap<>();
 			debug.put("StackTrace", exception.getStackTrace());
 			debug.put("Suppressed", exception.getSuppressed());

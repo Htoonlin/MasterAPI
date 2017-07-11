@@ -20,38 +20,38 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
 
-
 @Path("system")
 public class SystemResource extends DefaultResource {
 	private static final Logger LOG = Logger.getLogger(SystemResource.class);
-	
+
 	/**
 	 * Step 1: It will generate setting.properties file.
+	 * 
 	 * @param props
 	 * @return
 	 */
 	private IBaseResponse initSetting(Map<String, String> props) {
 		return null;
 	}
-	
+
 	/**
 	 * Step 2: It will generate hibernate.cfg.xml file.
+	 * 
 	 * @return
 	 */
 	private IBaseResponse initHibernate() {
 		return null;
 	}
-	
-	
+
 	/**
 	 * Step 3: It will create root user account with ID => 1.
+	 * 
 	 * @return
 	 */
 	private IBaseResponse createRoot() {
 		return null;
 	}
-	
-	
+
 	@PermitAll
 	@GET
 	@Path("setup/{step}")
@@ -60,7 +60,7 @@ public class SystemResource extends DefaultResource {
 	public IBaseResponse setup(@PathParam("step") int step) {
 		return new MessageResponse(200, ResponseType.SUCCESS, "Success.");
 	}
-	
+
 	@GET
 	@Path("setting")
 	@Produces(MediaType.APPLICATION_JSON)

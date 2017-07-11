@@ -68,7 +68,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 			return 9999;
 		}
 	}
-	
+
 	private int blockTime() {
 		int seconds = httpSession.getMaxInactiveInterval() * 2;
 		return (seconds / 60);

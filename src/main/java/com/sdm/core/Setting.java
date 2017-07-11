@@ -36,15 +36,15 @@ public final class Setting implements ISetting {
 		settingProps = new Properties();
 		this.loadSetting();
 	}
-	
+
 	public static synchronized Setting getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new Setting();
 		}
-		
+
 		return instance;
 	}
-	
+
 	public Properties getProperties() {
 		return this.settingProps;
 	}
@@ -59,15 +59,15 @@ public final class Setting implements ISetting {
 
 	public void loadSetting() {
 		File settingFile = new File(SETTING_FILE);
-		if(!settingFile.exists()) {
+		if (!settingFile.exists()) {
 			LOG.info("Generating setting.properties at" + settingFile.getAbsolutePath() + ".");
 			defaultSetting();
 			save();
 		}
-		
+
 		try (InputStream inputStream = new FileInputStream(settingFile)) {
 			this.settingProps.load(inputStream);
-			LOG.info("Loaded setting.properties.");
+			LOG.info("Loaded setting.properties <" + settingFile.getAbsolutePath() + "> .");
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -87,12 +87,14 @@ public final class Setting implements ISetting {
 		}
 	}
 
-	public void save() {		
-		String comments = Globalizer.getDateString("yyyy-MM-dd HH:mm:ss", new Date());
+	public void save() {
+		String comments = "Modified this properties file: ";
+		comments += Globalizer.getDateString("yyyy-MM-dd HH:mm:ss", new Date());
 		File settingFile = new File(SETTING_FILE);
 		try (OutputStream outputStream = new FileOutputStream(settingFile)) {
 			this.settingProps.store(outputStream, comments);
-			LOG.info("Generated setting.properties file at [" + comments + "] in " + settingFile.getAbsolutePath() + ".");
+			LOG.info("Generated setting.properties file at [" + comments + "] in " + settingFile.getAbsolutePath()
+					+ ".");
 		} catch (IOException ex) {
 			LOG.error(ex);
 		}
