@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.response;
+package com.sdm.core.response.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,15 +15,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder({ "code", "status", "count", "content", "timestamp" })
-public class ListResponse<T extends Serializable> extends DefaultResponse<T> implements Serializable {
+@JsonPropertyOrder({ "count", "data" })
+public class ListModel<T extends Serializable> implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 522782444980983172L;
 
-	public ListResponse(List<T> data) {
+	public ListModel(List<T> data) {
 		this.data = data;
 	}
 
@@ -40,12 +40,11 @@ public class ListResponse<T extends Serializable> extends DefaultResponse<T> imp
 		this.data.add(entity);
 	}
 
-	@Override
-	public List<T> getContent() {
-		return this.data;
+	public List<T> getData() {
+		return data;
 	}
 
-	public void setContent(List<T> value) {
-		this.data = value;
+	public void setData(List<T> data) {
+		this.data = data;
 	}
 }

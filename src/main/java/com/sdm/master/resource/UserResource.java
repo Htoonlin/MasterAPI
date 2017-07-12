@@ -20,8 +20,8 @@ import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.MessageResponse;
 import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.Message;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
@@ -80,7 +80,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 			mailSend.welcomeUser(createdUser, rawPassword);
 
-			return new DefaultResponse<UserEntity>(createdUser);
+			return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
 
 		} catch (Exception e) {
 			LOG.error(e);
@@ -99,16 +99,18 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 
 			UserEntity dbEntity = userDAO.fetchById(id);
 			if (dbEntity == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+				Message message = new Message(204, "No Data", "There is no data for your request.");
+				return new DefaultResponse<>(message);
 			} else if (!Objects.equals(dbEntity.getId(), request.getId())) {
-				return new MessageResponse(400, ResponseType.WARNING, "Invalid request ID.");
+				Message message = new Message(400, "Invalid", "Invalid request ID.");
+				return new DefaultResponse<>(message);
 			}
 
 			request.setEmail(dbEntity.getEmail());
 			request.setPassword(dbEntity.getPassword());
 
 			userDAO.update(request, true);
-			return new DefaultResponse<UserEntity>(request);
+			return new DefaultResponse<UserEntity>(202, ResponseType.SUCCESS, request);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;

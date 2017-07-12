@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.sdm.core.response.model.Message;
 
 /**
  *
@@ -50,6 +51,11 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 
 	@Override
 	public int getCode() {
+		if (content instanceof Message) {
+			Message message = (Message) this.content;
+			if (message.getCode() != 204)
+				return message.getCode();
+		}
 		return code;
 	}
 

@@ -19,10 +19,10 @@ import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.ResourceMethod;
 
 import com.sdm.core.Constants;
+import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ListResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.ListModel;
+import com.sdm.core.response.model.Message;
 import com.sdm.core.response.model.RouteInfo;
 
 /**
@@ -115,11 +115,12 @@ public class DefaultResource implements IBaseResource {
 		try {
 			Resource resource = Resource.from(this.getClass());
 			if (resource == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+				Message message = new Message(204, "No Data", "There is no data for your request.");
+				return new DefaultResponse<>(message);
 			}
 			List<RouteInfo> routeList = collectRoute(resource, "/");
-			ListResponse<RouteInfo> response = new ListResponse<RouteInfo>(routeList);
-			return response;
+			ListModel<RouteInfo> content = new ListModel<>(routeList);
+			return new DefaultResponse<>(content);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;

@@ -5,7 +5,10 @@
  */
 package com.sdm.core.filter;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sdm.core.Globalizer;
@@ -14,6 +17,8 @@ import com.sdm.core.Globalizer;
  *
  * @author Htoonlin
  */
+@Provider
+@Priority(Priorities.ENTITY_CODER)
 public class JacksonObjectMapper implements ContextResolver<ObjectMapper> {
 
 	final ObjectMapper defaultObjectMapper;

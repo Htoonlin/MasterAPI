@@ -24,6 +24,7 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import org.jvnet.hk2.annotations.Service;
 
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
@@ -34,6 +35,7 @@ import com.sdm.core.util.mail.response.ValidateResponse;
  *
  * @author Htoonlin
  */
+@Service
 public class MailgunService implements IMailManager {
 
 	private static final Logger LOG = Logger.getLogger(MailgunService.class.getName());

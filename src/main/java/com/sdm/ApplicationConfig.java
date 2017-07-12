@@ -5,120 +5,71 @@
  */
 package com.sdm;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Application;
 
 import org.apache.log4j.Logger;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.jersey.internal.inject.Injections;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.process.internal.RequestScoped;
-import org.glassfish.jersey.server.ServerProperties;
+import org.glassfish.jersey.server.ResourceConfig;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.sdm.core.Setting;
 import com.sdm.core.di.HttpSessionFactory;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
-import com.sdm.core.filter.JacksonObjectMapper;
-import com.sdm.core.util.JSPTemplateManager;
+import com.sdm.core.util.JSPTemplateService;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.util.mail.WebMailService;
-import com.sdm.master.util.AccessManager;
+import com.sdm.master.util.AccessService;
 
 /**
  *
  * @author Htoonlin
  */
-@javax.ws.rs.ApplicationPath("/api")
-public class ApplicationConfig extends Application {
+@javax.ws.rs.ApplicationPath("api")
+public class ApplicationConfig extends ResourceConfig {
 
 	private static final Logger LOG = Logger.getLogger(ApplicationConfig.class.getName());
 
-	@Inject
-	public ApplicationConfig(ServiceLocator serviceLocator) {
-		LOG.info("Loading Dependency Injections....");
-		DynamicConfiguration dc = Injections.getConfiguration(serviceLocator);
-		// Inject HttpSession
-		Injections.addBinding(Injections.newFactoryBinder(HttpSessionFactory.class).to(HttpSession.class).proxy(true)
-				.proxyForSameScope(false).in(RequestScoped.class), dc);
+	public ApplicationConfig() {
+		LOG.info("Loading packages");
+		packages("com.sdm.core.exception", "com.sdm.core.filter", "com.sdm.master.resource", "com.sdm.sample.resource");
+		LOG.info("Successfully loaded packages.");
 
-		// Inject AccessManager
-		Injections.addBinding(Injections.newBinder(AccessManager.class).to(IAccessManager.class), dc);
+		LOG.info("Loading jersey features and providers");
+		register(MultiPartFeature.class);
+		register(JacksonFeature.class);
+		register(LoggingFeature.class);
+		LOG.info("Successfully loaded jersey features and providers");
 
-		// Inject TemplateManager
-		Injections.addBinding(Injections.newBinder(JSPTemplateManager.class).to(ITemplateManager.class), dc);
+		register(new AbstractBinder() {
 
-		// Inject MailManager
-		String mailType = Setting.getInstance().get(Setting.MAIL_TYPE, "webmail");
-		if (mailType.equalsIgnoreCase("mailgun")) {
-			Injections.addBinding(Injections.newBinder(MailgunService.class).to(IMailManager.class), dc);
-		} else {
-			Injections.addBinding(Injections.newBinder(WebMailService.class).to(IMailManager.class), dc);
-		}
+			@Override
+			protected void configure() {
+				LOG.info("Loading Dependency Injections....");
+				// Inject HttpSession
+				bindFactory(HttpSessionFactory.class).to(HttpSession.class).proxy(true).proxyForSameScope(false)
+						.in(RequestScoped.class);
 
-		dc.commit();
-		LOG.info("Successfully loaded Dependency Injections....");
-	}
+				// Inject AccessManager
+				bindAsContract(AccessService.class).to(IAccessManager.class);
 
-	@Override
-	public Set<Class<?>> getClasses() {
-		Set<Class<?>> resources = new java.util.HashSet<>();
-		resources.add(MultiPartFeature.class);
-		resources.add(JacksonJaxbJsonProvider.class);
-		resources.add(JacksonObjectMapper.class);
-		resources.add(LoggingFeature.class);
-		addRestResourceClasses(resources);
-		return resources;
-	}
+				// Inject TemplateManager
+				bindAsContract(JSPTemplateService.class).to(ITemplateManager.class);
 
-	@Override
-	public Set<Object> getSingletons() {
-		return Collections.emptySet();
-	}
+				// Inject MailManager
+				String mailType = Setting.getInstance().get(Setting.MAIL_TYPE, "webmail");
+				if (mailType.equalsIgnoreCase("mailgun")) {
+					bindAsContract(MailgunService.class).to(IMailManager.class);
+				} else {
+					bindAsContract(WebMailService.class).to(IMailManager.class);
+				}
 
-	@Override
-	public Map<String, Object> getProperties() {
-		Map<String, Object> properties = new HashMap<>();
-		properties.put(ServerProperties.RESPONSE_SET_STATUS_OVER_SEND_ERROR, false);
-		properties.put(ServerProperties.BV_FEATURE_DISABLE, true);
-		properties.put(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
-		properties.put(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
-		properties.put(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);
-		return properties;
-	}
-
-	/**
-	 * Do not modify addRestResourceClasses() method. It is automatically populated
-	 * with all resources defined in the project. If required, comment out calling
-	 * this method in getClasses().
-	 */
-	private void addRestResourceClasses(Set<Class<?>> resources) {
-		resources.add(com.sdm.core.exception.ClassNotFoundExceptionMapper.class);
-		resources.add(com.sdm.core.exception.GenericExceptionMapper.class);
-		resources.add(com.sdm.core.exception.IllegalStateExceptionMapper.class);
-		resources.add(com.sdm.core.exception.SQLExceptionMapper.class);
-		resources.add(com.sdm.core.exception.UnrecognizedPropertyExceptionMapper.class);
-		resources.add(com.sdm.core.exception.WebApplicationExceptionMapper.class);
-		resources.add(com.sdm.core.filter.AuthenticaionFilter.class);
-		resources.add(com.sdm.core.filter.CORSFilter.class);
-		resources.add(com.sdm.core.filter.ResponseFilter.class);
-		resources.add(com.sdm.master.resource.AuthResource.class);
-		resources.add(com.sdm.master.resource.FileResource.class);
-		resources.add(com.sdm.master.resource.GeneralResource.class);
-		resources.add(com.sdm.master.resource.PermissionResource.class);
-		resources.add(com.sdm.master.resource.ProfileResource.class);
-		resources.add(com.sdm.master.resource.RoleResource.class);
-		resources.add(com.sdm.master.resource.UserResource.class);
-		resources.add(com.sdm.sample.resource.CustomerResource.class);
+				LOG.info("Successfully loaded Dependency Injections....");
+			}
+		});
 	}
 }

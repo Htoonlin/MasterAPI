@@ -10,12 +10,15 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import org.jvnet.hk2.annotations.Contract;
+
 import com.sdm.core.util.mail.MailInfo;
 
 /**
  *
  * @author Htoonlin
  */
+@Contract
 public interface IMailManager {
 
 	public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";

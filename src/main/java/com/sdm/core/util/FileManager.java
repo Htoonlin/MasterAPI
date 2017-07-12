@@ -8,6 +8,7 @@ package com.sdm.core.util;
 import java.io.File;
 import java.util.Date;
 
+import com.sdm.core.Constants;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 
@@ -57,11 +58,10 @@ public class FileManager {
 	}
 
 	public static File generateFile(int userId, String token, String ext) {
-		String uploadPath = "/User-" + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
+		String uploadPath = "/" + Constants.USER_PREFIX + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
 		String fileName = token + "." + ext;
 
-		File baseDir = new File(
-				Setting.getInstance().get(Setting.FILE_STORAGE_PATH, "/var/www/master-api/upload/") + uploadPath);
+		File baseDir = new File(Setting.getInstance().get(Setting.FILE_STORAGE_PATH) + uploadPath);
 		if (!baseDir.exists()) {
 			baseDir.mkdirs();
 		}

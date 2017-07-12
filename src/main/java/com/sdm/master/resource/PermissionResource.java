@@ -20,10 +20,10 @@ import org.apache.log4j.Logger;
 
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
+import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ListResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.ListModel;
+import com.sdm.core.response.model.Message;
 import com.sdm.master.dao.PermissionDAO;
 import com.sdm.master.entity.PermissionEntity;
 
@@ -62,8 +62,9 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
 			}
 			mainDAO.commitTransaction();
 
-			return new MessageResponse(202, ResponseType.SUCCESS,
+			Message message = new Message(202, "Update Success!",
 					"We updated the record with your request successfully.");
+			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			mainDAO.rollbackTransaction();
 			LOG.error(e);
@@ -76,7 +77,8 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
 	public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
 		try {
 			List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
-			return new ListResponse<PermissionEntity>(permissions);
+			ListModel<PermissionEntity> content = new ListModel<PermissionEntity>(permissions);
+			return new DefaultResponse<>(content);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;

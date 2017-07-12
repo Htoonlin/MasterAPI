@@ -26,6 +26,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.jvnet.hk2.annotations.Service;
 
 import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
@@ -34,6 +35,7 @@ import com.sdm.core.di.IMailManager;
  *
  * @author Htoonlin
  */
+@Service
 public class WebMailService implements IMailManager {
 
 	private static final Logger LOG = Logger.getLogger(WebMailService.class.getName());

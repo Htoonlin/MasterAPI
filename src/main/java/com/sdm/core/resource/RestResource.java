@@ -7,7 +7,9 @@ package com.sdm.core.resource;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -16,10 +18,10 @@ import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ListResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.PaginationResponse;
 import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.ListModel;
+import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.Pagination;
 import com.sdm.core.response.model.UIProperty;
 
 /**
@@ -42,11 +44,24 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
+	public IBaseResponse getNamedQueries() throws Exception {
+		T instance = getEntityClass().newInstance();
+		return new DefaultResponse<>(instance.getQueries());
+	}
+
+	@Override
+	public IBaseResponse postQuery(String queryName, Map<String, Object> params) throws Exception {
+		List<HashMap<String, Object>> data = (List<HashMap<String, Object>>) getDAO().fetchByName(queryName, params);
+		ListModel content = new ListModel<>(data);
+		return new DefaultResponse<>(content);
+	}
+
+	@Override
 	public IBaseResponse getAll() throws Exception {
 		try {
 			List<T> data = (List<T>) getDAO().fetchAll();
-			ListResponse<T> response = new ListResponse<T>(data);
-			return response;
+			ListModel<T> content = new ListModel<T>(data);
+			return new DefaultResponse<>(content);
 		} catch (Exception e) {
 			getLogger().error(e);
 			throw e;
@@ -60,12 +75,13 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 			List<T> data = (List<T>) getDAO().paging(filter, pageId, pageSize, sortString);
 
 			if (data == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your query string.");
+				Message message = new Message(204, "No Data", "There is no data for your query string.");
+				return new DefaultResponse<>(message);
 			}
 
-			PaginationResponse<T> response = new PaginationResponse<T>(data, total, pageId, pageSize);
+			Pagination<T> content = new Pagination<T>(data, total, pageId, pageSize);
 
-			return response;
+			return new DefaultResponse<>(content);
 		} catch (Exception e) {
 			getLogger().error(e);
 			throw e;
@@ -76,7 +92,8 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	public IBaseResponse getById(PK id) throws Exception {
 		T data = getDAO().fetchById(id);
 		if (data == null) {
-			return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+			Message message = new Message(204, "No Data", "There is no data for your request.");
+			return new DefaultResponse<>(message);
 		}
 		return new DefaultResponse<T>(data);
 	}
@@ -89,7 +106,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 			}
 
 			T entity = getDAO().insert(request, true);
-			return new DefaultResponse<T>(entity);
+			return new DefaultResponse<T>(201, ResponseType.SUCCESS, entity);
 		} catch (Exception e) {
 			getLogger().error(e);
 			throw e;
@@ -105,11 +122,12 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
 			T dbEntity = getDAO().fetchById(id);
 			if (dbEntity == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+				Message message = new Message(204, "No Data", "There is no data for your request.");
+				return new DefaultResponse<>(message);
 			}
 
 			T entity = getDAO().update(request, true);
-			return new DefaultResponse<T>(entity);
+			return new DefaultResponse<T>(202, ResponseType.SUCCESS, entity);
 		} catch (Exception e) {
 			getLogger().error(e);
 			throw e;
@@ -119,14 +137,15 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	@Override
 	public IBaseResponse remove(PK id) throws Exception {
 		try {
+			Message message = new Message(204, "No Data", "There is no data for your request.");
 			T entity = getDAO().fetchById(id);
 			if (entity == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+				return new DefaultResponse<>(message);
 			}
 
 			getDAO().delete(entity, true);
-			return new MessageResponse(202, ResponseType.SUCCESS,
-					"We deleted the record with your request successfully.");
+			message = new Message(202, "Deleted", "We deleted the record with your request successfully.");
+			return new DefaultResponse<>(202, ResponseType.SUCCESS, message);
 		} catch (Exception e) {
 			getLogger().error(e);
 			throw e;
@@ -137,8 +156,8 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	public IBaseResponse getStructure() throws Exception {
 		T instance = getEntityClass().newInstance();
 		List<UIProperty> properties = instance.getStructure();
-		ListResponse<UIProperty> response = new ListResponse<UIProperty>(properties);
-		return response;
+		ListModel<UIProperty> content = new ListModel<UIProperty>(properties);
+		return new DefaultResponse<>(content);
 	}
 
 	/*

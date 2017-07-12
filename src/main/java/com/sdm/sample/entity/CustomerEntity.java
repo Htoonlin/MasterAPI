@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
@@ -25,6 +27,7 @@ import com.sdm.core.hibernate.entity.UIStructure;
  *
  * @author Htoonlin
  */
+@Audited
 @Entity(name = "Sample_CustomerEntity")
 @Table(name = "tbl_sample_customer")
 public class CustomerEntity extends DefaultEntity implements Serializable {
@@ -34,6 +37,7 @@ public class CustomerEntity extends DefaultEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = 4890976494684611076L;
 
+	@NotAudited
 	@JsonIgnore
 	@Formula(value = "concat(name, email, phone, company, address, city, country, remark)")
 	private String search;

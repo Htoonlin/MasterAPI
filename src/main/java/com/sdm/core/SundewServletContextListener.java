@@ -25,7 +25,7 @@ public class SundewServletContextListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		LOG.info("System is starting ....");
-		Setting.getInstance();
+		Setting.getInstance().createSetting();
 		HibernateConnector.init();
 	}
 

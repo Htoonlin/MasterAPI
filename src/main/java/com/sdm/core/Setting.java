@@ -23,10 +23,13 @@ import com.sdm.core.util.SecurityManager;
  *
  * @author Htoonlin
  */
-public final class Setting implements ISetting {
+public final class Setting implements Constants {
 
 	private static final Logger LOG = Logger.getLogger(Setting.class.getName());
-	private static final String SETTING_FILE = "master-api.properties";
+
+	private static final String SETTING_FILE = "setting.properties";
+
+	private File settingFile;
 
 	private static Setting instance;
 
@@ -34,14 +37,12 @@ public final class Setting implements ISetting {
 
 	public Setting() {
 		settingProps = new Properties();
-		this.loadSetting();
 	}
 
 	public static synchronized Setting getInstance() {
 		if (instance == null) {
 			instance = new Setting();
 		}
-
 		return instance;
 	}
 
@@ -49,8 +50,16 @@ public final class Setting implements ISetting {
 		return this.settingProps;
 	}
 
+	public String get(String name) {
+		return this.get(name, "");
+	}
+
 	public String get(String name, String defaultValue) {
 		return this.settingProps.getProperty(name, defaultValue);
+	}
+
+	public int getInt(String name) {
+		return this.getInt(name, "0");
 	}
 
 	public int getInt(String name, String defaultValue) {
@@ -58,16 +67,9 @@ public final class Setting implements ISetting {
 	}
 
 	public void loadSetting() {
-		File settingFile = new File(SETTING_FILE);
-		if (!settingFile.exists()) {
-			LOG.info("Generating setting.properties => " + settingFile.getAbsolutePath() + ".");
-			defaultSetting();
-			save();
-		}
-
 		try (InputStream inputStream = new FileInputStream(settingFile)) {
 			this.settingProps.load(inputStream);
-			LOG.info("Loaded setting.properties => " + settingFile.getAbsolutePath() + ".");
+			LOG.info("Loaded properties => " + settingFile.getAbsolutePath() + ".");
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -90,8 +92,7 @@ public final class Setting implements ISetting {
 	public void save() {
 		String comments = "Modified this properties file: ";
 		comments += Globalizer.getDateString("yyyy-MM-dd HH:mm:ss", new Date());
-		File settingFile = new File(SETTING_FILE);
-		try (OutputStream outputStream = new FileOutputStream(settingFile)) {
+		try (OutputStream outputStream = new FileOutputStream(this.settingFile)) {
 			this.settingProps.store(outputStream, comments);
 			LOG.info("Generated setting.properties file at [" + comments + "] => " + settingFile.getAbsolutePath()
 					+ ".");
@@ -101,41 +102,30 @@ public final class Setting implements ISetting {
 
 	}
 
-	public void defaultSetting() {
-		this.settingProps.setProperty(SYSTEM_ENV, "DEV");
-		this.settingProps.setProperty(DATE_TIME_FORMAT, "yyyy-MM-dd HH:mm:ss");
-		this.settingProps.setProperty(DATE_FORMAT, "yyyy-MM-dd");
-		this.settingProps.setProperty(TIME_FORMAT, "HH:mm:ss");
+	public void createSetting() {
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(SETTING_FILE);
+		if (inputStream != null) {
+			try {
+				LOG.info("Loading default properites ....");
+				this.settingProps.load(inputStream);
+				LOG.info("Loaded default properites.");
+			} catch (IOException ex) {
+				LOG.error(ex);
+			}
+		}
 
-		this.settingProps.setProperty(FILE_STORAGE_PATH, "/var/www/master-api/upload/");
-		this.settingProps.setProperty(TEMPLATE_PATH, "/WEB-INF/template/");
-
-		this.settingProps.setProperty(CORS_ORIGIN, "*");
-		this.settingProps.setProperty(CORS_METHODS, "GET, POST, PUT, DELETE, OPTIONS");
-		this.settingProps.setProperty(CORS_HEADERS, "authorization,content-type");
-		this.settingProps.setProperty(CORS_MAX_AGE, "36000");
-
-		this.settingProps.setProperty(ROOT_ID, "1");
-		this.settingProps.setProperty(OTP_LIFE, "10");
-		this.settingProps.setProperty(AUTH_TOKEN_LIFE, "30");
+		LOG.info("Generating system properites ....");
 		this.settingProps.setProperty(JWT_KEY, SecurityManager.generateJWTKey());
-		this.settingProps.setProperty(SECURITY_TIMESTAMP_LIFE, "5");
 		this.settingProps.setProperty(ENCRYPT_SALT, SecurityManager.generateSalt(16));
-		this.settingProps.setProperty(TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-		this.settingProps.setProperty(AUTH_FAILED_COUNT, "3");
+		LOG.info("Generated system properites.");
 
-		this.settingProps.setProperty(MAIL_TYPE, "webmail");
-
-		this.settingProps.setProperty(MAIL_HOST, "smtp.gmail.com");
-		this.settingProps.setProperty(MAIL_PORT, "465");
-		this.settingProps.setProperty(MAIL_IS_AUTH, "true");
-		this.settingProps.setProperty(MAIL_USER, "example@gmail.com");
-		this.settingProps.setProperty(MAIL_PASSWORD, "3x@mp13");
-
-		this.settingProps.setProperty(MAILGUN_PRI_KEY, "private-key");
-		this.settingProps.setProperty(MAILGUN_PUB_KEY, "public-key");
-		this.settingProps.setProperty(MAILGUN_DOMAIN, "mydomain");
-		this.settingProps.setProperty(MAILGUN_DEFAULT_MAIL, "info@mydomain.com");
+		this.settingFile = new File(this.settingProps.get(Constants.ROOT_DIRECTORY) + SETTING_FILE);
+		if (this.settingFile.exists()) {
+			this.loadSetting();
+		} else {
+			this.save();
+		}
+		LOG.info("Setup new properties file => " + settingFile.getAbsolutePath() + ".");
 	}
 
 }

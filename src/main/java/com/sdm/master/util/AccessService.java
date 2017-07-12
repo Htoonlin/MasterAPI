@@ -28,9 +28,9 @@ import io.jsonwebtoken.Claims;
  *
  * @author Htoonlin
  */
-public class AccessManager implements IAccessManager {
+public class AccessService implements IAccessManager {
 
-	private static final Logger LOG = Logger.getLogger(AccessManager.class.getName());
+	private static final Logger LOG = Logger.getLogger(AccessService.class.getName());
 
 	private TokenEntity currentToken;
 
@@ -47,7 +47,7 @@ public class AccessManager implements IAccessManager {
 		String token = request.getId();
 		String deviceId = request.get("device_id").toString();
 		String deviceOS = request.get("device_os").toString();
-		int userId = Integer.parseInt(request.getSubject().substring(Constants.AUTH_SUBJECT_PREFIX.length()).trim());
+		int userId = Integer.parseInt(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
 
 		TokenDAO tokenDao = new TokenDAO(userId);
 		try {
@@ -83,8 +83,7 @@ public class AccessManager implements IAccessManager {
 
 	@Override
 	public boolean checkPermission(Claims request, Method method, String httpMethod) {
-		int authUserId = Integer
-				.parseInt(request.getSubject().substring(Constants.AUTH_SUBJECT_PREFIX.length()).trim());
+		int authUserId = Integer.parseInt(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
 
 		if (currentToken == null || currentToken.getUserId() != authUserId) {
 			return false;

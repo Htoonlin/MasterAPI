@@ -35,8 +35,7 @@ import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.Message;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
@@ -99,7 +98,7 @@ public class AuthResource extends DefaultResource {
 
 	private String generateJWT(TokenEntity currentToken) {
 		String jwtKey = Setting.getInstance().get(Setting.JWT_KEY, SecurityManager.generateJWTKey());
-		String compactJWT = Jwts.builder().setSubject(Constants.AUTH_SUBJECT_PREFIX + currentToken.getUserId())
+		String compactJWT = Jwts.builder().setSubject(Constants.USER_PREFIX + currentToken.getUserId())
 				.setIssuer(userAgentString).setIssuedAt(new Date()).setExpiration(currentToken.getTokenExpired())
 				.setId(currentToken.getToken()).claim("device_id", currentToken.getDeviceId())
 				.claim("device_os", currentToken.getDeviceOs()).compressWith(CompressionCodecs.DEFLATE)
@@ -115,11 +114,10 @@ public class AuthResource extends DefaultResource {
 				return new ErrorResponse(request.getErrors());
 			}
 
-			MessageResponse message = new MessageResponse(401, ResponseType.ERROR,
-					"Opp! Request email or password is something wrong");
+			Message message = new Message(401, "Invalid!", "Opp! Request email or password is something wrong");
 			int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
 			if (getFailed() >= limit) {
-				message = new MessageResponse(401, ResponseType.WARNING,
+				message = new Message(401, "Blocked!",
 						"Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
 			} else {
 				UserEntity authUser = userDao.userAuth(request.getEmail(), request.getCryptPassword());
@@ -143,7 +141,7 @@ public class AuthResource extends DefaultResource {
 			}
 			// Increase failed count
 			getHttpSession().setAttribute(Constants.SESSION_FAILED_COUNT, getFailed() + 1);
-			return message;
+			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			userDao.rollbackTransaction();
 			LOG.error(e);
@@ -197,8 +195,9 @@ public class AuthResource extends DefaultResource {
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 			mailSend.activateLink(user, userAgentString);
 			userDao.insert(user, true);
-			return new MessageResponse(200, ResponseType.SUCCESS,
+			Message message = new Message(200, "Registration Success",
 					"Thank you for your registration. Pls check your mail for activation.");
+			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;
@@ -218,7 +217,7 @@ public class AuthResource extends DefaultResource {
 			ActivateRequest activateRequest = Globalizer.jsonMapper().readValue(request, ActivateRequest.class);
 			activateRequest.setTimeStamp((new Date()).getTime());
 			IBaseResponse response = this.otpActivation(activateRequest);
-			if (response instanceof MessageResponse) {
+			if (response instanceof Message) {
 				data.put("title", response.getStatus());
 				data.put("message", "<p class=\"text-warning\">" + response.getContent() + "</p>");
 			} else if (response.getContent() instanceof UserEntity) {
@@ -252,15 +251,17 @@ public class AuthResource extends DefaultResource {
 
 			UserEntity user = userDao.checkToken(request.getEmail(), request.getToken());
 			if (user == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+				Message message = new Message(204, "No Data", "There is no data for your request.");
+				return new DefaultResponse<>(message);
 			}
 
 			if (user.getOtpExpired().before(new Date())) {
 				AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 				mailSend.activateLink(user, userAgentString);
 				userDao.update(user, true);
-				return new MessageResponse(400, ResponseType.WARNING,
+				Message message = new Message(400, "Token Expired",
 						"Sorry! Your token has expired. We send new token to your email.");
+				return new DefaultResponse<>(message);
 			}
 
 			userDao.beginTransaction();
@@ -291,21 +292,20 @@ public class AuthResource extends DefaultResource {
 			if (!request.isValid()) {
 				return new ErrorResponse(request.getErrors());
 			}
-			MessageResponse message = new MessageResponse(400, ResponseType.WARNING,
-					"Sorry! Requested token is invalid or expired.");
+			Message message = new Message(400, "Invalid!", "Sorry! Requested token is invalid or expired.");
 			String token = request.getToken();
 			UserEntity user = userDao.userAuth(request.getEmail(), request.getOldPassword());
 
 			if (user == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+				message = new Message(204, "No Data", "There is no data for your request.");
+				return new DefaultResponse<>(message);
 			}
 
 			if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
-
 				AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 				mailSend.forgetPasswordLink(user);
 				userDao.update(user, true);
-				message = new MessageResponse(400, ResponseType.WARNING,
+				message = new Message(400, "Token Expired",
 						"Sorry! Your token has expired. We send new link to your email.");
 			} else if (user.getEmail().equalsIgnoreCase(request.getEmail())
 					&& user.getPassword().equals(request.getOldPassword()) && user.getOtpToken().equals(token)) {
@@ -314,11 +314,10 @@ public class AuthResource extends DefaultResource {
 				user.setOtpToken(null);
 				user.setPassword(newPassword);
 				userDao.update(user, true);
-				message = new MessageResponse(202, ResponseType.SUCCESS,
-						"We updated the new password on your request successfully.");
+				message = new Message(202, "OK", "We updated the new password on your request successfully.");
 			}
 
-			return message;
+			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;
@@ -331,24 +330,23 @@ public class AuthResource extends DefaultResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public IBaseResponse forgetPassword(@PathParam("email") String email) throws Exception {
-		MessageResponse message;
+		Message message;
 		try {
 			if (!mailManager.checkMail(email)) {
-				message = new MessageResponse(400, ResponseType.WARNING, "Invalid email address.");
+				message = new Message(400, "Invalid!", "Invalid email address.");
 			} else {
 				UserEntity user = userDao.getUserByEmail(email);
 				if (user == null) {
-					message = new MessageResponse(400, ResponseType.WARNING, "Invalid email address");
+					message = new Message(400, "Invalid!", "Invalid email address");
 				} else {
 
 					AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 					mailSend.forgetPasswordLink(user);
 					userDao.update(user, true);
-					message = new MessageResponse(200, ResponseType.SUCCESS,
-							"We send the reset password link to your e-mail.");
+					message = new Message(201, "Send Mail", "We send the reset password link to your e-mail.");
 				}
 			}
-			return message;
+			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;

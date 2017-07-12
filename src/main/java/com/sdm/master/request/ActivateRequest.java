@@ -13,14 +13,14 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.request.DefaultRequest;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ActivateRequest extends DefaultEntity implements Serializable {
+public class ActivateRequest extends DefaultRequest implements Serializable {
 
 	/**
 	 * 

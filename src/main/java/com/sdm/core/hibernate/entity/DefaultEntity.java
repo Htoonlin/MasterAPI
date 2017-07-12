@@ -18,6 +18,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -82,6 +84,23 @@ public class DefaultEntity implements Serializable, IBaseRequest {
 		}
 
 		return violoationSet.isEmpty();
+	}
+
+	@JsonIgnore
+	public HashMap<String, Object> getQueries() {
+		HashMap<String, Object> queries = new HashMap<>();
+		NamedQueries namedQueries = this.getClass().getAnnotation(NamedQueries.class);
+		if (namedQueries != null) {
+			for (NamedQuery query : namedQueries.value()) {
+				queries.put(query.name(), query.query());
+			}
+		}
+
+		for (NamedQuery query : this.getClass().getAnnotationsByType(NamedQuery.class)) {
+			queries.put(query.name(), query.query());
+		}
+
+		return queries;
 	}
 
 	@JsonIgnore

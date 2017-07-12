@@ -6,6 +6,7 @@
 package com.sdm.core.resource;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -29,6 +30,16 @@ import com.sdm.core.response.IBaseResponse;
  * @param <PK>
  */
 public interface IRestResource<T extends IBaseRequest, PK extends Serializable> {
+
+	@GET
+	@Path("q")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getNamedQueries() throws Exception;
+
+	@POST
+	@Path("q/{name}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse postQuery(@PathParam("name") String queryName, Map<String, Object> params) throws Exception;
 
 	@GET
 	@Path("all")

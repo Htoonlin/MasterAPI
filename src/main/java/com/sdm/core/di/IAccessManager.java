@@ -7,12 +7,15 @@ package com.sdm.core.di;
 
 import java.lang.reflect.Method;
 
+import org.jvnet.hk2.annotations.Contract;
+
 import io.jsonwebtoken.Claims;
 
 /**
  *
  * @author Htoonlin
  */
+@Contract
 public interface IAccessManager {
 
 	boolean validateToken(Claims request);

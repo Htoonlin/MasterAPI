@@ -37,7 +37,7 @@ public final class HibernateConnector {
 	}
 
 	public static synchronized SessionFactory getFactory() throws HibernateException {
-		if (mainFactory == null || mainFactory.isClosed()) {
+		if (mainFactory.isClosed()) {
 			init();
 		}
 		return mainFactory;

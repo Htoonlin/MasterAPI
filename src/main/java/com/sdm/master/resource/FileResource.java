@@ -33,8 +33,7 @@ import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.Message;
 import com.sdm.master.dao.FileDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.FileEntity;
@@ -67,8 +66,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
 				try {
-					String filePath = Setting.getInstance().get(Setting.FILE_STORAGE_PATH,
-							"/var/www/master-api/upload/") + entity.getStoragePath();
+					String filePath = Setting.getInstance().get(Setting.FILE_STORAGE_PATH) + entity.getStoragePath();
 					File savedFile = new File(filePath);
 					if (savedFile.exists()) {
 						byte[] data = Files.readAllBytes(savedFile.toPath());
@@ -96,8 +94,9 @@ public class FileResource extends RestResource<FileEntity, Long> {
 			UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
 			UserEntity currentUser = userDAO.fetchById(getUserId());
 			if (currentUser == null) {
-				return new MessageResponse(401, ResponseType.WARNING,
-						"Invalid user. You neeed to register new account to upload file.");
+				Message message = new Message(401, "Invalid User!",
+						"You neeed to register new account to upload file.");
+				return new DefaultResponse<>(message);
 			}
 			FileEntity entity = mainDAO.saveFile(inputFile, fileDetail);
 			return new DefaultResponse<FileEntity>(entity);
@@ -115,9 +114,8 @@ public class FileResource extends RestResource<FileEntity, Long> {
 		if (entity != null) {
 			return this.downloadFile(entity);
 		}
-		MessageResponse message = new MessageResponse(204, ResponseType.WARNING,
-				"There is no file for your requested token.");
-		return Response.ok(message, MediaType.APPLICATION_JSON).build();
+		Message message = new Message(204, "No File!", "There is no file for your requested token.");
+		return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
 	}
 
 	@GET
@@ -125,9 +123,8 @@ public class FileResource extends RestResource<FileEntity, Long> {
 	public Response privateDownload(@PathParam("id") double id) throws Exception {
 		FileEntity entity = mainDAO.fetchById(id);
 		if (entity == null) {
-			MessageResponse message = new MessageResponse(204, ResponseType.WARNING,
-					"There is no file for your request.");
-			return Response.ok(message, MediaType.APPLICATION_JSON).build();
+			Message message = new Message(204, "No File!", "There is no file for your request.");
+			return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
 		}
 
 		return this.downloadFile(entity);

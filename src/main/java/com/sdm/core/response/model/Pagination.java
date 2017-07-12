@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.response;
+package com.sdm.core.response.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,16 +11,14 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.sdm.core.request.QueryRequest;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = { "code", "status", "total", "count", "current_page", "page_size", "page_count", "query",
-		"content", "extra", "timestamp" })
-public class PaginationResponse<T extends Serializable> extends DefaultResponse<T> implements Serializable {
+@JsonPropertyOrder(value = { "total", "count", "current_page", "page_size", "page_count", "data" })
+public class Pagination<T extends Serializable> implements Serializable {
 
 	/**
 	 * 
@@ -30,24 +28,15 @@ public class PaginationResponse<T extends Serializable> extends DefaultResponse<
 	private long total;
 	private int currentPage;
 	private int pageSize;
-	private QueryRequest query;
 
-	public PaginationResponse() {
+	public Pagination() {
 	}
 
-	public PaginationResponse(List<T> data, long total, int currentPage, int pageSize) {
+	public Pagination(List<T> data, long total, int currentPage, int pageSize) {
 		this.data = data;
 		this.total = total;
 		this.currentPage = currentPage;
 		this.pageSize = pageSize;
-	}
-
-	public PaginationResponse(List<T> data, long total, int currentPage, int pageSize, QueryRequest query) {
-		this.data = data;
-		this.total = total;
-		this.currentPage = currentPage;
-		this.pageSize = pageSize;
-		this.query = query;
 	}
 
 	public double getPageCount() {
@@ -82,14 +71,6 @@ public class PaginationResponse<T extends Serializable> extends DefaultResponse<
 		this.currentPage = currentPage;
 	}
 
-	public QueryRequest getQuery() {
-		return query;
-	}
-
-	public void setQuery(QueryRequest query) {
-		this.query = query;
-	}
-
 	public void addData(T entity) {
 		if (this.data == null) {
 			this.data = new ArrayList<>();
@@ -97,12 +78,11 @@ public class PaginationResponse<T extends Serializable> extends DefaultResponse<
 		this.data.add(entity);
 	}
 
-	@Override
-	public List<T> getContent() {
-		return this.data;
+	public List<T> getData() {
+		return data;
 	}
 
-	public void setContent(List<T> value) {
-		this.data = value;
+	public void setData(List<T> data) {
+		this.data = data;
 	}
 }

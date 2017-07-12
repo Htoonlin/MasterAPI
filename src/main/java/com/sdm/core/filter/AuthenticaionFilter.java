@@ -25,13 +25,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 
 import com.sdm.core.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.Message;
 import com.sdm.core.util.SecurityManager;
 
 import io.jsonwebtoken.ClaimJwtException;
@@ -65,7 +65,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 			return (int) httpSession.getAttribute(Constants.SESSION_FAILED_COUNT);
 		} catch (Exception e) {
 			LOG.error(e);
-			return 9999;
+			return 0;
 		}
 	}
 
@@ -125,8 +125,8 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 					}
 
 					// Separate UserID and Save
-					int userId = Integer.parseInt(
-							authorizeToken.getSubject().substring(Constants.AUTH_SUBJECT_PREFIX.length()).trim());
+					int userId = Integer
+							.parseInt(authorizeToken.getSubject().substring(Constants.USER_PREFIX.length()).trim());
 					this.saveUserId(userId);
 				} catch (ClaimJwtException ex) {
 					requestContext.abortWith(buildResponse(403, ex.getLocalizedMessage()));
@@ -155,7 +155,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 	}
 
 	private Response buildResponse(int code, String description) {
-		MessageResponse message = new MessageResponse(code, ResponseType.ERROR, description);
+		Message message = new Message(code, HttpStatus.getStatusText(code), description);
 		return Response.status(code).entity(message).build();
 	}
 

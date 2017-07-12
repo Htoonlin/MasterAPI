@@ -15,8 +15,8 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sdm.core.Setting;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.model.Message;
 
 /**
  *
@@ -27,16 +27,17 @@ public class UnrecognizedPropertyExceptionMapper implements ExceptionMapper<Unre
 
 	@Override
 	public Response toResponse(UnrecognizedPropertyException exception) {
-		MessageResponse message = new MessageResponse(400, ResponseType.ERROR, exception.getLocalizedMessage());
+		Message message = new Message(400, UnrecognizedPropertyException.class.getName(),
+				exception.getLocalizedMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
 		if (env.equalsIgnoreCase("dev")) {
 			Map<String, Object> debug = new HashMap<>();
 			debug.put("StackTrace", exception.getStackTrace());
 			debug.put("Suppressed", exception.getSuppressed());
-			message.setDebug(debug);
+			message.setTrace(debug);
 		}
 
-		return Response.status(400).entity(message).type(MediaType.APPLICATION_JSON).build();
+		return Response.status(400).entity(new DefaultResponse<>(message)).type(MediaType.APPLICATION_JSON).build();
 	}
 
 }

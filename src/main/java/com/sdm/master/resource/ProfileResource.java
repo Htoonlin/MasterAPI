@@ -22,8 +22,7 @@ import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.Message;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
@@ -52,7 +51,8 @@ public class ProfileResource extends DefaultResource {
 	public IBaseResponse getProfile() throws Exception {
 		UserEntity user = userDAO.fetchById(getUserId());
 		if (user == null) {
-			return new MessageResponse(204, ResponseType.WARNING, "There is no user. (or) User is not active.");
+			Message message = new Message(204, "Invalid User", "There is no user. (or) User is not active.");
+			return new DefaultResponse<>(message);
 		}
 		return new DefaultResponse<UserEntity>(user);
 	}
@@ -65,7 +65,8 @@ public class ProfileResource extends DefaultResource {
 		try {
 			UserEntity currentUser = userDAO.fetchById(getUserId());
 			if (currentUser == null) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no user. (or) User is not active.");
+				Message message = new Message(204, "Invalid User", "There is no user. (or) User is not active.");
+				return new DefaultResponse<>(message);
 			}
 			request.setPassword(currentUser.getPassword());
 
@@ -96,22 +97,25 @@ public class ProfileResource extends DefaultResource {
 				return new ErrorResponse(errors);
 			}
 
+			Message message = new Message(202, "Changed password",
+					"We updated the new password on your request successfully.");
+
 			String oldPassword = SecurityManager.md5String(request.getEmail(), request.getOldPassword());
 			UserEntity user = userDAO.userAuth(request.getEmail(), oldPassword);
 
 			if (user == null || user.getId() != getUserId()) {
-				return new MessageResponse(204, ResponseType.WARNING, "There is no data for your request.");
+				message = new Message(204, "Invalid User", "There is no user. (or) User is not active.");
+				return new DefaultResponse<>(message);
 			}
 
 			if (!(user.getEmail().equalsIgnoreCase(request.getEmail()) && user.getPassword().equals(oldPassword))) {
-				return new MessageResponse(400, ResponseType.WARNING,
-						"Hey! your old password is wrong. pls try again.");
+				message = new Message(400, "Invalid Password", "Hey! your old password is wrong. pls try again.");
+				return new DefaultResponse<>(message);
 			}
 			String newPassword = SecurityManager.md5String(request.getEmail(), request.getNewPassword());
 			user.setPassword(newPassword);
 			userDAO.update(user, true);
-			return new MessageResponse(202, ResponseType.SUCCESS,
-					"We updated the new password on your request successfully.");
+			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;

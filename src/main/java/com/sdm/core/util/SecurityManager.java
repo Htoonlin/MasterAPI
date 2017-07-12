@@ -40,7 +40,7 @@ public class SecurityManager {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		return (salt + input);
+		return SecurityManager.base64Encode(salt + ":" + input);
 	}
 
 	public static String base64Encode(String normal) {

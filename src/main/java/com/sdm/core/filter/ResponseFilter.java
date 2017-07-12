@@ -12,8 +12,11 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import com.sdm.core.Globalizer;
 import com.sdm.core.response.IBaseResponse;
 
 /**
@@ -27,6 +30,13 @@ public class ResponseFilter implements ContainerResponseFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
+
+		if (requestContext.getMethod().equalsIgnoreCase("GET")) {
+			// Set Cache Control
+			MultivaluedMap<String, Object> headers = responseContext.getHeaders();
+			headers.putSingle(HttpHeaders.CACHE_CONTROL, Globalizer.getCacheControl());
+		}
+
 		Object entity = responseContext.getEntity();
 		if (entity instanceof IBaseResponse) {
 			IBaseResponse baseEntity = (IBaseResponse) entity;

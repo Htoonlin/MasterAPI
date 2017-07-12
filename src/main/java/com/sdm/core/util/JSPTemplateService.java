@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import javax.ws.rs.core.Context;
 
 import org.apache.log4j.Logger;
+import org.jvnet.hk2.annotations.Service;
 
 import com.sdm.core.Setting;
 import com.sdm.core.di.ITemplateManager;
@@ -25,7 +26,8 @@ import com.sdm.core.di.ITemplateManager;
  *
  * @author Htoonlin
  */
-public class JSPTemplateManager implements ITemplateManager {
+@Service
+public class JSPTemplateService implements ITemplateManager {
 
 	private class TemplateWriter extends HttpServletResponseWrapper {
 
@@ -45,7 +47,7 @@ public class JSPTemplateManager implements ITemplateManager {
 		}
 	}
 
-	private static final Logger LOG = Logger.getLogger(JSPTemplateManager.class.getName());
+	private static final Logger LOG = Logger.getLogger(JSPTemplateService.class.getName());
 
 	@Context
 	private HttpServletResponse response;

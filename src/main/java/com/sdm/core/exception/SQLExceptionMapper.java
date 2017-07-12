@@ -15,8 +15,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import com.sdm.core.Setting;
-import com.sdm.core.response.MessageResponse;
-import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.model.Message;
 
 /**
  *
@@ -27,16 +27,16 @@ public class SQLExceptionMapper implements ExceptionMapper<SQLException> {
 
 	@Override
 	public Response toResponse(SQLException exception) {
-		MessageResponse message = new MessageResponse(500, ResponseType.ERROR, exception.getMessage());
+		Message message = new Message(500, SQLException.class.getName(), exception.getMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
 		if (env.equalsIgnoreCase("dev")) {
 			Map<String, Object> debug = new HashMap<>();
 			debug.put("StackTrace", exception.getStackTrace());
 			debug.put("Suppressed", exception.getSuppressed());
-			message.setDebug(debug);
+			message.setTrace(debug);
 		}
 
-		return Response.serverError().entity(message).type(MediaType.APPLICATION_JSON).build();
+		return Response.serverError().entity(new DefaultResponse<>(message)).type(MediaType.APPLICATION_JSON).build();
 	}
 
 }

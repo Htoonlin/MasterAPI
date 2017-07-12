@@ -2,13 +2,9 @@
 # Project specific excludes
 #
 
-/src/main/webapp/META-INF/context.xml
 /src/main/resources/log4j.properties
 /src/main/resources/setting.properties
 /src/main/resources/hibernate.cfg.xml
-/src/main/resources/
-/src/main/webapp/META-INF/
-/src/main/java/com/sdm/ApplicationConfig.java
 
 
 tomcat
