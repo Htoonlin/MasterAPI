@@ -15,7 +15,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import com.sdm.core.Setting;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 
 /**
  *
@@ -27,7 +27,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 	@Override
 	public Response toResponse(WebApplicationException exception) {
 		Response exResponse = exception.getResponse();
-		Message message = new Message(exResponse.getStatus(), WebApplicationException.class.getName(),
+		MessageModel message = new MessageModel(exResponse.getStatus(), WebApplicationException.class.getName(),
 				exception.getLocalizedMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
 		if (env.equalsIgnoreCase("dev")) {

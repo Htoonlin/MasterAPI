@@ -20,6 +20,7 @@ import com.sdm.core.di.HttpSessionFactory;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
+import com.sdm.core.resource.SystemResource;
 import com.sdm.core.util.JSPTemplateService;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.util.mail.WebMailService;
@@ -40,6 +41,7 @@ public class ApplicationConfig extends ResourceConfig {
 		LOG.info("Successfully loaded packages.");
 
 		LOG.info("Loading jersey features and providers");
+		register(SystemResource.class);
 		register(MultiPartFeature.class);
 		register(JacksonFeature.class);
 		register(LoggingFeature.class);

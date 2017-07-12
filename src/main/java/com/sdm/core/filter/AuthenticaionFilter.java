@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import com.sdm.core.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
 
 import io.jsonwebtoken.ClaimJwtException;
@@ -155,7 +155,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 	}
 
 	private Response buildResponse(int code, String description) {
-		Message message = new Message(code, HttpStatus.getStatusText(code), description);
+		MessageModel message = new MessageModel(code, HttpStatus.getStatusText(code), description);
 		return Response.status(code).entity(message).build();
 	}
 

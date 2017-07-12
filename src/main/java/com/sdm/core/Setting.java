@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,8 +47,16 @@ public final class Setting implements Constants {
 		return instance;
 	}
 
-	public Properties getProperties() {
-		return this.settingProps;
+	public HashMap<String, Object> getProperties() {
+		HashMap<String, Object> props = new HashMap<>();
+
+		for (String key : this.settingProps.stringPropertyNames()) {
+			if (key.startsWith("com.sdm.path")) {
+				continue;
+			}
+			props.put(key.toLowerCase(), this.get(key));
+		}
+		return props;
 	}
 
 	public String get(String name) {
@@ -76,6 +85,9 @@ public final class Setting implements Constants {
 	}
 
 	public void changeSetting(String key, String value) {
+		if (key.startsWith("com.sdm.path")) {
+			return;
+		}
 		LOG.info("Changing setting [" + key + "=>" + value + "].");
 		this.settingProps.setProperty(key, value);
 	}
@@ -102,27 +114,27 @@ public final class Setting implements Constants {
 
 	}
 
-	public void createSetting() {
+	public void init() {
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(SETTING_FILE);
 		if (inputStream != null) {
 			try {
 				LOG.info("Loading default properites ....");
 				this.settingProps.load(inputStream);
+				inputStream.close();
 				LOG.info("Loaded default properites.");
 			} catch (IOException ex) {
 				LOG.error(ex);
 			}
 		}
 
-		LOG.info("Generating system properites ....");
-		this.settingProps.setProperty(JWT_KEY, SecurityManager.generateJWTKey());
-		this.settingProps.setProperty(ENCRYPT_SALT, SecurityManager.generateSalt(16));
-		LOG.info("Generated system properites.");
-
 		this.settingFile = new File(this.settingProps.get(Constants.ROOT_DIRECTORY) + SETTING_FILE);
 		if (this.settingFile.exists()) {
 			this.loadSetting();
 		} else {
+			LOG.info("Generating system properites ....");
+			this.settingProps.setProperty(JWT_KEY, SecurityManager.generateJWTKey());
+			this.settingProps.setProperty(ENCRYPT_SALT, SecurityManager.generateSalt());
+			LOG.info("Generated system properites.");
 			this.save();
 		}
 		LOG.info("Setup new properties file => " + settingFile.getAbsolutePath() + ".");

@@ -20,7 +20,7 @@ import com.sdm.core.Setting;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.MyanmarFontManager;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.util.GeoIPManager;
@@ -78,7 +78,8 @@ public class UtilityResource extends DefaultResource {
 			content.put("message", msgString);
 			return new DefaultResponse(content);
 		} else {
-			Message message = new Message(HttpStatus.SC_BAD_REQUEST, "Invalid font!", "No! It is not myanmar font.");
+			MessageModel message = new MessageModel(HttpStatus.SC_BAD_REQUEST, "Invalid font!",
+					"No! It is not myanmar font.");
 			return new DefaultResponse<>(message);
 		}
 	}

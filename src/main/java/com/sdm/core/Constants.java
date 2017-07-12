@@ -39,12 +39,12 @@ public interface Constants {
 	/**
 	 * File upload path for system.
 	 */
-	String FILE_STORAGE_PATH = "com.sdm.path.storage";
+	String UPLOAD_DIRECTORY = "com.sdm.path.storage";
 
 	/**
 	 * JSP Template file path to use ITemplate Engine.
 	 */
-	String TEMPLATE_PATH = "com.sdm.path.template";
+	String TEMPLATE_DIRECTORY = "com.sdm.path.template";
 
 	/**
 	 * Cache-Control max age [Second]

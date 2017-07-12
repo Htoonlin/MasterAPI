@@ -21,7 +21,7 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
@@ -73,7 +73,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 			}
 
 			String rawPassword = request.getPassword();
-			String password = SecurityManager.md5String(request.getEmail(), rawPassword);
+			String password = SecurityManager.hashString(request.getEmail(), rawPassword);
 			request.setPassword(password);
 			request.setStatus('A');
 			UserEntity createdUser = userDAO.insert(request, true);
@@ -99,10 +99,10 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 
 			UserEntity dbEntity = userDAO.fetchById(id);
 			if (dbEntity == null) {
-				Message message = new Message(204, "No Data", "There is no data for your request.");
+				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 				return new DefaultResponse<>(message);
 			} else if (!Objects.equals(dbEntity.getId(), request.getId())) {
-				Message message = new Message(400, "Invalid", "Invalid request ID.");
+				MessageModel message = new MessageModel(400, "Invalid", "Invalid request ID.");
 				return new DefaultResponse<>(message);
 			}
 

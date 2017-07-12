@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sdm.core.Setting;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 
 /**
  *
@@ -27,7 +27,8 @@ public class JsonExceptionMapper implements ExceptionMapper<JsonProcessingExcept
 
 	@Override
 	public Response toResponse(JsonProcessingException exception) {
-		Message message = new Message(400, JsonProcessingException.class.getName(), exception.getOriginalMessage());
+		MessageModel message = new MessageModel(400, JsonProcessingException.class.getName(),
+				exception.getOriginalMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
 		if (env.equalsIgnoreCase("dev")) {
 			Map<String, Object> debug = new HashMap<>();

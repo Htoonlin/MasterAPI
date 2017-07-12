@@ -23,7 +23,7 @@ import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.ListModel;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 import com.sdm.master.dao.PermissionDAO;
 import com.sdm.master.entity.PermissionEntity;
 
@@ -62,7 +62,7 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
 			}
 			mainDAO.commitTransaction();
 
-			Message message = new Message(202, "Update Success!",
+			MessageModel message = new MessageModel(202, "Update Success!",
 					"We updated the record with your request successfully.");
 			return new DefaultResponse<>(message);
 		} catch (Exception e) {

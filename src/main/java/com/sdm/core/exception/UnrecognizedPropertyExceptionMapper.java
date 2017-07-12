@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sdm.core.Setting;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 
 /**
  *
@@ -27,7 +27,7 @@ public class UnrecognizedPropertyExceptionMapper implements ExceptionMapper<Unre
 
 	@Override
 	public Response toResponse(UnrecognizedPropertyException exception) {
-		Message message = new Message(400, UnrecognizedPropertyException.class.getName(),
+		MessageModel message = new MessageModel(400, UnrecognizedPropertyException.class.getName(),
 				exception.getLocalizedMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
 		if (env.equalsIgnoreCase("dev")) {

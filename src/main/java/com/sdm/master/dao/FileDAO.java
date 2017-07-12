@@ -52,7 +52,7 @@ public class FileDAO extends RestDAO {
 	}
 
 	public void delete(FileEntity entity, boolean commit) throws Exception {
-		File savedFile = new File(Setting.getInstance().get(Setting.FILE_STORAGE_PATH) + entity.getStoragePath());
+		File savedFile = new File(Setting.getInstance().get(Setting.UPLOAD_DIRECTORY) + entity.getStoragePath());
 		if (savedFile.exists() && savedFile.delete()) {
 			LOG.info("Deleted File by ID => " + entity.getId());
 		}
@@ -89,7 +89,7 @@ public class FileDAO extends RestDAO {
 		entity.setPublicToken(token);
 		entity.setFileSize(saveFile.length());
 		entity.setStoragePath(
-				saveFile.getPath().substring(Setting.getInstance().get(Setting.FILE_STORAGE_PATH).length()));
+				saveFile.getPath().substring(Setting.getInstance().get(Setting.UPLOAD_DIRECTORY).length()));
 		return super.insert(entity, true);
 	}
 }

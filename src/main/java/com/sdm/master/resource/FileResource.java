@@ -33,7 +33,7 @@ import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 import com.sdm.master.dao.FileDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.FileEntity;
@@ -66,7 +66,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
 				try {
-					String filePath = Setting.getInstance().get(Setting.FILE_STORAGE_PATH) + entity.getStoragePath();
+					String filePath = Setting.getInstance().get(Setting.UPLOAD_DIRECTORY) + entity.getStoragePath();
 					File savedFile = new File(filePath);
 					if (savedFile.exists()) {
 						byte[] data = Files.readAllBytes(savedFile.toPath());
@@ -94,7 +94,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 			UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
 			UserEntity currentUser = userDAO.fetchById(getUserId());
 			if (currentUser == null) {
-				Message message = new Message(401, "Invalid User!",
+				MessageModel message = new MessageModel(401, "Invalid User!",
 						"You neeed to register new account to upload file.");
 				return new DefaultResponse<>(message);
 			}
@@ -114,7 +114,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 		if (entity != null) {
 			return this.downloadFile(entity);
 		}
-		Message message = new Message(204, "No File!", "There is no file for your requested token.");
+		MessageModel message = new MessageModel(204, "No File!", "There is no file for your requested token.");
 		return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
 	}
 
@@ -123,7 +123,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 	public Response privateDownload(@PathParam("id") double id) throws Exception {
 		FileEntity entity = mainDAO.fetchById(id);
 		if (entity == null) {
-			Message message = new Message(204, "No File!", "There is no file for your request.");
+			MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
 			return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
 		}
 

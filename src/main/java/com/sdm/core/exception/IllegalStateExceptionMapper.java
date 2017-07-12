@@ -15,7 +15,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.sdm.core.Setting;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 
 /**
  *
@@ -26,7 +26,7 @@ public class IllegalStateExceptionMapper implements ExceptionMapper<IllegalState
 
 	@Override
 	public Response toResponse(IllegalStateException exception) {
-		Message message = new Message(500, IllegalStateException.class.getName(), exception.getMessage());
+		MessageModel message = new MessageModel(500, IllegalStateException.class.getName(), exception.getMessage());
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
 		if (env.equalsIgnoreCase("dev")) {
 			Map<String, Object> debug = new HashMap<>();

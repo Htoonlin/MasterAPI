@@ -67,7 +67,7 @@ public class AuthRequest extends DefaultRequest implements Serializable {
 	}
 
 	public String getCryptPassword() {
-		return SecurityManager.md5String(this.email, this.password);
+		return SecurityManager.hashString(this.email, this.password);
 	}
 
 	public boolean isAuth(UserEntity authUser) {

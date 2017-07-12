@@ -17,17 +17,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder(value = { "code", "title", "message", "trace" })
-public class Message implements Serializable {
+public class MessageModel implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -459150304625745739L;
 
-	public Message() {
+	public MessageModel() {
 	}
 
-	public Message(int code, String title, String message) {
+	public MessageModel(int code, String title, String message) {
 		this.code = code;
 		this.title = title;
 		this.message = message;

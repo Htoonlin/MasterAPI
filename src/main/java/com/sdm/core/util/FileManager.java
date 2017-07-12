@@ -61,7 +61,7 @@ public class FileManager {
 		String uploadPath = "/" + Constants.USER_PREFIX + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
 		String fileName = token + "." + ext;
 
-		File baseDir = new File(Setting.getInstance().get(Setting.FILE_STORAGE_PATH) + uploadPath);
+		File baseDir = new File(Setting.getInstance().get(Setting.UPLOAD_DIRECTORY) + uploadPath);
 		if (!baseDir.exists()) {
 			baseDir.mkdirs();
 		}

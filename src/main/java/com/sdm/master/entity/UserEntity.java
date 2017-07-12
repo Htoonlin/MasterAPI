@@ -79,7 +79,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	private Set<RoleEntity> roles;
 
 	@UIStructure(order = 3, label = "Password", inputType = "password")
-	@Column(name = "password", nullable = false)
+	@Column(name = "password", nullable = false, length = 255)
 	private String password;
 
 	@NotAudited

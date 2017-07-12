@@ -22,7 +22,7 @@ import com.sdm.core.Constants;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.ListModel;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.response.model.RouteInfo;
 
 /**
@@ -115,7 +115,7 @@ public class DefaultResource implements IBaseResource {
 		try {
 			Resource resource = Resource.from(this.getClass());
 			if (resource == null) {
-				Message message = new Message(204, "No Data", "There is no data for your request.");
+				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 				return new DefaultResponse<>(message);
 			}
 			List<RouteInfo> routeList = collectRoute(resource, "/");

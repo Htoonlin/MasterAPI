@@ -20,7 +20,7 @@ import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
-import com.sdm.core.response.model.Message;
+import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.response.model.Pagination;
 import com.sdm.core.response.model.UIProperty;
 
@@ -75,7 +75,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 			List<T> data = (List<T>) getDAO().paging(filter, pageId, pageSize, sortString);
 
 			if (data == null) {
-				Message message = new Message(204, "No Data", "There is no data for your query string.");
+				MessageModel message = new MessageModel(204, "No Data", "There is no data for your query string.");
 				return new DefaultResponse<>(message);
 			}
 
@@ -92,7 +92,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	public IBaseResponse getById(PK id) throws Exception {
 		T data = getDAO().fetchById(id);
 		if (data == null) {
-			Message message = new Message(204, "No Data", "There is no data for your request.");
+			MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 			return new DefaultResponse<>(message);
 		}
 		return new DefaultResponse<T>(data);
@@ -122,7 +122,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
 			T dbEntity = getDAO().fetchById(id);
 			if (dbEntity == null) {
-				Message message = new Message(204, "No Data", "There is no data for your request.");
+				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 				return new DefaultResponse<>(message);
 			}
 
@@ -137,14 +137,14 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	@Override
 	public IBaseResponse remove(PK id) throws Exception {
 		try {
-			Message message = new Message(204, "No Data", "There is no data for your request.");
+			MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 			T entity = getDAO().fetchById(id);
 			if (entity == null) {
 				return new DefaultResponse<>(message);
 			}
 
 			getDAO().delete(entity, true);
-			message = new Message(202, "Deleted", "We deleted the record with your request successfully.");
+			message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
 			return new DefaultResponse<>(202, ResponseType.SUCCESS, message);
 		} catch (Exception e) {
 			getLogger().error(e);
