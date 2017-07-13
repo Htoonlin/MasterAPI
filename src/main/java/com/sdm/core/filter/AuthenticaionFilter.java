@@ -62,7 +62,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 
 	private int getFailed() {
 		try {
-			return (int) httpSession.getAttribute(Constants.SESSION_FAILED_COUNT);
+			return (int) httpSession.getAttribute(Constants.SessionKey.FAILED_COUNT);
 		} catch (Exception e) {
 			LOG.error(e);
 			return 0;
@@ -142,7 +142,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 
 	private Response errorResponse(int code) {
 		String description = "";
-		this.httpSession.setAttribute(Constants.SESSION_FAILED_COUNT, getFailed() + 1);
+		this.httpSession.setAttribute(Constants.SessionKey.FAILED_COUNT, getFailed() + 1);
 		switch (code) {
 		case 401:
 			description = "Hmmm! Your authorization is failed. If you are trying to hack server, don't do it again.";
@@ -160,7 +160,7 @@ public class AuthenticaionFilter implements ContainerRequestFilter {
 	}
 
 	private void saveUserId(int userId) {
-		this.httpSession.setAttribute(Constants.SESSION_FAILED_COUNT, 0);
-		this.httpSession.setAttribute(Constants.SESSION_USER_ID, userId);
+		this.httpSession.setAttribute(Constants.SessionKey.FAILED_COUNT, 0);
+		this.httpSession.setAttribute(Constants.SessionKey.USER_ID, userId);
 	}
 }

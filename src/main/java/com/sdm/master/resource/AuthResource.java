@@ -72,7 +72,7 @@ public class AuthResource extends DefaultResource {
 
 	private int getFailed() {
 		try {
-			return (int) getHttpSession().getAttribute(Constants.SESSION_FAILED_COUNT);
+			return (int) getHttpSession().getAttribute(Constants.SessionKey.FAILED_COUNT);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -104,7 +104,7 @@ public class AuthResource extends DefaultResource {
 				.claim("device_os", currentToken.getDeviceOs()).compressWith(CompressionCodecs.DEFLATE)
 				.signWith(SignatureAlgorithm.HS512, jwtKey).compact();
 
-		getHttpSession().setAttribute(Constants.SESSION_USER_TOKEN, compactJWT);
+		getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, compactJWT);
 		return compactJWT;
 	}
 
@@ -135,13 +135,13 @@ public class AuthResource extends DefaultResource {
 					userDao.commitTransaction();
 
 					// Reset failed count
-					getHttpSession().setAttribute(Constants.SESSION_FAILED_COUNT, 0);
+					getHttpSession().setAttribute(Constants.SessionKey.FAILED_COUNT, 0);
 
 					return new DefaultResponse<UserEntity>(authUser);
 				}
 			}
 			// Increase failed count
-			getHttpSession().setAttribute(Constants.SESSION_FAILED_COUNT, getFailed() + 1);
+			getHttpSession().setAttribute(Constants.SessionKey.FAILED_COUNT, getFailed() + 1);
 			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			userDao.rollbackTransaction();

@@ -95,4 +95,59 @@ public class TemplateButton implements Serializable {
 		this.fallbackUrl = fallbackUrl;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((fallbackUrl == null) ? 0 : fallbackUrl.hashCode());
+		result = prime * result + (messengerExtensions ? 1231 : 1237);
+		result = prime * result + ((payload == null) ? 0 : payload.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		result = prime * result + ((webviewHeightRatio == null) ? 0 : webviewHeightRatio.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TemplateButton other = (TemplateButton) obj;
+		if (fallbackUrl == null) {
+			if (other.fallbackUrl != null)
+				return false;
+		} else if (!fallbackUrl.equals(other.fallbackUrl))
+			return false;
+		if (messengerExtensions != other.messengerExtensions)
+			return false;
+		if (payload == null) {
+			if (other.payload != null)
+				return false;
+		} else if (!payload.equals(other.payload))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (type != other.type)
+			return false;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.equals(other.url))
+			return false;
+		if (webviewHeightRatio == null) {
+			if (other.webviewHeightRatio != null)
+				return false;
+		} else if (!webviewHeightRatio.equals(other.webviewHeightRatio))
+			return false;
+		return true;
+	}
+
 }

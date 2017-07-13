@@ -28,8 +28,8 @@ public class SessionListener implements HttpSessionListener {
 	private int sessionRecording(String prefix, HttpSessionEvent hse) {
 		HttpSession session = hse.getSession();
 		int userId = 0;
-		if (session.getAttribute(Constants.SESSION_USER_ID) != null) {
-			userId = (int) session.getAttribute(Constants.SESSION_USER_ID);
+		if (session.getAttribute(Constants.SessionKey.USER_ID) != null) {
+			userId = (int) session.getAttribute(Constants.SessionKey.USER_ID);
 		}
 		LOG.info(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
 		return userId;

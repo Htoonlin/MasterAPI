@@ -10,7 +10,7 @@
 <%
 	String accessToken = "";
 	try {
-		accessToken = session.getAttribute(Constants.SESSION_USER_TOKEN).toString();
+		accessToken = session.getAttribute(Constants.SessionKey.USER_TOKEN).toString();
 	} catch (Exception e) {
 		accessToken = "";
 	}

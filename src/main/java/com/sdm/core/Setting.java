@@ -24,7 +24,7 @@ import com.sdm.core.util.SecurityManager;
  *
  * @author Htoonlin
  */
-public final class Setting implements Constants {
+public final class Setting implements Constants.Setting {
 
 	private static final Logger LOG = Logger.getLogger(Setting.class.getName());
 
@@ -127,7 +127,7 @@ public final class Setting implements Constants {
 			}
 		}
 
-		this.settingFile = new File(this.settingProps.get(Constants.ROOT_DIRECTORY) + SETTING_FILE);
+		this.settingFile = new File(this.settingProps.get(ROOT_DIRECTORY) + SETTING_FILE);
 		if (this.settingFile.exists()) {
 			this.loadSetting();
 		} else {

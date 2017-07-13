@@ -5,7 +5,6 @@
  */
 package com.sdm.core.hibernate.entity;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +34,7 @@ import com.sdm.core.response.model.UIProperty;
  *
  * @author Htoonlin
  */
-public class DefaultEntity implements Serializable, IBaseRequest {
+public class DefaultEntity implements IBaseRequest {
 
 	/**
 	 * 
@@ -157,5 +156,36 @@ public class DefaultEntity implements Serializable, IBaseRequest {
 		});
 
 		return properties;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((errors == null) ? 0 : errors.hashCode());
+		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DefaultEntity other = (DefaultEntity) obj;
+		if (errors == null) {
+			if (other.errors != null)
+				return false;
+		} else if (!errors.equals(other.errors))
+			return false;
+		if (timestamp == null) {
+			if (other.timestamp != null)
+				return false;
+		} else if (!timestamp.equals(other.timestamp))
+			return false;
+		return true;
 	}
 }

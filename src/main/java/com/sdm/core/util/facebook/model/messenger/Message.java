@@ -57,4 +57,36 @@ public class Message implements Serializable {
 		}
 		quickReplies.add(quickReply);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((quickReplies == null) ? 0 : quickReplies.hashCode());
+		result = prime * result + ((text == null) ? 0 : text.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Message other = (Message) obj;
+		if (quickReplies == null) {
+			if (other.quickReplies != null)
+				return false;
+		} else if (!quickReplies.equals(other.quickReplies))
+			return false;
+		if (text == null) {
+			if (other.text != null)
+				return false;
+		} else if (!text.equals(other.text))
+			return false;
+		return true;
+	}
+
 }

@@ -85,4 +85,38 @@ public class Pagination<T extends Serializable> implements Serializable {
 	public void setData(List<T> data) {
 		this.data = data;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + currentPage;
+		result = prime * result + ((data == null) ? 0 : data.hashCode());
+		result = prime * result + pageSize;
+		result = prime * result + (int) (total ^ (total >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pagination other = (Pagination) obj;
+		if (currentPage != other.currentPage)
+			return false;
+		if (data == null) {
+			if (other.data != null)
+				return false;
+		} else if (!data.equals(other.data))
+			return false;
+		if (pageSize != other.pageSize)
+			return false;
+		if (total != other.total)
+			return false;
+		return true;
+	}
 }

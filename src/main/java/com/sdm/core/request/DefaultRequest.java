@@ -5,7 +5,6 @@
  */
 package com.sdm.core.request;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,7 @@ import com.sdm.core.Setting;
  *
  * @author Htoonlin
  */
-public class DefaultRequest implements Serializable, IBaseRequest {
+public class DefaultRequest implements IBaseRequest {
 
 	/**
 	 * 
@@ -71,4 +70,36 @@ public class DefaultRequest implements Serializable, IBaseRequest {
 
 		return violoationSet.isEmpty();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((errors == null) ? 0 : errors.hashCode());
+		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DefaultRequest other = (DefaultRequest) obj;
+		if (errors == null) {
+			if (other.errors != null)
+				return false;
+		} else if (!errors.equals(other.errors))
+			return false;
+		if (timestamp == null) {
+			if (other.timestamp != null)
+				return false;
+		} else if (!timestamp.equals(other.timestamp))
+			return false;
+		return true;
+	}
+
 }
