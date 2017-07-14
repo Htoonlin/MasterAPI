@@ -61,6 +61,7 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
 				mainDAO.insert(permission, false);
 			}
 			mainDAO.commitTransaction();
+			this.modifiedResource();
 
 			MessageModel message = new MessageModel(202, "Update Success!",
 					"We updated the record with your request successfully.");
@@ -75,10 +76,17 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
 	@GET
 	@Path("/role/{roleId:\\d+}")
 	public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
+		DefaultResponse response = this.validateCache();
+		if (response != null) {
+			return response;
+		}
+
 		try {
 			List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
 			ListModel<PermissionEntity> content = new ListModel<PermissionEntity>(permissions);
-			return new DefaultResponse<>(content);
+			response = new DefaultResponse<>(content);
+			response.setHeaders(this.buildCache());
+			return response;
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;

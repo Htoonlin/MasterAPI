@@ -20,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -78,9 +79,16 @@ public class FileResource extends RestResource<FileEntity, Long> {
 				}
 			}
 		};
+		CacheControl cc = new CacheControl();
+
+		// Cache will hold 30 days to file
+		cc.setMaxAge((3600 * 24 * 30));
+		cc.setNoStore(false);
+		cc.setNoTransform(true);
 
 		String fileName = entity.getName() + "." + entity.getExtension();
-		return Response.ok(fileStream, entity.getType())
+
+		return Response.ok(fileStream, entity.getType()).cacheControl(cc)
 				.header("content-disposition", "attachment; filename=\"" + fileName + "\"").build();
 	}
 
@@ -99,6 +107,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 				return new DefaultResponse<>(message);
 			}
 			FileEntity entity = mainDAO.saveFile(inputFile, fileDetail);
+			this.modifiedResource();
 			return new DefaultResponse<FileEntity>(entity);
 		} catch (Exception e) {
 			LOG.error(e);

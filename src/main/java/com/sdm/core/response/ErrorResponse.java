@@ -59,4 +59,9 @@ public class ErrorResponse implements IBaseResponse {
 	public Map<String, String> getContent() {
 		return this.errors;
 	}
+
+	@Override
+	public Map<String, Object> getHeaders() {
+		return new HashMap<>();
+	}
 }

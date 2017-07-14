@@ -7,6 +7,8 @@ package com.sdm.core.response;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sdm.core.response.model.MessageModel;
@@ -21,6 +23,7 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 
 	private int code;
 	private ResponseType status;
+	private Map<String, Object> headers;
 
 	public DefaultResponse() {
 		this.code = 200;
@@ -75,5 +78,21 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 	@Override
 	public Object getContent() {
 		return this.content;
+	}
+
+	public void addHeader(String key, String value) {
+		if (this.headers == null) {
+			this.headers = new HashMap<>();
+		}
+		this.headers.put(key, value);
+	}
+
+	public void setHeaders(Map<String, Object> headers) {
+		this.headers = headers;
+	}
+
+	@Override
+	public Map<String, Object> getHeaders() {
+		return this.headers;
 	}
 }

@@ -49,12 +49,20 @@ public class ProfileResource extends DefaultResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse getProfile() throws Exception {
+		DefaultResponse response = this.validateCache();
+		// Cache validation
+		if (response != null) {
+			return response;
+		}
+
 		UserEntity user = userDAO.fetchById(getUserId());
 		if (user == null) {
 			MessageModel message = new MessageModel(204, "Invalid User", "There is no user. (or) User is not active.");
 			return new DefaultResponse<>(message);
 		}
-		return new DefaultResponse<UserEntity>(user);
+		response = new DefaultResponse<UserEntity>(user);
+		response.setHeaders(this.buildCache());
+		return response;
 	}
 
 	@RolesAllowed("user")
@@ -79,6 +87,7 @@ public class ProfileResource extends DefaultResource {
 			currentUser.setCountryCode(request.getCountryCode());
 			currentUser.setProfileImage(request.getProfileImage());
 			currentUser = userDAO.update(currentUser, true);
+			this.modifiedResource();
 			return new DefaultResponse<UserEntity>(currentUser);
 		} catch (Exception e) {
 			LOG.error(e);
@@ -116,6 +125,7 @@ public class ProfileResource extends DefaultResource {
 			String newPassword = SecurityManager.hashString(request.getEmail(), request.getNewPassword());
 			user.setPassword(newPassword);
 			userDAO.update(user, true);
+			this.modifiedResource();
 			return new DefaultResponse<>(message);
 		} catch (Exception e) {
 			LOG.error(e);

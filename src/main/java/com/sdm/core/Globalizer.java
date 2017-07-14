@@ -11,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.CacheControl;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -27,12 +26,6 @@ import com.sdm.core.util.security.AccessorType;
  * @author Htoonlin
  */
 public class Globalizer {
-
-	public static CacheControl getCacheControl() {
-		CacheControl cc = new CacheControl();
-		cc.setMaxAge(Setting.getInstance().getInt(Setting.CC_MAX_AGE, "30"));
-		return cc;
-	}
 
 	public static ObjectMapper jsonMapper() {
 		ObjectMapper mapper = new ObjectMapper();

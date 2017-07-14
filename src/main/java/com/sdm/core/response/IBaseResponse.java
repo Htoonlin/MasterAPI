@@ -5,7 +5,10 @@
  */
 package com.sdm.core.response;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
@@ -25,4 +28,7 @@ public interface IBaseResponse {
 
 	@JsonGetter("timestamp")
 	public long getTimestamp();
+
+	@JsonIgnore
+	public Map<String, Object> getHeaders();
 }

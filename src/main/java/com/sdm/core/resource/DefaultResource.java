@@ -6,21 +6,32 @@
 package com.sdm.core.resource;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.model.Invocable;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.ResourceMethod;
 
 import com.sdm.core.Constants;
+import com.sdm.core.Setting;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.response.model.RouteInfo;
@@ -38,6 +49,55 @@ public class DefaultResource implements IBaseResource {
 
 	@Inject
 	private HttpSession httpSession;
+
+	@Context
+	protected Request request;
+
+	//private static String eTag = UUID.randomUUID().toString();
+	private static Date lastModified = new Date();
+
+	protected void modifiedResource() {
+		//eTag = UUID.randomUUID().toString();
+		lastModified = new Date();
+	}
+
+	protected DefaultResponse<MessageModel> validateCache() {
+		ResponseBuilder builder = request.evaluatePreconditions(lastModified);
+		if (builder != null) {
+			MessageModel message = new MessageModel(HttpStatus.SC_NOT_MODIFIED, "NO_CHANGE",
+					"There is no any changes for your request.");
+			DefaultResponse<MessageModel> response = new DefaultResponse<>(HttpStatus.SC_NOT_MODIFIED,
+					ResponseType.INFO, message);
+			response.setHeaders(this.buildCache());
+			return response;
+		}
+		return null;
+	}
+
+	protected Map<String, Object> buildCache() {
+		return this.buildCache(Setting.getInstance().getInt(Setting.CC_MAX_AGE));
+	}
+
+	protected Map<String, Object> buildCache(int cacheAge) {
+		// Build CacheControl
+		CacheControl cc = new CacheControl();
+		cc.setMaxAge(cacheAge);
+		cc.setNoStore(true);
+		cc.setPrivate(true);
+		cc.setNoTransform(false);
+
+		// Build Expire
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.SECOND, cacheAge);
+
+		Map<String, Object> cacheHeader = new HashMap<>();
+		cacheHeader.put(HttpHeaders.CACHE_CONTROL, cc);
+		cacheHeader.put(HttpHeaders.EXPIRES, cal.getTime());
+		//cacheHeader.put(HttpHeaders.ETAG, new EntityTag(eTag));
+		cacheHeader.put(HttpHeaders.LAST_MODIFIED, lastModified);
+		return cacheHeader;
+	}
 
 	@Override
 	public HttpSession getHttpSession() {

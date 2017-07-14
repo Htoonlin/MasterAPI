@@ -3,10 +3,9 @@
     Created on : 23-Jul-2016, 14:09:03
     Author     : Htoonlin
 --%>
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.sdm.core.Globalizer"%>
 <%@page import="com.sdm.core.Constants"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
 	String accessToken = "";
 	try {
@@ -149,6 +148,7 @@
 			var hide_columns = [ 'search', 'version', 'created_by', 'modified_by', 'created_at', 'modified_at' ];
 			var active_object = {};
 			var blank_object = {};
+			var responseHeaders = {};
 			function show_message(type, title, message) {
 				var html = '<strong>' + title + '</strong>' + message;
 				$("div#messageBox").attr('class', 'alert alert-' + type).html(html);
@@ -165,12 +165,17 @@
 					beforeSend : function(xhr) {
 						xhr.setRequestHeader('Authorization', $('input#txtAccessToken').val());
 						xhr.setRequestHeader('Content-Type', 'application/json');
+						xhr.setRequestHeader('If-Modified-Since', responseHeaders['Last-Modified']);
+						xhr.setRequestHeader('If-None-Match', responseHeaders['ETag']);
 					},
 					success : callback,
 					error : function(data) {
 						var json = data.responseJSON;
 						$("div#mainPanel").attr('class', 'panel panel-danger');
 						show_message('danger', json.status, json.content.message);
+					},
+					complete: function(jqXHR){
+						responseHeaders = JSON.stringify(jqXHR.getAllResponseHeaders());
 					}
 				};
 				if (method.toLowerCase() === 'get') {

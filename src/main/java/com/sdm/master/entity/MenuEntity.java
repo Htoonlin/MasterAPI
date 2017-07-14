@@ -43,14 +43,14 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 	private String name;
 
 	@UIStructure(order = 2, label = "Description", inputType = "text")
-	@Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
+	@Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = true)
 	private String description;
 
-	@UIStructure(order = 2, label = "State", inputType = "text")
+	@UIStructure(order = 3, label = "State", inputType = "text")
 	@Column(name = "state", columnDefinition = "varchar(500)", length = 500, nullable = false)
 	private String state;
 
-	@UIStructure(order = 3, label = "Icon", inputType = "icon")
+	@UIStructure(order = 4, label = "Icon", inputType = "icon")
 	@Column(name = "icon", columnDefinition = "varchar(50)", length = 50, nullable = false)
 	private String icon;
 
@@ -60,6 +60,10 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 	@UIStructure(order = 4, label = "Type", inputType = "text")
 	@Column(name = "type", columnDefinition = "varchar(10)", length = 10, nullable = false)
 	private String type;
+
+	@UIStructure(order = 5, label = "priority", inputType = "number")
+	@Column(name = "priority", columnDefinition = "INT", nullable = false)
+	private int priority;
 
 	@UIStructure(order = 5, label = "Is separator?", inputType = "checkbox")
 	@Column(name = "name", columnDefinition = "bit(1)", nullable = false)
@@ -134,6 +138,14 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 
 	public boolean isSeparator() {

@@ -3,11 +3,10 @@
     Created on : 05-Oct-2016, 11:34:24
     Author     : Htoonlin
 --%>
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.sdm.core.Globalizer"%>
 <%@page import="com.sdm.master.request.ActivateRequest"%>
-<%@page import="com.sdm.core.util.SecurityManager;"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="com.sdm.core.util.SecurityManager"%>
 <%
     boolean isReset = false;
     ActivateRequest activate = null;
@@ -125,7 +124,7 @@
                     "old_password": "<%= activate.getDeviceId()%>",
                     "new_password": new_pass,
                     "timestamp": (new Date()).getTime(),
-                    "extra": {"token": "<%= activate.getToken()%>"}
+                    "token": "<%= activate.getToken()%>"
                 };
 
                 var url = "api/auth/resetPassword/";

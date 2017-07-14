@@ -6,7 +6,6 @@
 package com.sdm.core.util;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -16,6 +15,7 @@ import java.util.Base64;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.log4j.Logger;
 
@@ -54,11 +54,11 @@ public class SecurityManager {
 		try {
 			PBEKeySpec spec = new PBEKeySpec(password, staticSalt, iterations, keyLength);
 			SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-			String inputHex = new BigInteger(skf.generateSecret(spec).getEncoded()).toString(16);
+			String inputHex = DatatypeConverter.printHexBinary(skf.generateSecret(spec).getEncoded());
 
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			digest.update(salt.getBytes());
-			String saltHex = new BigInteger(1, digest.digest()).toString(16);
+			String saltHex = DatatypeConverter.printHexBinary(digest.digest());
 			String encryptedString = saltHex + inputHex;
 			LOG.info("Successfully encrypted data.");
 			return encryptedString;

@@ -77,6 +77,9 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 			request.setPassword(password);
 			request.setStatus('A');
 			UserEntity createdUser = userDAO.insert(request, true);
+			this.modifiedResource();
+
+			// Send Welcome mail to User
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 			mailSend.welcomeUser(createdUser, rawPassword);
 
@@ -110,6 +113,8 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 			request.setPassword(dbEntity.getPassword());
 
 			userDAO.update(request, true);
+			this.modifiedResource();
+
 			return new DefaultResponse<UserEntity>(202, ResponseType.SUCCESS, request);
 		} catch (Exception e) {
 			LOG.error(e);

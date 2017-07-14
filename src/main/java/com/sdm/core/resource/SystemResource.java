@@ -40,7 +40,14 @@ public class SystemResource extends DefaultResource {
 	@Path("setting")
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse getAllSetting() {
-		return new DefaultResponse<>(Setting.getInstance().getProperties());
+		DefaultResponse response = this.validateCache();
+		// Cache validation
+		if (response != null) {
+			return response;
+		}
+		response = new DefaultResponse<>(Setting.getInstance().getProperties());
+		response.setHeaders(this.buildCache());
+		return response;
 	}
 
 	@POST
@@ -64,6 +71,8 @@ public class SystemResource extends DefaultResource {
 		}
 
 		Setting.getInstance().save();
+		this.modifiedResource();
+
 		return new DefaultResponse<>(Setting.getInstance().getProperties());
 	}
 }
