@@ -75,6 +75,8 @@ public class DefaultEntity implements IBaseRequest {
 				return false;
 			}
 		}
+
+		// Bean Validation
 		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 		Set<ConstraintViolation<DefaultEntity>> violoationSet = validator.validate(this);
 		for (ConstraintViolation<DefaultEntity> v : violoationSet) {

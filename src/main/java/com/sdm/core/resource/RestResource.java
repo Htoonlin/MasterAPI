@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.log4j.Logger;
 
 import com.sdm.core.hibernate.dao.RestDAO;
@@ -36,6 +38,13 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	protected abstract Logger getLogger();
 
 	protected abstract RestDAO getDAO();
+
+	@PreDestroy
+	protected void onDestroy() {
+		if (getDAO() != null) {
+			getDAO().closeSession();
+		}
+	}
 
 	protected Class<T> getEntityClass() {
 		ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();

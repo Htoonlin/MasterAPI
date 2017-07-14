@@ -44,7 +44,9 @@ public class DefaultDAO {
 	}
 
 	public void closeSession() {
-		this.mainSession.close();
+		if (this.mainSession.isOpen()) {
+			this.mainSession.close();
+		}
 		AuditStorage.INSTANCE.clean();
 	}
 

@@ -65,10 +65,9 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	@Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
 	private String description;
 
-	@JsonIgnore
 	@NotAudited
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
+	@JoinColumn(name = "roleId", insertable = false, updatable = false, columnDefinition = "MEDIUMINT UNSIGNED")
 	@NotFound(action = NotFoundAction.IGNORE)
 	private Set<PermissionEntity> permissions;
 

@@ -1,15 +1,23 @@
 package com.sdm.master.entity;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -35,15 +43,15 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@UIStructure(order = 0, label = "#", readOnly = true)
-	@Column(name = "id", unique = true, nullable = false, columnDefinition = "INT UNSIGNED")
-	private long id;
+	@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+	private int id;
 
 	@UIStructure(order = 1, label = "Name", inputType = "text")
 	@Column(name = "name", columnDefinition = "varchar(50)", length = 50, nullable = false)
 	private String name;
 
 	@UIStructure(order = 2, label = "Description", inputType = "text")
-	@Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = true)
+	@Column(name = "description", columnDefinition = "varchar(255)", length = 255, nullable = true)
 	private String description;
 
 	@UIStructure(order = 3, label = "State", inputType = "text")
@@ -66,21 +74,38 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 	private int priority;
 
 	@UIStructure(order = 5, label = "Is separator?", inputType = "checkbox")
-	@Column(name = "name", columnDefinition = "bit(1)", nullable = false)
+	@Column(name = "isDivider", columnDefinition = "bit(1)", nullable = false)
 	private boolean separator;
+
+	@UIStructure(order = 6, label = "Parent Menu", inputType = "number", hideInGrid = true)
+	@NotAudited
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "parentId", columnDefinition = "INT UNSIGNED")
+	@NotFound(action = NotFoundAction.IGNORE)
+	private Set<MenuEntity> children;
+
+	@UIStructure(order = 7, label = "Roles", inputType = "multi-object", hideInGrid = true)
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "tbl_user_role", joinColumns = {
+			@JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = {
+					@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED") })
+	@NotFound(action = NotFoundAction.IGNORE)
+	private Set<RoleEntity> roles;
 
 	public MenuEntity() {
 
 	}
 
-	public MenuEntity(String search, long id, String name, String state, String icon, String type, boolean separator) {
+	public MenuEntity(int id, String name, String description, String state, String icon, String type, int priority,
+			boolean separator) {
 		super();
-		this.search = search;
 		this.id = id;
 		this.name = name;
+		this.description = description;
 		this.state = state;
 		this.icon = icon;
 		this.type = type;
+		this.priority = priority;
 		this.separator = separator;
 	}
 
@@ -92,11 +117,11 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 		this.search = search;
 	}
 
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -154,6 +179,22 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 
 	public void setSeparator(boolean separator) {
 		this.separator = separator;
+	}
+
+	public Set<MenuEntity> getChildren() {
+		return children;
+	}
+
+	public void setChildren(Set<MenuEntity> children) {
+		this.children = children;
+	}
+
+	public Set<RoleEntity> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<RoleEntity> roles) {
+		this.roles = roles;
 	}
 
 	@Override

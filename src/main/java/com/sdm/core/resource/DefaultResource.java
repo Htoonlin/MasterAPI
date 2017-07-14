@@ -11,11 +11,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -53,11 +55,11 @@ public class DefaultResource implements IBaseResource {
 	@Context
 	protected Request request;
 
-	//private static String eTag = UUID.randomUUID().toString();
+	private static String eTag = UUID.randomUUID().toString();
 	private static Date lastModified = new Date();
 
 	protected void modifiedResource() {
-		//eTag = UUID.randomUUID().toString();
+		eTag = UUID.randomUUID().toString();
 		lastModified = new Date();
 	}
 
@@ -94,7 +96,7 @@ public class DefaultResource implements IBaseResource {
 		Map<String, Object> cacheHeader = new HashMap<>();
 		cacheHeader.put(HttpHeaders.CACHE_CONTROL, cc);
 		cacheHeader.put(HttpHeaders.EXPIRES, cal.getTime());
-		//cacheHeader.put(HttpHeaders.ETAG, new EntityTag(eTag));
+		cacheHeader.put(HttpHeaders.ETAG, new EntityTag(eTag));
 		cacheHeader.put(HttpHeaders.LAST_MODIFIED, lastModified);
 		return cacheHeader;
 	}

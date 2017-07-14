@@ -35,6 +35,7 @@
 		<mapping class="com.sdm.master.entity.PermissionEntity" />
 		<mapping class="com.sdm.master.entity.TokenEntity" />
 		<mapping class="com.sdm.master.entity.FileEntity" />
+		<mapping class="com.sdm.master.entity.MenuEntity" />
 
 		<!-- Utilities Entities Mapping -->
 		<mapping class="com.sdm.master.entity.GeoIPCacheEntity" />
