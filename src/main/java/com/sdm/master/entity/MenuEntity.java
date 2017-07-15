@@ -86,8 +86,8 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 
 	@UIStructure(order = 7, label = "Roles", inputType = "multi-object", hideInGrid = true)
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "tbl_user_role", joinColumns = {
-			@JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = {
+	@JoinTable(name = "tbl_menu_permission", joinColumns = {
+			@JoinColumn(name = "menuId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = {
 					@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED") })
 	@NotFound(action = NotFoundAction.IGNORE)
 	private Set<RoleEntity> roles;
