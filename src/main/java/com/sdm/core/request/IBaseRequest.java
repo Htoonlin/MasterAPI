@@ -6,9 +6,8 @@
 package com.sdm.core.request;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 /**
@@ -17,11 +16,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
  */
 public interface IBaseRequest extends Serializable {
 	@JsonSetter("timestamp")
-	void setTimeStamp(long date);
+	void setTimestamp(long date);
 
-	@JsonIgnore
-	Map<String, String> getErrors();
-
-	@JsonIgnore
-	boolean isValid();
+	Date getTimestamp();
 }

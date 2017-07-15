@@ -208,7 +208,7 @@ public class AuthResource extends DefaultResource {
 		try {
 			request = SecurityManager.base64Decode(request);
 			ActivateRequest activateRequest = Globalizer.jsonMapper().readValue(request, ActivateRequest.class);
-			activateRequest.setTimeStamp((new Date()).getTime());
+			activateRequest.setTimestamp((new Date()).getTime());
 			IBaseResponse response = this.otpActivation(activateRequest);
 			if (response instanceof MessageModel) {
 				data.put("title", response.getStatus());

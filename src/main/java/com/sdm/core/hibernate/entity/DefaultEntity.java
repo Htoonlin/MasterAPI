@@ -12,21 +12,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
 import com.sdm.core.request.IBaseRequest;
 import com.sdm.core.response.model.UIProperty;
 
@@ -48,43 +41,8 @@ public class DefaultEntity implements IBaseRequest {
 	}
 
 	@Override
-	public void setTimeStamp(long date) {
+	public void setTimestamp(long date) {
 		this.timestamp = new Date(date);
-	}
-
-	private Map<String, String> errors;
-
-	protected void addError(String key, String value) {
-		if (errors == null) {
-			errors = new HashMap<>();
-		}
-		errors.put(key, value);
-	}
-
-	@Override
-	public Map<String, String> getErrors() {
-		return errors;
-	}
-
-	@Override
-	public boolean isValid() {
-		String env = Setting.getInstance().get(Setting.SECURITY_TIMESTAMP_LIFE, "beta");
-		if (!env.equalsIgnoreCase("dev")) {
-			if (timestamp == null || !Globalizer.validTimeStamp(timestamp)) {
-				addError("timestamp", "Invalid timestamp.");
-				return false;
-			}
-		}
-
-		// Bean Validation
-		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-		Set<ConstraintViolation<DefaultEntity>> violoationSet = validator.validate(this);
-		for (ConstraintViolation<DefaultEntity> v : violoationSet) {
-			String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
-			addError(propertyName, v.getMessage());
-		}
-
-		return violoationSet.isEmpty();
 	}
 
 	@JsonIgnore
@@ -164,7 +122,6 @@ public class DefaultEntity implements IBaseRequest {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((errors == null) ? 0 : errors.hashCode());
 		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 		return result;
 	}
@@ -178,11 +135,6 @@ public class DefaultEntity implements IBaseRequest {
 		if (getClass() != obj.getClass())
 			return false;
 		DefaultEntity other = (DefaultEntity) obj;
-		if (errors == null) {
-			if (other.errors != null)
-				return false;
-		} else if (!errors.equals(other.errors))
-			return false;
 		if (timestamp == null) {
 			if (other.timestamp != null)
 				return false;
@@ -190,4 +142,5 @@ public class DefaultEntity implements IBaseRequest {
 			return false;
 		return true;
 	}
+
 }

@@ -5,7 +5,7 @@
  */
 package com.sdm.master.request;
 
-import java.io.Serializable;
+import java.util.Date;
 
 import javax.validation.constraints.Size;
 
@@ -13,14 +13,14 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sdm.core.request.DefaultRequest;
+import com.sdm.core.request.IBaseRequest;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ChangePasswordRequest extends DefaultRequest implements Serializable {
+public class ChangePasswordRequest implements IBaseRequest {
 
 	/**
 	 * 
@@ -82,6 +82,18 @@ public class ChangePasswordRequest extends DefaultRequest implements Serializabl
 	 */
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	private Date timestamp;
+
+	@Override
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
+
+	@Override
+	public void setTimestamp(long date) {
+		this.timestamp = new Date(date);
 	}
 
 	@Override

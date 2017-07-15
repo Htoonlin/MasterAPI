@@ -5,7 +5,7 @@
  */
 package com.sdm.master.request;
 
-import java.io.Serializable;
+import java.util.Date;
 
 import javax.validation.constraints.Size;
 
@@ -13,14 +13,14 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sdm.core.request.DefaultRequest;
+import com.sdm.core.request.IBaseRequest;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ActivateRequest extends DefaultRequest implements Serializable {
+public class ActivateRequest implements IBaseRequest {
 
 	/**
 	 * 
@@ -32,6 +32,8 @@ public class ActivateRequest extends DefaultRequest implements Serializable {
 	private String token;
 
 	private String deviceId;
+
+	private Date timestamp;
 
 	@NotBlank(message = "DeviceID can't be blank.")
 	public String getDeviceId() {
@@ -61,6 +63,16 @@ public class ActivateRequest extends DefaultRequest implements Serializable {
 
 	public void setToken(String value) {
 		this.token = value;
+	}
+
+	@Override
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
+
+	@Override
+	public void setTimestamp(long date) {
+		this.timestamp = new Date(date);
 	}
 
 	@Override

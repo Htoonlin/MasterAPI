@@ -7,40 +7,45 @@ and open the template in the editor.
     Created on : 05-Oct-2016, 16:36:22
     Author     : Htoonlin
 */
-body{
-    background: #ccb475 url('../img/sand.png');
+body {
+	background: #ccb475 url('../img/sand.png');
 }
-#auth-box{
-    margin-top: 180px;
-    box-shadow: 3px 3px 5px #666;
-    border-color: #c5a456;
+
+#auth-box {
+	margin-top: 180px;
+	box-shadow: 3px 3px 5px #666;
+	border-color: #c5a456;
 }
-#auth-box .panel-heading, #auth-box .panel-footer{
-    color: #c35a00;
-    background-color: #fbf2db;
-    border-color: #c5a456;
+
+#auth-box .panel-heading, #auth-box .panel-footer {
+	color: #c35a00;
+	background-color: #fbf2db;
+	border-color: #c5a456;
 }
-#auth-box h1{
-    margin: 20px 50px 10px;
-    font-size: 21px;
-    text-transform: uppercase;
-    border-bottom: 3px solid #c97800;
-    padding-bottom: 20px;
+
+#auth-box h1 {
+	margin: 20px 50px 10px;
+	font-size: 21px;
+	text-transform: uppercase;
+	border-bottom: 3px solid #c97800;
+	padding-bottom: 20px;
 }
-#auth-box label{
-    font-weight: normal;
+
+#auth-box label {
+	font-weight: normal;
 }
-#auth-box button{
-    padding:6px 50px;
+
+#auth-box button {
+	padding: 6px 50px;
 }
 
 /* CSS3 Loading */
-#loading-box{    
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+#loading-box {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 999;
 }

@@ -5,7 +5,7 @@
  */
 package com.sdm.master.request;
 
-import java.io.Serializable;
+import java.util.Date;
 
 import javax.validation.constraints.Size;
 
@@ -13,7 +13,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sdm.core.request.DefaultRequest;
+import com.sdm.core.request.IBaseRequest;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.entity.UserEntity;
 
@@ -22,7 +22,7 @@ import com.sdm.master.entity.UserEntity;
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AuthRequest extends DefaultRequest implements Serializable {
+public class AuthRequest implements IBaseRequest {
 
 	/**
 	 * 
@@ -34,6 +34,8 @@ public class AuthRequest extends DefaultRequest implements Serializable {
 	private String password;
 
 	private String deviceId;
+
+	private Date timestamp;
 
 	@NotBlank(message = "DeviceID can't be blank.")
 	@Size(min = 10, max = 255)
@@ -76,6 +78,16 @@ public class AuthRequest extends DefaultRequest implements Serializable {
 		}
 		String cryptPassword = this.getCryptPassword();
 		return (authUser.getEmail().equalsIgnoreCase(this.email) && authUser.getPassword().equals(cryptPassword));
+	}
+
+	@Override
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
+
+	@Override
+	public void setTimestamp(long date) {
+		this.timestamp = new Date(date);
 	}
 
 	@Override
