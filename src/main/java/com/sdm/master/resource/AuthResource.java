@@ -31,9 +31,9 @@ import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
+import com.sdm.core.exception.InvalidRequestException;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
@@ -110,10 +110,6 @@ public class AuthResource extends DefaultResource {
 
 	private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
 		try {
-			if (!request.isValid()) {
-				return new ErrorResponse(request.getErrors());
-			}
-
 			MessageModel message = new MessageModel(401, "Invalid!",
 					"Opp! Request email or password is something wrong");
 			int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
@@ -175,20 +171,16 @@ public class AuthResource extends DefaultResource {
 	public IBaseResponse userRegistration(RegistrationRequest request) throws Exception {
 		try {
 			Map<String, String> errors = new HashMap<>();
-			if (!request.isValid()) {
-				errors = request.getErrors();
-				return new ErrorResponse(errors);
-			}
 
 			if (!mailManager.checkMail(request.getEmail())) {
 				errors.put("email", "Requested email is not valid");
-				return new ErrorResponse(errors);
+				throw new InvalidRequestException(errors);
 			}
 
 			UserEntity user = userDao.getUserByEmail(request.getEmail());
 			if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
 				errors.put("email", "Sorry! someone already registered with this email");
-				return new ErrorResponse(errors);
+				throw new InvalidRequestException(errors);
 			}
 			String password = SecurityManager.hashString(request.getEmail(), request.getPassword());
 			user = new UserEntity(request.getEmail(), request.getDisplayName(), password, true, request.getCountry(),
@@ -246,10 +238,6 @@ public class AuthResource extends DefaultResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse otpActivation(ActivateRequest request) throws Exception {
 		try {
-			if (!request.isValid()) {
-				return new ErrorResponse(request.getErrors());
-			}
-
 			UserEntity user = userDao.checkToken(request.getEmail(), request.getToken());
 			if (user == null) {
 				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
@@ -290,9 +278,6 @@ public class AuthResource extends DefaultResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse resetPassword(ChangePasswordRequest request) throws Exception {
 		try {
-			if (!request.isValid()) {
-				return new ErrorResponse(request.getErrors());
-			}
 			MessageModel message = new MessageModel(400, "Invalid!", "Sorry! Requested token is invalid or expired.");
 			String token = request.getToken();
 			UserEntity user = userDao.userAuth(request.getEmail(), request.getOldPassword());

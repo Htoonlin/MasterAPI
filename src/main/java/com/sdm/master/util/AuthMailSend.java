@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
@@ -55,7 +56,7 @@ public class AuthMailSend {
 		return request;
 	}
 
-	public void forgetPasswordLink(UserEntity user) throws Exception {
+	public void forgetPasswordLink(UserEntity user) throws JsonProcessingException {
 		user = setToken(user);
 		ActivateRequest request = buildRequest(user, user.getPassword());
 
@@ -70,7 +71,7 @@ public class AuthMailSend {
 		mailManager.sendHTML(info);
 	}
 
-	public void activateLink(UserEntity user, String deviceId) throws Exception {
+	public void activateLink(UserEntity user, String deviceId) throws JsonProcessingException {
 		user = setToken(user);
 		ActivateRequest request = buildRequest(user, deviceId);
 
@@ -85,7 +86,7 @@ public class AuthMailSend {
 		mailManager.sendHTML(info);
 	}
 
-	public void welcomeUser(UserEntity user, String rawPassword) throws Exception {
+	public void welcomeUser(UserEntity user, String rawPassword) {
 
 		Map<String, Object> data = new HashMap<>();
 		data.put("email", user.getEmail());

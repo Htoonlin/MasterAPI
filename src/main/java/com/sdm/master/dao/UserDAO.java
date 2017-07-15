@@ -35,21 +35,21 @@ public class UserDAO extends RestDAO {
 		super(session, UserEntity.class.getName(), userId);
 	}
 
-	public UserEntity userAuth(String email, String password) throws Exception {
+	public UserEntity userAuth(String email, String password) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("email", email);
 		params.put("password", password);
 		return super.fetchOne(AUTH_BY_EMAIL, params);
 	}
 
-	public UserEntity checkToken(String email, String token) throws Exception {
+	public UserEntity checkToken(String email, String token) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("email", email);
 		params.put("token", token);
 		return super.fetchOne(GET_USER_BY_TOKEN, params);
 	}
 
-	public UserEntity getUserByEmail(String email) throws Exception {
+	public UserEntity getUserByEmail(String email) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("email", email);
 		return super.fetchOne(SELECT_BY_EMAIL, params);

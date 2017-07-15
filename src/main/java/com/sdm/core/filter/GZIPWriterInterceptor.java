@@ -30,7 +30,7 @@ public class GZIPWriterInterceptor implements WriterInterceptor, ReaderIntercept
 	@Override
 	public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
 		String encoding = context.getHeaders().getFirst("Content-Encoding");
-		if(encoding != null && encoding.equalsIgnoreCase("gzip")) {
+		if (encoding != null && encoding.equalsIgnoreCase("gzip")) {
 			GZIPInputStream input = new GZIPInputStream(context.getInputStream());
 			context.setInputStream(input);
 		}

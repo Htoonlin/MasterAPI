@@ -34,12 +34,12 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
 	@GET
 	@Path("q")
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getNamedQueries() throws Exception;
+	public IBaseResponse getNamedQueries();
 
 	@POST
 	@Path("q/{name}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse postQuery(@PathParam("name") String queryName, Map<String, Object> params) throws Exception;
+	public IBaseResponse postQuery(@PathParam("name") String queryName, Map<String, Object> params);
 
 	@GET
 	@Path("all")
@@ -50,31 +50,31 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse getPaging(@DefaultValue("") @QueryParam("filter") String filter,
 			@DefaultValue("1") @QueryParam("page") int pageId, @DefaultValue("10") @QueryParam("size") int pageSize,
-			@DefaultValue("id:ASC") @QueryParam("sort") String sort) throws Exception;
+			@DefaultValue("id:ASC") @QueryParam("sort") String sort);
 
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getById(@PathParam("id") PK id) throws Exception;
+	public IBaseResponse getById(@PathParam("id") PK id);
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse create(T request) throws Exception;
+	public IBaseResponse create(T request);
 
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse update(T request, @PathParam("id") PK id) throws Exception;
+	public IBaseResponse update(T request, @PathParam("id") PK id);
 
 	@DELETE
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse remove(@PathParam("id") PK id) throws Exception;
+	public IBaseResponse remove(@PathParam("id") PK id);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("struct")
-	public IBaseResponse getStructure() throws Exception;
+	public IBaseResponse getStructure();
 }

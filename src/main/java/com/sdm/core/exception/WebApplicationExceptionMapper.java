@@ -15,6 +15,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import com.sdm.core.Setting;
+import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.model.MessageModel;
 
 /**
@@ -37,7 +38,8 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 			message.setTrace(debug);
 		}
 
-		return Response.status(exResponse.getStatus()).entity(message).type(MediaType.APPLICATION_JSON).build();
+		return Response.status(exResponse.getStatus()).entity(new DefaultResponse(message))
+				.type(MediaType.APPLICATION_JSON).build();
 	}
 
 }

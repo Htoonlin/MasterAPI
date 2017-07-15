@@ -16,8 +16,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.sdm.core.Setting;
+import com.sdm.core.exception.InvalidRequestException;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
 
@@ -56,10 +56,10 @@ public class SystemResource extends DefaultResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse updateAllSetting(HashMap<String, String> request) {
 		boolean isValid = true;
-		ErrorResponse errors = new ErrorResponse();
+		HashMap<String, String> errors = new HashMap<>();
 		for (String key : request.keySet()) {
 			if (key.toLowerCase().startsWith("com.sdm.path")) {
-				errors.addError(key, "Can't modified this property <" + key + ">");
+				errors.put(key, "Can't modified this property <" + key + ">");
 				isValid = false;
 				continue;
 			}
@@ -67,7 +67,7 @@ public class SystemResource extends DefaultResource {
 			Setting.getInstance().changeSetting(key.toLowerCase(), value);
 		}
 		if (!isValid) {
-			return errors;
+			throw new InvalidRequestException(errors);
 		}
 
 		Setting.getInstance().save();

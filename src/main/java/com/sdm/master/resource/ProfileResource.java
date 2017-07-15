@@ -5,8 +5,6 @@
  */
 package com.sdm.master.resource;
 
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -20,7 +18,6 @@ import org.apache.log4j.Logger;
 
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
@@ -102,11 +99,6 @@ public class ProfileResource extends DefaultResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse changePassword(ChangePasswordRequest request) throws Exception {
 		try {
-			if (!request.isValid()) {
-				Map<String, String> errors = request.getErrors();
-				return new ErrorResponse(errors);
-			}
-
 			MessageModel message = new MessageModel(202, "Changed password",
 					"We updated the new password on your request successfully.");
 

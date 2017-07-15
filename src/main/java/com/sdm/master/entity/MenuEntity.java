@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +22,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl.ConstraintType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
@@ -73,18 +76,18 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 	@Column(name = "priority", columnDefinition = "INT", nullable = false)
 	private int priority;
 
-	@UIStructure(order = 5, label = "Is separator?", inputType = "checkbox")
+	@UIStructure(order = 6, label = "Is separator?", inputType = "checkbox")
 	@Column(name = "isDivider", columnDefinition = "bit(1)", nullable = false)
 	private boolean separator;
 
-	@UIStructure(order = 6, label = "Parent Menu", inputType = "number", hideInGrid = true)
+	@UIStructure(order = 7, label = "Parent Menu", inputType = "number", hideInGrid = true)
 	@NotAudited
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "parentId", columnDefinition = "INT UNSIGNED")
+	@JoinColumn(name = "parentId", columnDefinition = "INT UNSIGNED", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
 	@NotFound(action = NotFoundAction.IGNORE)
 	private Set<MenuEntity> children;
 
-	@UIStructure(order = 7, label = "Roles", inputType = "multi-object", hideInGrid = true)
+	@UIStructure(order = 8, label = "Roles", inputType = "multi-object", hideInGrid = true)
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "tbl_menu_permission", joinColumns = {
 			@JoinColumn(name = "menuId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = {

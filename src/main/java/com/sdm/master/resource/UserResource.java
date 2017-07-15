@@ -5,6 +5,8 @@
  */
 package com.sdm.master.resource;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -15,10 +17,10 @@ import org.apache.log4j.Logger;
 
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
+import com.sdm.core.exception.InvalidRequestException;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.MessageModel;
@@ -58,48 +60,32 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 	}
 
 	@Override
-	public IBaseResponse create(UserEntity request) throws Exception {
-		try {
-			ErrorResponse errors = new ErrorResponse();
-			if (!request.isValid()) {
-				errors.setContent(request.getErrors());
-				return errors;
-			}
+	public IBaseResponse create(UserEntity request) {
+		Map<String, String> errors = new HashMap<>();
 
-			UserEntity user = userDAO.getUserByEmail(request.getEmail());
-			if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-				errors.addError("email", "Sorry! someone already registered with this email");
-				return errors;
-			}
-
-			String rawPassword = request.getPassword();
-			String password = SecurityManager.hashString(request.getEmail(), rawPassword);
-			request.setPassword(password);
-			request.setStatus('A');
-			UserEntity createdUser = userDAO.insert(request, true);
-			this.modifiedResource();
-
-			// Send Welcome mail to User
-			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-			mailSend.welcomeUser(createdUser, rawPassword);
-
-			return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
-
-		} catch (Exception e) {
-			LOG.error(e);
-			throw e;
+		UserEntity user = userDAO.getUserByEmail(request.getEmail());
+		if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+			errors.put("email", "Sorry! someone already registered with this email");
+			throw new InvalidRequestException(errors);
 		}
+
+		String rawPassword = request.getPassword();
+		String password = SecurityManager.hashString(request.getEmail(), rawPassword);
+		request.setPassword(password);
+		request.setStatus('A');
+		UserEntity createdUser = userDAO.insert(request, true);
+		this.modifiedResource();
+
+		// Send Welcome mail to User
+		AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+		mailSend.welcomeUser(createdUser, rawPassword);
+
+		return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
 	}
 
 	@Override
-	public IBaseResponse update(UserEntity request, Integer id) throws Exception {
+	public IBaseResponse update(UserEntity request, Integer id) {
 		try {
-			request.setPassword("temp-password");
-			request.setEmail("temp@temp.com");
-			if (!request.isValid()) {
-				return new ErrorResponse(request.getErrors());
-			}
-
 			UserEntity dbEntity = userDAO.fetchById(id);
 			if (dbEntity == null) {
 				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");

@@ -9,7 +9,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.process.internal.RequestScoped;
@@ -43,7 +42,6 @@ public class ApplicationConfig extends ResourceConfig {
 		LOG.info("Loading jersey features and providers");
 		register(SystemResource.class);
 		register(MultiPartFeature.class);
-		register(JacksonFeature.class);
 		register(LoggingFeature.class);
 		LOG.info("Successfully loaded jersey features and providers");
 

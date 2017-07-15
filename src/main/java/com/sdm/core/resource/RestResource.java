@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
+import javax.ws.rs.WebApplicationException;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.ErrorResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
@@ -53,22 +54,27 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse getNamedQueries() throws Exception {
+	public IBaseResponse getNamedQueries() {
 		DefaultResponse response = this.validateCache();
 		// Cache validation
 		if (response != null) {
 			return response;
 		}
 
-		T instance = getEntityClass().newInstance();
-		response = new DefaultResponse<>(instance.getQueries());
-		// Set Cache Header Info
-		response.setHeaders(this.buildCache());
-		return response;
+		try {
+			T instance = getEntityClass().newInstance();
+			response = new DefaultResponse<>(instance.getQueries());
+			// Set Cache Header Info
+			response.setHeaders(this.buildCache());
+			return response;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new WebApplicationException(e.getLocalizedMessage(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 	@Override
-	public IBaseResponse postQuery(String queryName, Map<String, Object> params) throws Exception {
+	public IBaseResponse postQuery(String queryName, Map<String, Object> params) {
 		DefaultResponse response = this.validateCache();
 		// Cache validation
 		if (response != null) {
@@ -83,7 +89,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse getAll() throws Exception {
+	public IBaseResponse getAll() {
 		DefaultResponse response = this.validateCache();
 		// Cache validation
 		if (response != null) {
@@ -103,7 +109,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse getPaging(String filter, int pageId, int pageSize, String sortString) throws Exception {
+	public IBaseResponse getPaging(String filter, int pageId, int pageSize, String sortString) {
 		DefaultResponse response = this.validateCache();
 		// Cache validation
 		if (response != null) {
@@ -131,7 +137,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse getById(PK id) throws Exception {
+	public IBaseResponse getById(PK id) {
 		DefaultResponse response = this.validateCache();
 		// Cache validation
 		if (response != null) {
@@ -149,11 +155,8 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse create(T request) throws Exception {
+	public IBaseResponse create(T request) {
 		try {
-			if (!request.isValid()) {
-				return new ErrorResponse(request.getErrors());
-			}
 			T entity = getDAO().insert(request, true);
 			this.modifiedResource();
 			return new DefaultResponse<T>(201, ResponseType.SUCCESS, entity);
@@ -164,12 +167,8 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse update(T request, PK id) throws Exception {
+	public IBaseResponse update(T request, PK id) {
 		try {
-			if (!request.isValid()) {
-				return new ErrorResponse(request.getErrors());
-			}
-
 			T dbEntity = getDAO().fetchById(id);
 			if (dbEntity == null) {
 				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
@@ -185,7 +184,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse remove(PK id) throws Exception {
+	public IBaseResponse remove(PK id) {
 		try {
 			MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 			T entity = getDAO().fetchById(id);
@@ -205,20 +204,25 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse getStructure() throws Exception {
+	public IBaseResponse getStructure() {
 		DefaultResponse response = this.validateCache();
 		// Cache validation
 		if (response != null) {
 			return response;
 		}
 
-		T instance = getEntityClass().newInstance();
-		List<UIProperty> properties = instance.getStructure();
-		ListModel<UIProperty> content = new ListModel<UIProperty>(properties);
+		try {
+			T instance = getEntityClass().newInstance();
+			List<UIProperty> properties = instance.getStructure();
+			ListModel<UIProperty> content = new ListModel<UIProperty>(properties);
 
-		response = new DefaultResponse<>(content);
-		// Cache will hold a week of entity structure
-		response.setHeaders(this.buildCache(3600 * 24 * 7));
-		return response;
+			response = new DefaultResponse<>(content);
+			// Cache will hold a week of entity structure
+			response.setHeaders(this.buildCache(3600 * 24 * 7));
+			return response;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new WebApplicationException(e.getLocalizedMessage(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		}
+
 	}
 }

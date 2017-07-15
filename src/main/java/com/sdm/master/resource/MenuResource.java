@@ -14,12 +14,12 @@ import com.sdm.master.entity.MenuEntity;
 public class MenuResource extends RestResource<MenuEntity, Long> {
 
 	private MenuDAO mainDAO;
-	
+
 	@PostConstruct
 	private void init() {
 		mainDAO = new MenuDAO(getUserId());
 	}
-	
+
 	@Override
 	protected Logger getLogger() {
 		return Logger.getLogger(MenuResource.class);
