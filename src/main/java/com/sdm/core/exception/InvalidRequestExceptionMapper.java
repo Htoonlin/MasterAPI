@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.httpclient.HttpStatus;
 
@@ -12,6 +13,7 @@ import com.sdm.core.Setting;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ResponseType;
 
+@Provider
 public class InvalidRequestExceptionMapper implements ExceptionMapper<InvalidRequestException> {
 
 	@Override

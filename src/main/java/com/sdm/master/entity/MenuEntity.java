@@ -22,7 +22,6 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl.ConstraintType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
