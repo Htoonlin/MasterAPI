@@ -45,7 +45,6 @@ public class BarCodeManager {
 				}
 			}
 		}
-
 		ImageIO.write(image, FILE_TYPE, outputFile);
 	}
 

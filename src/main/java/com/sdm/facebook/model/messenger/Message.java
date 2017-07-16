@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.util.facebook.model.messenger;
+package com.sdm.facebook.model.messenger;
 
 import java.io.Serializable;
 import java.util.ArrayList;

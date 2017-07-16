@@ -3,17 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.util.facebook;
+package com.sdm.facebook.util;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -22,12 +18,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sdm.core.Globalizer;
-import com.sdm.core.util.facebook.model.PageResponse;
-import com.sdm.core.util.facebook.model.messenger.Message;
-import com.sdm.core.util.facebook.model.messenger.Recipient;
+import com.sdm.facebook.model.PageResponse;
+import com.sdm.facebook.model.messenger.Message;
+import com.sdm.facebook.model.messenger.Recipient;
 
 /**
  *
@@ -102,15 +101,30 @@ public class MessengerManager {
 
 	public void sendJsonTemplate(String recipientId, String jsonFileURL, IFacebookListener listener) {
 		try {
-			JsonReader payload = Json.createReader(new FileReader(jsonFileURL));
-			JsonObject data = Json.createObjectBuilder()
-					.add("recipient", Json.createObjectBuilder().add("id", recipientId))
-					.add("message", Json.createObjectBuilder().add("attachment",
-							Json.createObjectBuilder().add("type", "template").add("payload", payload.readObject())))
-					.build();
-			Response response = this.postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, data.toString());
+			JSONParser parser = new JSONParser();
+			JSONObject payload = (JSONObject) parser.parse(new FileReader(jsonFileURL));
+			
+			//Build recipient
+			JSONObject recipient = new JSONObject();
+			recipient.put("id", recipientId);
+			
+			//Build Template
+			JSONObject template = new JSONObject();
+			template.put("type", "template");
+			template.put("payload", payload);
+			
+			//Build message
+			JSONObject message = new JSONObject();
+			message.put("attachment", template);
+			
+			//Build data
+			JSONObject data = new JSONObject();
+			data.put("recipient", recipient);
+			data.put("message", message);
+			
+			Response response = this.postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, data.toJSONString());
 			processResponse(response, listener);
-		} catch (FileNotFoundException ex) {
+		} catch (IOException | ParseException ex) {
 			this.sendMessage(new Recipient(recipientId), new Message("Invalid Template File."), listener);
 			LOG.error(ex);
 		}
