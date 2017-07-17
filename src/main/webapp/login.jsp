@@ -4,7 +4,12 @@
     Author     : Htoonlin
 --%>
 
+<%@page import="com.sdm.core.Setting"%>
+<%@page import="com.sdm.core.Constants"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+	final String client_id = Setting.getInstance().get(Setting.FB_API_ID);
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,6 +23,9 @@
 	crossorigin="anonymous"></script>
 <script type="text/javascript"
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	type="text/css" rel="stylesheet" />
 <link href="./css/auth.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -59,68 +67,94 @@
 						</div>
 						<div class="form-group">
 							<a href="reset-password.jsp">Forget your password?</a>
+							<div class="pull-right">
+								<div class="fb-login-button" data-max-rows="1" data-size="medium" 
+									data-button-type="continue_with" data-show-faces="false" 
+									data-scope="<%= Constants.Facebook.AUTH_SCOPE %>"
+									data-auto-logout-link="false" onlogin="facebook_login()" 
+									data-use-continue-as="true"></div>
+							</div>
 						</div>
 					</div>
 					<div class="panel-footer">
 						<button type="submit" class="btn btn-success btn-block">
-							Go to login <span class="glyphicon glyphicon-log-in"></span>
+								Go to login <span class="glyphicon glyphicon-log-in"></span>
 						</button>
 					</div>
 				</div>
 			</form>
 		</div>
 	</div>
+	<!-- Facebook login -->
+	<div id="fb-root"></div>
 	<script type="text/javascript">
-            $('document').ready(function () {
-                $('#loading-box').hide();
-            });
-            function call_api(url, method, data, callback, error) {
-                var ajax_request = {
-                    url: url,
-                    method: method,
-                    data: (data != null) ? JSON.stringify(data) : null,
-                    dataType: 'json',
-                    beforeSend: function (xhr) {
-                        $('#loading-box').show();
-                        xhr.setRequestHeader('Content-Type', 'application/json');
-                    },
-                    success: callback,
-                    error: error,
-                    complete: function () {
-                        $('#loading-box').hide();
-                    }
-                };
+		(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=<%= Constants.Facebook.API_VERSION %>&appId=<%= client_id %>";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+		
+		function facebook_login(){
+			FB.getLoginStatus(function(response){
+				console.log(response);
+			});
+		}
+	</script>
 
-                $.ajax(ajax_request);
-            }
-            $('#frmLogin').submit(function (event) {
-                event.preventDefault();
-                $("#server-message").removeClass('alert alert-danger').html('');
-                var data = {
-                    "email": $('#txtEmail').val(),
-                    "password": $('#txtPassword').val(),
-                    "device_id": navigator.userAgent,
-                    "timestamp": (new Date()).getTime()
-                };
-                call_api("api/auth/", "post", data, function (res) {
-                    window.location.href = "index.jsp";
-                }, function (res) {
-                    var json = res.responseJSON;
-                    if (json.status != 400) {
-                        $("#server-message").addClass("alert alert-danger")
-                                .html(json.content.message);
-                    } else{
-                        $.each(json.content, function (prop, value) {
-                            console.log(prop + ":" + value);
-                            if (prop === "email") {
-                                $("span#msgEmail").html(value);
-                            } else if (prop === "password") {
-                                $("span#msgPassword").html(value);
-                            }
-                        });
-                    }
-                });
-            });
-        </script>
+	<!-- Normal login -->
+	<script type="text/javascript">
+		$('document').ready(function() {
+			$('#loading-box').hide();
+		});
+		function call_api(url, method, data, callback, error) {
+			var ajax_request = {
+				url : url,
+				method : method,
+				data : (data != null) ? JSON.stringify(data) : null,
+				dataType : 'json',
+				beforeSend : function(xhr) {
+					$('#loading-box').show();
+					xhr.setRequestHeader('Content-Type', 'application/json');
+				},
+				success : callback,
+				error : error,
+				complete : function() {
+					$('#loading-box').hide();
+				}
+			};
+	
+			$.ajax(ajax_request);
+		}
+		$('#frmLogin').submit(function(event) {
+			event.preventDefault();
+			$("#server-message").removeClass('alert alert-danger').html('');
+			var data = {
+				"email" : $('#txtEmail').val(),
+				"password" : $('#txtPassword').val(),
+				"device_id" : navigator.userAgent,
+				"timestamp" : (new Date()).getTime()
+			};
+			call_api("api/auth/", "post", data, function(res) {
+				window.location.href = "index.jsp";
+			}, function(res) {
+				var json = res.responseJSON;
+				if (json.status != 400) {
+					$("#server-message").addClass("alert alert-danger")
+						.html(json.content.message);
+				} else {
+					$.each(json.content, function(prop, value) {
+						console.log(prop + ":" + value);
+						if (prop === "email") {
+							$("span#msgEmail").html(value);
+						} else if (prop === "password") {
+							$("span#msgPassword").html(value);
+						}
+					});
+				}
+			});
+		});
+	</script>
 </body>
 </html>

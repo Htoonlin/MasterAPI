@@ -11,7 +11,9 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -21,6 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -96,18 +99,6 @@ public class AuthResource extends DefaultResource {
 		return userAgent.getOperatingSystem().getName();
 	}
 
-	private String generateJWT(TokenEntity currentToken) {
-		String jwtKey = Setting.getInstance().get(Setting.JWT_KEY, SecurityManager.generateJWTKey());
-		String compactJWT = Jwts.builder().setSubject(Constants.USER_PREFIX + currentToken.getUserId())
-				.setIssuer(userAgentString).setIssuedAt(new Date()).setExpiration(currentToken.getTokenExpired())
-				.setId(currentToken.getToken()).claim("device_id", currentToken.getDeviceId())
-				.claim("device_os", currentToken.getDeviceOs()).compressWith(CompressionCodecs.DEFLATE)
-				.signWith(SignatureAlgorithm.HS512, jwtKey).compact();
-
-		getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, compactJWT);
-		return compactJWT;
-	}
-
 	private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
 		try {
 			MessageModel message = new MessageModel(401, "Invalid!",
@@ -126,7 +117,11 @@ public class AuthResource extends DefaultResource {
 					}
 					TokenEntity authToken = tokenDAO.generateToken(authUser.getId(), request.getDeviceId(),
 							this.getDeviceOS());
-					String token = this.generateJWT(authToken);
+					
+					//Generate and store JWT
+					String token = authToken.generateJWT(userAgentString);
+					getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
+					
 					authUser.setCurrentToken(token);
 					userDao.commitTransaction();
 
@@ -146,6 +141,7 @@ public class AuthResource extends DefaultResource {
 		}
 	}
 
+	@RolesAllowed("user")
 	@POST
 	@Path("clean")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -260,7 +256,11 @@ public class AuthResource extends DefaultResource {
 			userDao.update(user, false);
 			TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
 			TokenEntity authToken = tokenDAO.generateToken(user.getId(), request.getDeviceId(), this.getDeviceOS());
-			String token = generateJWT(authToken);
+			
+			//Generate and store JWT
+			String token = authToken.generateJWT(userAgentString);
+			getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
+			
 			user.setCurrentToken(token);
 			userDao.commitTransaction();
 			return new DefaultResponse<UserEntity>(user);

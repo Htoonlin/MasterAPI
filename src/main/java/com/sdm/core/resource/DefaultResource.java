@@ -53,7 +53,7 @@ public class DefaultResource implements IBaseResource {
 	private HttpSession httpSession;
 
 	@Context
-	protected Request request;
+	private Request request;
 
 	private static String eTag = UUID.randomUUID().toString();
 	private static Date lastModified = new Date();

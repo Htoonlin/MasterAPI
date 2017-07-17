@@ -79,7 +79,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	private Set<RoleEntity> roles;
 
 	@UIStructure(order = 3, label = "Password", inputType = "password")
-	@Column(name = "password", nullable = false, length = 255)
+	@Column(name = "password", columnDefinition="VARCHAR(255)", nullable = false, length = 255)
 	private String password;
 
 	@NotAudited
@@ -88,7 +88,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	private boolean online;
 
 	@UIStructure(order = 5, label = "Country")
-	@Column(name = "countryCode", nullable = false, length = 2)
+	@Column(name = "countryCode", columnDefinition="VARCHAR(10)", nullable = false, length = 10)
 	private String countryCode;
 
 	@UIStructure(order = 6, label = "Image")
@@ -98,7 +98,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	private FileEntity profileImage;
 
 	@JsonIgnore
-	@Column(name = "facebookToken", length = 255)
+	@Column(name = "facebookToken", columnDefinition="VARCHAR(255)", length = 255)
 	private String facebookToken;
 
 	@JsonIgnore
@@ -197,7 +197,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	}
 
 	@NotNull(message = "Country is required.")
-	@Size(min = 2, max = 2, message = "Invalid country code.")
+	@Size(min = 2, max = 10, message = "Invalid country code.")
 	public String getCountryCode() {
 		return this.countryCode;
 	}

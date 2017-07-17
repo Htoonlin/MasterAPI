@@ -35,6 +35,10 @@ public class UserDAO extends RestDAO {
 		super(session, UserEntity.class.getName(), userId);
 	}
 
+	public UserEntity facebookAuth(String code) {
+		return null;
+	}
+
 	public UserEntity userAuth(String email, String password) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("email", email);
