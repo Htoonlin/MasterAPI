@@ -5,39 +5,21 @@
  */
 package com.sdm.core.exception;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.sdm.core.Setting;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.model.MessageModel;
 
 /**
  *
  * @author Htoonlin
  */
 @Provider
-public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingException> {
+public class JsonMappingExceptionMapper extends DefaultExceptionMapper<JsonMappingException> {
 
 	@Override
 	public Response toResponse(JsonMappingException exception) {
-		MessageModel message = new MessageModel(400, JsonMappingException.class.getName(),
-				exception.getOriginalMessage());
-		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
-		if (env.equalsIgnoreCase("dev")) {
-			Map<String, Object> debug = new HashMap<>();
-			debug.put("StackTrace", exception.getStackTrace());
-			debug.put("Suppressed", exception.getSuppressed());
-			message.setTrace(debug);
-		}
-
-		return Response.status(400).entity(new DefaultResponse<>(message)).type(MediaType.APPLICATION_JSON).build();
+		return buildResponse(422, exception);
 	}
 
 }

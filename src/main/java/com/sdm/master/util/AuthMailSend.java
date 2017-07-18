@@ -29,17 +29,15 @@ public class AuthMailSend {
 	private final ITemplateManager templateManager;
 	private final IMailManager mailManager;
 	private final int OTP_MINUTE;
-	private final String TOKEN_CHARS;
 
 	public AuthMailSend(IMailManager mailManager, ITemplateManager templateManager) {
 		this.mailManager = mailManager;
 		this.templateManager = templateManager;
 		this.OTP_MINUTE = Setting.getInstance().getInt(Setting.OTP_LIFE, "10");
-		this.TOKEN_CHARS = Setting.getInstance().get(Setting.TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
 	}
 
 	private UserEntity setToken(UserEntity user) {
-		user.setOtpToken(Globalizer.generateToken(TOKEN_CHARS, UserEntity.TOKEN_LENGTH));
+		user.setOtpToken(Globalizer.generateToken(UserEntity.TOKEN_LENGTH));
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		cal.add(Calendar.MINUTE, this.OTP_MINUTE);

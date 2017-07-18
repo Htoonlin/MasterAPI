@@ -25,11 +25,6 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 	private ResponseType status;
 	private Map<String, Object> headers;
 
-	public DefaultResponse() {
-		this.code = 200;
-		this.status = ResponseType.SUCCESS;
-	}
-
 	public DefaultResponse(int code, ResponseType status, T content) {
 		this.code = code;
 		this.status = status;
@@ -37,8 +32,29 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 	}
 
 	public DefaultResponse(T content) {
-		this();
+		// Get Code from message model
+		this.code = 200;
+		this.status = ResponseType.UNKNOWN;
 		this.content = content;
+
+		if (content instanceof MessageModel) {
+			MessageModel message = (MessageModel) this.content;
+			if (message.getCode() != 204) {
+				this.code = message.getCode();
+			}
+
+			// Define status on code.
+			if (this.code >= 100 && this.code < 200) {
+				this.status = ResponseType.INFO;
+			} else if (this.code >= 200 && this.code < 300) {
+				this.status = ResponseType.SUCCESS;
+			} else if (this.code >= 400 && this.code < 500) {
+				this.status = ResponseType.CLIENT_ERROR;
+			} else if (this.code >= 500 && this.code < 600) {
+				this.status = ResponseType.CLIENT_ERROR;
+			}
+		}
+
 	}
 
 	private T content;
@@ -54,11 +70,6 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 
 	@Override
 	public int getCode() {
-		if (content instanceof MessageModel) {
-			MessageModel message = (MessageModel) this.content;
-			if (message.getCode() != 204)
-				return message.getCode();
-		}
 		return code;
 	}
 

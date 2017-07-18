@@ -5,39 +5,21 @@
  */
 package com.sdm.core.exception;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.hibernate.HibernateException;
-
-import com.sdm.core.Setting;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.model.MessageModel;
 
 /**
  *
  * @author Htoonlin
  */
 @Provider
-public class HibernateExceptionMapper implements ExceptionMapper<HibernateException> {
+public class HibernateExceptionMapper extends DefaultExceptionMapper<HibernateException> {
 
 	@Override
 	public Response toResponse(HibernateException exception) {
-		MessageModel message = new MessageModel(500, HibernateException.class.getName(), exception.getMessage());
-		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
-		if (env.equalsIgnoreCase("dev")) {
-			Map<String, Object> debug = new HashMap<>();
-			debug.put("StackTrace", exception.getStackTrace());
-			debug.put("Suppressed", exception.getSuppressed());
-			message.setTrace(debug);
-		}
-
-		return Response.serverError().entity(new DefaultResponse<>(message)).type(MediaType.APPLICATION_JSON).build();
+		return buildResponse(500, exception);
 	}
 
 }

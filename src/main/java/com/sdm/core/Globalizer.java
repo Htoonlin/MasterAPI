@@ -91,6 +91,11 @@ public class Globalizer {
 		return checkDate.after(new Date());
 	}
 
+	public static String generateToken(int length) {
+		String chars = Setting.getInstance().get(Setting.TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+		return generateToken(chars, length);
+	}
+
 	public static String generateToken(String chars, int length) {
 		SecureRandom rnd = new SecureRandom();
 		StringBuilder pass = new StringBuilder();

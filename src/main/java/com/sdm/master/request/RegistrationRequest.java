@@ -35,7 +35,7 @@ public class RegistrationRequest implements IBaseRequest {
 	private String password;
 
 	private String country;
-	
+
 	private Date timestamp;
 
 	@NotNull(message = "Display name is required.")
@@ -88,7 +88,7 @@ public class RegistrationRequest implements IBaseRequest {
 	public void setTimestamp(long date) {
 		this.timestamp = new Date(date);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

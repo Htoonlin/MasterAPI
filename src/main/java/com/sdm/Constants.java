@@ -1,4 +1,4 @@
-package com.sdm.core;
+package com.sdm;
 
 /**
  * Global constants data.
@@ -7,17 +7,17 @@ package com.sdm.core;
  *
  */
 public interface Constants {
-	
+
 	/**
 	 * Facebook Constants
 	 */
-	
-	public interface Facebook{
+
+	public interface Facebook {
 		String API_VERSION = "v2.9";
 		String GRAPH_API = "https://graph.facebook.com/";
 		String AUTH_SCOPE = "email,public_profile";
 	}
-	
+
 	/**
 	 * Regex Patterns
 	 * 
@@ -229,7 +229,7 @@ public interface Constants {
 		 * Mailgun default mail sender.
 		 */
 		String MAILGUN_DEFAULT_MAIL = "com.sdm.mailgun.default_mail";
-		
+
 		/**
 		 * Facebook api_id for OAuth
 		 */

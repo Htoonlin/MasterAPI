@@ -5,7 +5,7 @@
 --%>
 
 <%@page import="com.sdm.core.Setting"%>
-<%@page import="com.sdm.core.Constants"%>
+<%@page import="com.sdm.Constants"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
 	final String client_id = Setting.getInstance().get(Setting.FB_API_ID);
@@ -85,26 +85,18 @@
 			</form>
 		</div>
 	</div>
-	<!-- Facebook login -->
-	<div id="fb-root"></div>
+	
+	<!-- Login process -->
 	<script type="text/javascript">
+		//Facebook Init
 		(function(d, s, id) {
-		  var js, fjs = d.getElementsByTagName(s)[0];
-		  if (d.getElementById(id)) return;
-		  js = d.createElement(s); js.id = id;
-		  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=<%= Constants.Facebook.API_VERSION %>&appId=<%= client_id %>";
-		  fjs.parentNode.insertBefore(js, fjs);
+			  var js, fjs = d.getElementsByTagName(s)[0];
+			  if (d.getElementById(id)) return;
+			  js = d.createElement(s); js.id = id;
+			  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=<%= Constants.Facebook.API_VERSION %>&appId=<%= client_id %>";
+			  fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
-		
-		function facebook_login(){
-			FB.getLoginStatus(function(response){
-				console.log(response);
-			});
-		}
-	</script>
-
-	<!-- Normal login -->
-	<script type="text/javascript">
+	
 		$('document').ready(function() {
 			$('#loading-box').hide();
 		});
@@ -127,6 +119,29 @@
 	
 			$.ajax(ajax_request);
 		}
+			
+		//Facebook Login
+		function facebook_login(){
+			FB.getLoginStatus(function(response){
+				console.log(response);
+				if(response.status === "connected" && response.authResponse.accessToken){
+					var data = {
+						"access_token": response.authResponse.accessToken,
+						"device_id": navigator.userAgent,
+						"timestamp": (new Date()).getTime()
+					};
+					
+					call_api("api/auth/facebook/", "post", data, function(res) {
+						window.location.href = "index.jsp";
+					}, function(res) {
+						var json = res.responseJSON;
+						$("#server-message").addClass("alert alert-danger").html(json.content.message);
+					});
+				}
+			});
+		}
+		
+		//Email Auth
 		$('#frmLogin').submit(function(event) {
 			event.preventDefault();
 			$("#server-message").removeClass('alert alert-danger').html('');

@@ -8,7 +8,7 @@ package com.sdm.core.util;
 import java.io.File;
 import java.util.Date;
 
-import com.sdm.core.Constants;
+import com.sdm.Constants;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 
@@ -52,9 +52,7 @@ public class FileManager {
 	 */
 
 	public static String generateToken() {
-		return Globalizer.generateToken(
-				Setting.getInstance().get(Setting.TOKEN_CHARS, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 10) + "-"
-				+ Globalizer.getDateString("yyyyMMddHHmmss", new Date());
+		return Globalizer.generateToken(10) + "-" + Globalizer.getDateString("yyyyMMddHHmmss", new Date());
 	}
 
 	public static File generateFile(int userId, String token, String ext) {

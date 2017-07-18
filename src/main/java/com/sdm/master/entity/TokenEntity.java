@@ -16,7 +16,7 @@ import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.sdm.core.Constants;
+import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.hibernate.entity.UIStructure;
@@ -80,16 +80,15 @@ public class TokenEntity extends DefaultEntity implements Serializable {
 		this.lastLogin = lastLogin;
 		this.tokenExpired = tokenExpired;
 	}
-	
+
 	@JsonIgnore
 	public String generateJWT(String userAgent) {
 		String jwtKey = Setting.getInstance().get(Setting.JWT_KEY, SecurityManager.generateJWTKey());
-		String compactJWT = Jwts.builder().setSubject(Constants.USER_PREFIX + this.userId)
-				.setIssuer(userAgent).setIssuedAt(new Date()).setExpiration(this.tokenExpired)
-				.setId(this.token).claim("device_id", this.deviceId)
-				.claim("device_os", this.deviceOs).compressWith(CompressionCodecs.DEFLATE)
-				.signWith(SignatureAlgorithm.HS512, jwtKey).compact();
-		
+		String compactJWT = Jwts.builder().setSubject(Constants.USER_PREFIX + this.userId).setIssuer(userAgent)
+				.setIssuedAt(new Date()).setExpiration(this.tokenExpired).setId(this.token)
+				.claim("device_id", this.deviceId).claim("device_os", this.deviceOs)
+				.compressWith(CompressionCodecs.DEFLATE).signWith(SignatureAlgorithm.HS512, jwtKey).compact();
+
 		return compactJWT;
 	}
 

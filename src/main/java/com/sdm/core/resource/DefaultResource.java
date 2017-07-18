@@ -29,7 +29,7 @@ import org.glassfish.jersey.server.model.Invocable;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.ResourceMethod;
 
-import com.sdm.core.Constants;
+import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;

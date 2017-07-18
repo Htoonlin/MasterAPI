@@ -19,6 +19,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.log4j.Logger;
 
+import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 
 import io.jsonwebtoken.impl.crypto.MacProvider;
@@ -67,6 +68,14 @@ public class SecurityManager {
 		}
 
 		return base64Encode(salt + input + systemSalt);
+	}
+
+	public static String randomPassword(int length) {
+		String passwordChars = "ABCDEFGHIJKLMNOPQRSTUVWHZ";
+		passwordChars += passwordChars.toLowerCase();
+		passwordChars += "0123456789";
+		passwordChars += "!@#$%^&*()_+-=";
+		return Globalizer.generateToken(passwordChars, length);
 	}
 
 	public static String base64Encode(String normal) {

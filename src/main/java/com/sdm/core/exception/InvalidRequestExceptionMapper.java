@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -14,7 +13,7 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.ResponseType;
 
 @Provider
-public class InvalidRequestExceptionMapper implements ExceptionMapper<InvalidRequestException> {
+public class InvalidRequestExceptionMapper extends DefaultExceptionMapper<InvalidRequestException> {
 
 	@Override
 	public Response toResponse(InvalidRequestException exception) {
@@ -26,8 +25,8 @@ public class InvalidRequestExceptionMapper implements ExceptionMapper<InvalidReq
 			content.put("StackTrace", exception.getStackTrace());
 			content.put("Suppressed", exception.getSuppressed());
 		}
-		DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.WARNING, content);
 
+		DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.EXCEPTION, content);
 		return Response.status(HttpStatus.SC_BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON).build();
 	}
 

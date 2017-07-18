@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import com.sdm.Constants;
 import com.sdm.core.util.SecurityManager;
 
 /**

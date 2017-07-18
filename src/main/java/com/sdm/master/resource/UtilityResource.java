@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.httpclient.HttpStatus;
 
 import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
@@ -54,8 +53,7 @@ public class UtilityResource extends DefaultResource {
 	@Path("strRandom/{len}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse generateRandomString(@DefaultValue("10") @PathParam("len") int length) throws Exception {
-		return new DefaultResponse<String>(
-				Globalizer.generateToken(Setting.getInstance().get(Setting.TOKEN_CHARS, "abc"), length));
+		return new DefaultResponse<String>(Globalizer.generateToken(length));
 	}
 
 	@PermitAll

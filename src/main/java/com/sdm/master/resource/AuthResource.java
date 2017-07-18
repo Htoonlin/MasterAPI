@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -23,13 +22,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import com.sdm.core.Constants;
+import com.sdm.Constants;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
@@ -40,6 +38,8 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
+import com.sdm.facebook.response.User;
+import com.sdm.facebook.util.GraphManager;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.TokenEntity;
@@ -47,13 +47,11 @@ import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.ActivateRequest;
 import com.sdm.master.request.AuthRequest;
 import com.sdm.master.request.ChangePasswordRequest;
+import com.sdm.master.request.FacebookAuthRequest;
 import com.sdm.master.request.RegistrationRequest;
 import com.sdm.master.util.AuthMailSend;
 
 import eu.bitwalker.useragentutils.UserAgent;
-import io.jsonwebtoken.CompressionCodecs;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 /**
  * REST Web Service
@@ -117,11 +115,11 @@ public class AuthResource extends DefaultResource {
 					}
 					TokenEntity authToken = tokenDAO.generateToken(authUser.getId(), request.getDeviceId(),
 							this.getDeviceOS());
-					
-					//Generate and store JWT
+
+					// Generate and store JWT
 					String token = authToken.generateJWT(userAgentString);
 					getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
-					
+
 					authUser.setCurrentToken(token);
 					userDao.commitTransaction();
 
@@ -148,6 +146,55 @@ public class AuthResource extends DefaultResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse cleanToken(AuthRequest request) throws Exception {
 		return this.authProcess(request, true);
+	}
+
+	@PermitAll
+	@POST
+	@Path("facebook")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public IBaseResponse facebookAuth(FacebookAuthRequest request) throws Exception {
+
+		// Validate failed count
+		int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
+		if (getFailed() >= limit) {
+			MessageModel message = new MessageModel(401, "Blocked!",
+					"Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
+			return new DefaultResponse<>(message);
+		}
+
+		GraphManager manager = new GraphManager(request.getAccessToken());
+		User facebookUser = manager.setPath("me").addQuery("fields", "id, name, email, locale").getRequest(User.class);
+
+		try {
+			userDao.beginTransaction();
+			UserEntity userEntity = userDao.userAuthByFacebook(facebookUser.getId());
+			if (userEntity == null) {
+				userEntity = userDao.facebookMigrate(facebookUser, false);
+			} else if (!userEntity.getFacebookId().equals(facebookUser.getId())) {
+				// Increase failed count
+				getHttpSession().setAttribute(Constants.SessionKey.FAILED_COUNT, getFailed() + 1);
+				MessageModel message = new MessageModel(401, "Invalid!",
+						"Opp! Request email or password is something wrong");
+				return new DefaultResponse<>(message);
+			}
+
+			TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
+			TokenEntity authToken = tokenDAO.generateToken(userEntity.getId(), request.getDeviceId(),
+					this.getDeviceOS());
+
+			// Generate and store JWT
+			String token = authToken.generateJWT(userAgentString);
+			getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
+
+			userEntity.setCurrentToken(token);
+			userDao.commitTransaction();
+			return new DefaultResponse<UserEntity>(userEntity);
+		} catch (Exception ex) {
+			LOG.error(ex);
+			userDao.rollbackTransaction();
+			throw ex;
+		}
 	}
 
 	@PermitAll
@@ -256,11 +303,11 @@ public class AuthResource extends DefaultResource {
 			userDao.update(user, false);
 			TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
 			TokenEntity authToken = tokenDAO.generateToken(user.getId(), request.getDeviceId(), this.getDeviceOS());
-			
-			//Generate and store JWT
+
+			// Generate and store JWT
 			String token = authToken.generateJWT(userAgentString);
 			getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
-			
+
 			user.setCurrentToken(token);
 			userDao.commitTransaction();
 			return new DefaultResponse<UserEntity>(user);

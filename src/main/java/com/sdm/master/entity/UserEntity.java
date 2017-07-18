@@ -79,7 +79,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	private Set<RoleEntity> roles;
 
 	@UIStructure(order = 3, label = "Password", inputType = "password")
-	@Column(name = "password", columnDefinition="VARCHAR(255)", nullable = false, length = 255)
+	@Column(name = "password", columnDefinition = "VARCHAR(255)", nullable = false, length = 255)
 	private String password;
 
 	@NotAudited
@@ -88,7 +88,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	private boolean online;
 
 	@UIStructure(order = 5, label = "Country")
-	@Column(name = "countryCode", columnDefinition="VARCHAR(10)", nullable = false, length = 10)
+	@Column(name = "countryCode", columnDefinition = "VARCHAR(10)", nullable = false, length = 10)
 	private String countryCode;
 
 	@UIStructure(order = 6, label = "Image")
@@ -97,9 +97,8 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	@NotFound(action = NotFoundAction.IGNORE)
 	private FileEntity profileImage;
 
-	@JsonIgnore
-	@Column(name = "facebookToken", columnDefinition="VARCHAR(255)", length = 255)
-	private String facebookToken;
+	@Column(name = "facebookId", columnDefinition = "VARCHAR(255)", unique = true, nullable = true, length = 255)
+	private String facebookId;
 
 	@JsonIgnore
 	@Column(name = "otpToken", length = TOKEN_LENGTH)
@@ -214,12 +213,12 @@ public class UserEntity extends DefaultEntity implements Serializable {
 		this.profileImage = profileImage;
 	}
 
-	public String getFacebookToken() {
-		return this.facebookToken;
+	public String getFacebookId() {
+		return facebookId;
 	}
 
-	public void setFacebookToken(String facebookToken) {
-		this.facebookToken = facebookToken;
+	public void setFacebookId(String facebookID) {
+		this.facebookId = facebookID;
 	}
 
 	public String getOtpToken() {

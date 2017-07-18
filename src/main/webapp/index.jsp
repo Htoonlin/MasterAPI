@@ -5,7 +5,7 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.sdm.core.Globalizer"%>
-<%@page import="com.sdm.core.Constants"%>
+<%@page import="com.sdm.Constants"%>
 <%
 	String accessToken = "";
 	try {

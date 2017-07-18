@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 
-import com.sdm.core.Constants;
+import com.sdm.Constants;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 

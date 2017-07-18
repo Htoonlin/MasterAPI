@@ -103,25 +103,25 @@ public class MessengerManager {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject payload = (JSONObject) parser.parse(new FileReader(jsonFileURL));
-			
-			//Build recipient
+
+			// Build recipient
 			JSONObject recipient = new JSONObject();
 			recipient.put("id", recipientId);
-			
-			//Build Template
+
+			// Build Template
 			JSONObject template = new JSONObject();
 			template.put("type", "template");
 			template.put("payload", payload);
-			
-			//Build message
+
+			// Build message
 			JSONObject message = new JSONObject();
 			message.put("attachment", template);
-			
-			//Build data
+
+			// Build data
 			JSONObject data = new JSONObject();
 			data.put("recipient", recipient);
 			data.put("message", message);
-			
+
 			Response response = this.postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, data.toJSONString());
 			processResponse(response, listener);
 		} catch (IOException | ParseException ex) {

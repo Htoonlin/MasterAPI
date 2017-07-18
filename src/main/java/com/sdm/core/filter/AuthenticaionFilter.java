@@ -28,7 +28,7 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 
-import com.sdm.core.Constants;
+import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.response.model.MessageModel;

@@ -38,28 +38,28 @@ public class JsonProvider<I extends IBaseRequest, O extends IBaseResponse>
 
 	private Map<String, String> validateRequest(Class<I> reqClass, I request) {
 		Map<String, String> errors = new HashMap<>();
-		
-		//Timestamp validation
+
+		// Timestamp validation
 		String env = Setting.getInstance().get(Setting.SYSTEM_ENV, "beta");
 		if (!env.equalsIgnoreCase("dev")) {
 			if (request.getTimestamp() == null || !Globalizer.validTimeStamp(request.getTimestamp())) {
-				errors.put("timestamp", "Invalid timestamp.");				
+				errors.put("timestamp", "Invalid timestamp.");
 			}
 		}
-		
-		//Hibernate bean validation
+
+		// Hibernate bean validation
 		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 		Set<ConstraintViolation<I>> violoationSet = validator.validate(request);
 		for (ConstraintViolation<I> v : violoationSet) {
 			String propertyName = Globalizer.camelToLowerUnderScore(v.getPropertyPath().toString());
 			errors.put(propertyName, v.getMessage());
 		}
-		
-		//Validate DB input
-		for(Field field : reqClass.getDeclaredFields()) {
+
+		// Validate DB input
+		for (Field field : reqClass.getDeclaredFields()) {
 			Column column = field.getAnnotation(Column.class);
-			if(column != null) {
-				//Need to develop DB validation here
+			if (column != null) {
+				// Need to develop DB validation here
 			}
 		}
 

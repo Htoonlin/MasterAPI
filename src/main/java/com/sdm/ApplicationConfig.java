@@ -5,6 +5,7 @@
  */
 package com.sdm;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -30,13 +31,15 @@ import com.sdm.master.util.AccessService;
  * @author Htoonlin
  */
 @javax.ws.rs.ApplicationPath("api")
+@MultipartConfig(maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50, fileSizeThreshold = 1024 * 1024)
 public class ApplicationConfig extends ResourceConfig {
 
 	private static final Logger LOG = Logger.getLogger(ApplicationConfig.class.getName());
 
 	public ApplicationConfig() {
 		LOG.info("Loading packages");
-		packages("com.sdm.core.exception", "com.sdm.core.filter", "com.sdm.master.resource", "com.sdm.sample.resource");
+		packages("com.sdm.core.exception", "com.sdm.core.filter", "com.sdm.master.resource",
+				"com.sdm.facebook.resource", "com.sdm.sample.resource");
 		LOG.info("Successfully loaded packages.");
 
 		LOG.info("Loading jersey features and providers");

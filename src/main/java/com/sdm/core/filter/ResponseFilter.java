@@ -42,10 +42,11 @@ public class ResponseFilter implements ContainerResponseFilter {
 			}
 
 			// Skip Http staus code 204 to 200 because 204 can't response any data.
-			if (baseEntity.getCode() == 204) {
+			int httpStatus = baseEntity.getCode();
+			if (httpStatus == 204) {
 				responseContext.setStatus(200);
 			} else {
-				responseContext.setStatus(baseEntity.getCode());
+				responseContext.setStatus(httpStatus);
 			}
 		}
 
