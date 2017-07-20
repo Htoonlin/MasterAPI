@@ -2,9 +2,14 @@ package com.sdm.master.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,6 +19,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -27,7 +34,6 @@ import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -76,7 +82,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
 			@JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = {
 					@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED") })
 	@NotFound(action = NotFoundAction.IGNORE)
-	private Set<RoleEntity> roles;
+	private Set<RoleEntity> roles = new HashSet<>();
 
 	@UIStructure(order = 3, label = "Password", inputType = "password")
 	@Column(name = "password", columnDefinition = "VARCHAR(255)", nullable = false, length = 255)
@@ -86,10 +92,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	@UIStructure(order = 4, label = "Is online?")
 	@Column(name = "isOnline", nullable = false)
 	private boolean online;
-
-	@UIStructure(order = 5, label = "Country")
-	@Column(name = "countryCode", columnDefinition = "VARCHAR(10)", nullable = false, length = 10)
-	private String countryCode;
 
 	@UIStructure(order = 6, label = "Image")
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -109,6 +111,13 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	@Column(name = "otpExpired", length = 19)
 	private Date otpExpired;
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	@OrderColumn(name = "name")
+	@CollectionTable(name = "tbl_user_extra", joinColumns = @JoinColumn(name = "userId"))
+	@Column(name = "value", nullable = false, columnDefinition = "VARCHAR(500)", length = 500)
+	@MapKeyColumn(name = "name", nullable = false, columnDefinition = "VARCHAR(255)", length = 255)
+	private Map<String, String> extra = new HashMap<>();
+
 	@UIStructure(order = 7, label = "Status")
 	@Column(name = "status", nullable = false, length = 1)
 	private char status;
@@ -120,13 +129,11 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	public UserEntity() {
 	}
 
-	public UserEntity(String email, String displayName, String password, boolean online, String countryCode,
-			char status) {
+	public UserEntity(String email, String displayName, String password, boolean online, char status) {
 		this.email = email;
 		this.displayName = displayName;
 		this.password = password;
 		this.online = online;
-		this.countryCode = countryCode;
 		this.status = status;
 	}
 
@@ -147,7 +154,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	}
 
 	@Email(message = "Ivalid email format.")
-	@NotBlank(message = "Email can't be blank.")
 	@Size(min = 6, max = 255)
 	public String getEmail() {
 		return this.email;
@@ -176,7 +182,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
 	}
 
 	@JsonIgnore
-	@NotNull(message = "Password is required.")
 	@Size(min = 6, max = 255)
 	public String getPassword() {
 		return this.password;
@@ -193,16 +198,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
 	public void setOnline(boolean online) {
 		this.online = online;
-	}
-
-	@NotNull(message = "Country is required.")
-	@Size(min = 2, max = 10, message = "Invalid country code.")
-	public String getCountryCode() {
-		return this.countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
 	}
 
 	public FileEntity getProfileImage() {
@@ -243,6 +238,21 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
 	public void setStatus(char status) {
 		this.status = status;
+	}
+
+	public Map<String, String> getExtra() {
+		return extra;
+	}
+
+	public void setExtra(Map<String, String> extra) {
+		this.extra = extra;
+	}
+
+	public void addExtra(String key, String value) {
+		if (this.extra == null) {
+			this.extra = new HashMap<>();
+		}
+		this.extra.put(key, value);
 	}
 
 	public String getCurrentToken() {

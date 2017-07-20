@@ -7,6 +7,7 @@ package com.sdm.master.resource;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -66,7 +67,7 @@ public class ProfileResource extends DefaultResource {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public IBaseResponse setProfile(UserEntity request) throws Exception {
+	public IBaseResponse setProfile(@Valid UserEntity request) throws Exception {
 		try {
 			UserEntity currentUser = userDAO.fetchById(getUserId());
 			if (currentUser == null) {
@@ -75,15 +76,10 @@ public class ProfileResource extends DefaultResource {
 				return new DefaultResponse<>(message);
 			}
 			request.setPassword(currentUser.getPassword());
+			request.setEmail(currentUser.getEmail());
+			request.setFacebookId(currentUser.getFacebookId());
 
-			/*
-			 * if (!request.isValid()) { return new ErrorResponse(request.getErrors()); }
-			 */
-			currentUser.setDisplayName(request.getDisplayName());
-			currentUser.setOnline(request.isOnline());
-			currentUser.setCountryCode(request.getCountryCode());
-			currentUser.setProfileImage(request.getProfileImage());
-			currentUser = userDAO.update(currentUser, true);
+			currentUser = userDAO.update(request, true);
 			this.modifiedResource();
 			return new DefaultResponse<UserEntity>(currentUser);
 		} catch (Exception e) {

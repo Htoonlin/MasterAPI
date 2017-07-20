@@ -48,7 +48,7 @@ public class UserDAO extends RestDAO {
 			userEntity.setDisplayName(facebookUser.getName());
 			userEntity.setEmail(facebookUser.getEmail());
 			userEntity.setPassword(SecurityManager.hashString(facebookUser.getEmail(), randomPassword));
-			userEntity.setCountryCode(facebookUser.getLocale());
+			userEntity.addExtra("locale", facebookUser.getLocale());
 			userEntity.setStatus(UserEntity.ACTIVE);
 			return this.insert(userEntity, autoCommit);
 		} else {

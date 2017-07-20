@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -153,7 +154,7 @@ public class AuthResource extends DefaultResource {
 	@Path("facebook")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public IBaseResponse facebookAuth(FacebookAuthRequest request) throws Exception {
+	public IBaseResponse facebookAuth(@Valid FacebookAuthRequest request) throws Exception {
 
 		// Validate failed count
 		int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
@@ -201,7 +202,7 @@ public class AuthResource extends DefaultResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse authWithEmail(AuthRequest request, @HeaderParam("user-agent") String userAgent)
+	public IBaseResponse authWithEmail(@Valid AuthRequest request, @HeaderParam("user-agent") String userAgent)
 			throws Exception {
 		return this.authProcess(request, false);
 	}
@@ -211,23 +212,25 @@ public class AuthResource extends DefaultResource {
 	@Path("register")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse userRegistration(RegistrationRequest request) throws Exception {
+	public IBaseResponse userRegistration(@Valid RegistrationRequest request) throws Exception {
 		try {
-			Map<String, String> errors = new HashMap<>();
+			InvalidRequestException invalidRequest = new InvalidRequestException();
 
 			if (!mailManager.checkMail(request.getEmail())) {
-				errors.put("email", "Requested email is not valid");
-				throw new InvalidRequestException(errors);
+				invalidRequest.addError("email", "Requested email is not valid", request.getEmail());
 			}
 
 			UserEntity user = userDao.getUserByEmail(request.getEmail());
 			if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-				errors.put("email", "Sorry! someone already registered with this email");
-				throw new InvalidRequestException(errors);
+				invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
 			}
+			
+			if(invalidRequest.getErrors().size() > 0) {
+				throw invalidRequest;
+			}
+			
 			String password = SecurityManager.hashString(request.getEmail(), request.getPassword());
-			user = new UserEntity(request.getEmail(), request.getDisplayName(), password, true, request.getCountry(),
-					UserEntity.PENDING);
+			user = new UserEntity(request.getEmail(), request.getDisplayName(), password, true, UserEntity.PENDING);
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
 			mailSend.activateLink(user, userAgentString);
 			userDao.insert(user, true);
@@ -279,7 +282,7 @@ public class AuthResource extends DefaultResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse otpActivation(ActivateRequest request) throws Exception {
+	public IBaseResponse otpActivation(@Valid ActivateRequest request) throws Exception {
 		try {
 			UserEntity user = userDao.checkToken(request.getEmail(), request.getToken());
 			if (user == null) {
@@ -323,7 +326,7 @@ public class AuthResource extends DefaultResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse resetPassword(ChangePasswordRequest request) throws Exception {
+	public IBaseResponse resetPassword(@Valid ChangePasswordRequest request) throws Exception {
 		try {
 			MessageModel message = new MessageModel(400, "Invalid!", "Sorry! Requested token is invalid or expired.");
 			String token = request.getToken();

@@ -1,9 +1,10 @@
 package com.sdm.core.exception;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
+
+import com.sdm.core.response.model.ErrorModel;
 
 public class InvalidRequestException extends WebApplicationException {
 
@@ -12,25 +13,32 @@ public class InvalidRequestException extends WebApplicationException {
 	 */
 	private static final long serialVersionUID = -1809767050392811636L;
 
-	private Map<String, String> errors;
+	private HashMap<String, ErrorModel> errors;
 
-	public InvalidRequestException(Map<String, String> errors) {
-		super();
+	public InvalidRequestException() {
+		this.errors = new HashMap<>();
+	}
+	
+	public InvalidRequestException(HashMap<String, ErrorModel> errors) {
 		this.errors = errors;
 	}
 
-	public Map<String, String> getErrors() {
+	public HashMap<String, ErrorModel> getErrors() {
 		return errors;
 	}
 
-	public void addError(String property, String value) {
+	public void addError(String property, String message, Object value) {
+		this.errors.put(property, new ErrorModel(message, value));
+	}
+	
+	public void addError(String property, ErrorModel value) {
 		if (this.errors == null) {
 			this.errors = new HashMap<>();
 		}
 		this.errors.put(property, value);
 	}
 
-	public void setErrors(Map<String, String> errors) {
+	public void setErrors(HashMap<String, ErrorModel> errors) {
 		this.errors = errors;
 	}
 }

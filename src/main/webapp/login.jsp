@@ -160,11 +160,10 @@
 						.html(json.content.message);
 				} else {
 					$.each(json.content, function(prop, value) {
-						console.log(prop + ":" + value);
 						if (prop === "email") {
-							$("span#msgEmail").html(value);
+							$("span#msgEmail").html(value.message);
 						} else if (prop === "password") {
-							$("span#msgPassword").html(value);
+							$("span#msgPassword").html(value.message);
 						}
 					});
 				}

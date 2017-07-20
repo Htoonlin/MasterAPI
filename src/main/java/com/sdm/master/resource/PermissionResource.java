@@ -8,6 +8,7 @@ package com.sdm.master.resource;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -54,7 +55,7 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
 	@Path("/multi")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public IBaseResponse multiPermissions(List<PermissionEntity> permissionList) throws Exception {
+	public IBaseResponse multiPermissions(@Valid List<PermissionEntity> permissionList) throws Exception {
 		try {
 			mainDAO.beginTransaction();
 			for (PermissionEntity permission : permissionList) {

@@ -46,10 +46,10 @@ import io.jsonwebtoken.UnsupportedJwtException;
  * @author Htoonlin
  */
 @Provider
-@Priority(Priorities.AUTHENTICATION)
-public class AuthenticaionFilter implements ContainerRequestFilter {
+@Priority(Priorities.AUTHORIZATION)
+public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
-	private static final Logger LOG = Logger.getLogger(AuthenticaionFilter.class);
+	private static final Logger LOG = Logger.getLogger(AuthorizationRequestFilter.class);
 
 	@Context
 	private ResourceInfo resourceInfo;

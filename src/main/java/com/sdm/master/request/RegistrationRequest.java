@@ -7,7 +7,6 @@ package com.sdm.master.request;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
@@ -34,11 +33,9 @@ public class RegistrationRequest implements IBaseRequest {
 
 	private String password;
 
-	private String country;
-
 	private Date timestamp;
 
-	@NotNull(message = "Display name is required.")
+	@NotBlank(message = "Display name is required.")
 	@Size(min = 1, max = 255)
 	public String getDisplayName() {
 		return this.displayName;
@@ -59,7 +56,7 @@ public class RegistrationRequest implements IBaseRequest {
 		this.email = value;
 	}
 
-	@NotNull(message = "Password is required.")
+	@NotBlank(message = "Password is required.")
 	@Size(min = 6, max = 255)
 	public String getPassword() {
 		return this.password;
@@ -67,16 +64,6 @@ public class RegistrationRequest implements IBaseRequest {
 
 	public void setPassword(String value) {
 		this.password = value;
-	}
-
-	@NotNull(message = "Country is required.")
-	@Size(min = 2, max = 2, message = "Invalid country code.")
-	public String getCountry() {
-		return this.country;
-	}
-
-	public void setCountry(String value) {
-		this.country = value;
 	}
 
 	@Override

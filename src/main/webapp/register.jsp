@@ -105,7 +105,6 @@
                     "display_name": $('#txtFullName').val(),
                     "email": $('#txtEmail').val(),
                     "password": $('#txtPassword').val(),
-                    "country": "MM",
                     "timestamp": (new Date()).getTime()
                 };
                 call_api("api/auth/register/", "post", data, function (res) {
@@ -118,13 +117,12 @@
                                 .html('<strong>' + json.status + '</strong>' + json.content.message);
                     } else {
                         $.each(json.content, function (prop, value) {
-                            console.log(prop + ":" + value);
                             if (prop === "display_name") {
-                                $("span#msgName").html(value);
+                                $("span#msgName").html(value.message);
                             } else if (prop === "email") {
-                                $("span#msgEmail").html(value);
+                                $("span#msgEmail").html(value.message);
                             } else if (prop === "password") {
-                                $("span#msgPassword").html(value);
+                                $("span#msgPassword").html(value.message);
                             }
                         });
                     }

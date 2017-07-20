@@ -8,6 +8,7 @@ package com.sdm.core.resource;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -60,13 +61,13 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse create(T request);
+	public IBaseResponse create(@Valid T request);
 
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse update(T request, @PathParam("id") PK id);
+	public IBaseResponse update(@Valid T request, @PathParam("id") PK id);
 
 	@DELETE
 	@Path("{id}")

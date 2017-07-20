@@ -55,19 +55,17 @@ public class SystemResource extends DefaultResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse updateAllSetting(HashMap<String, String> request) {
-		boolean isValid = true;
-		HashMap<String, String> errors = new HashMap<>();
+		InvalidRequestException invalidRequest = new InvalidRequestException();
 		for (String key : request.keySet()) {
+			String value = request.get(key);
 			if (key.toLowerCase().startsWith("com.sdm.path")) {
-				errors.put(key, "Can't modified this property <" + key + ">");
-				isValid = false;
+				invalidRequest.addError(key, "Can't modified this property <" + key + ">", value);
 				continue;
 			}
-			String value = request.get(key);
 			Setting.getInstance().changeSetting(key.toLowerCase(), value);
 		}
-		if (!isValid) {
-			throw new InvalidRequestException(errors);
+		if (invalidRequest.getErrors().size() > 0) {
+			throw invalidRequest;
 		}
 
 		Setting.getInstance().save();

@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -15,7 +17,8 @@ import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
 @Provider
-public class GZIPWriterInterceptor implements WriterInterceptor, ReaderInterceptor {
+@Priority(Priorities.ENTITY_CODER)
+public class GZIPInterceptor implements WriterInterceptor, ReaderInterceptor {
 
 	@Override
 	public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {

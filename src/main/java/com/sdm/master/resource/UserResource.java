@@ -5,12 +5,11 @@
  */
 package com.sdm.master.resource;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.Path;
 
 import org.apache.log4j.Logger;
@@ -60,13 +59,12 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 	}
 
 	@Override
-	public IBaseResponse create(UserEntity request) {
-		Map<String, String> errors = new HashMap<>();
-
+	public IBaseResponse create(@Valid UserEntity request) {
 		UserEntity user = userDAO.getUserByEmail(request.getEmail());
 		if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-			errors.put("email", "Sorry! someone already registered with this email");
-			throw new InvalidRequestException(errors);
+			InvalidRequestException invalidRequest = new InvalidRequestException();
+			invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
+			throw invalidRequest;
 		}
 
 		String rawPassword = request.getPassword();
@@ -84,7 +82,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 	}
 
 	@Override
-	public IBaseResponse update(UserEntity request, Integer id) {
+	public IBaseResponse update(@Valid UserEntity request, Integer id) {
 		try {
 			UserEntity dbEntity = userDAO.fetchById(id);
 			if (dbEntity == null) {
@@ -97,6 +95,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 
 			request.setEmail(dbEntity.getEmail());
 			request.setPassword(dbEntity.getPassword());
+			request.setFacebookId(dbEntity.getFacebookId());
 
 			userDAO.update(request, true);
 			this.modifiedResource();

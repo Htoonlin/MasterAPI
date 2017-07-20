@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.response.model.MessageModel;
 
 /**
@@ -53,6 +54,8 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
 			} else if (this.code >= 500 && this.code < 600) {
 				this.status = ResponseType.CLIENT_ERROR;
 			}
+		} else if (content instanceof DefaultEntity) {
+			this.status = ResponseType.SUCCESS;
 		}
 
 	}
