@@ -39,8 +39,7 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
-import com.sdm.facebook.response.User;
-import com.sdm.facebook.util.GraphManager;
+import com.sdm.facebook.manager.AuthManager;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.TokenEntity;
@@ -164,15 +163,15 @@ public class AuthResource extends DefaultResource {
 			return new DefaultResponse<>(message);
 		}
 
-		GraphManager manager = new GraphManager(request.getAccessToken());
-		User facebookUser = manager.setPath("me").addQuery("fields", "id, name, email, locale").getRequest(User.class);
-
 		try {
 			userDao.beginTransaction();
-			UserEntity userEntity = userDao.userAuthByFacebook(facebookUser.getId());
+
+			LOG.info("requesting to facebook by token.");
+			AuthManager facebookAuth = new AuthManager(request.getAccessToken(), userDao);
+			UserEntity userEntity = facebookAuth.authByFacebook();
+			LOG.info("Finished request to facebook by token.");
+			
 			if (userEntity == null) {
-				userEntity = userDao.facebookMigrate(facebookUser, false);
-			} else if (!userEntity.getFacebookId().equals(facebookUser.getId())) {
 				// Increase failed count
 				getHttpSession().setAttribute(Constants.SessionKey.FAILED_COUNT, getFailed() + 1);
 				MessageModel message = new MessageModel(401, "Invalid!",
@@ -222,13 +221,14 @@ public class AuthResource extends DefaultResource {
 
 			UserEntity user = userDao.getUserByEmail(request.getEmail());
 			if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-				invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
+				invalidRequest.addError("email", "Sorry! someone already registered with this email",
+						request.getEmail());
 			}
-			
-			if(invalidRequest.getErrors().size() > 0) {
+
+			if (invalidRequest.getErrors().size() > 0) {
 				throw invalidRequest;
 			}
-			
+
 			String password = SecurityManager.hashString(request.getEmail(), request.getPassword());
 			user = new UserEntity(request.getEmail(), request.getDisplayName(), password, true, UserEntity.PENDING);
 			AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);

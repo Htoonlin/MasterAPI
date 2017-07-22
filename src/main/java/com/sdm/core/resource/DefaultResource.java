@@ -84,7 +84,7 @@ public class DefaultResource implements IBaseResource {
 		// Build CacheControl
 		CacheControl cc = new CacheControl();
 		cc.setMaxAge(cacheAge);
-		cc.setNoStore(true);
+		cc.setNoStore(false);
 		cc.setPrivate(true);
 		cc.setNoTransform(false);
 

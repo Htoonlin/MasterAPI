@@ -13,7 +13,7 @@ public interface Constants {
 	 */
 
 	public interface Facebook {
-		String API_VERSION = "v2.9";
+		String API_VERSION = "v2.10";
 		String GRAPH_API = "https://graph.facebook.com/";
 		String AUTH_SCOPE = "email,public_profile";
 	}

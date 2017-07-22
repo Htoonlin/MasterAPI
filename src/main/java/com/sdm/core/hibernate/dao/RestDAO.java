@@ -149,7 +149,7 @@ public class RestDAO extends DefaultDAO {
 				beginTransaction();
 			}
 			entity = (T) getSession().merge(entity);
-			getSession().update(entity);
+			getSession().saveOrUpdate(entity);
 			if (autoCommit) {
 				commitTransaction();
 			}

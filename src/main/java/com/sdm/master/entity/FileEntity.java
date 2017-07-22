@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Formula;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -56,13 +57,15 @@ public class FileEntity extends DefaultEntity implements Serializable {
 	private BigInteger id;
 
 	@UIStructure(order = 1, label = "Owner ID")
-	@Column(name = "owner", columnDefinition = "INT UNSIGNED", nullable = false)
-	private long ownerId;
+	@Column(name = "owner", columnDefinition = "MEDIUMINT UNSIGNED", nullable = false)
+	private int ownerId;
 
+	@NotBlank
 	@UIStructure(order = 2, label = "Name")
 	@Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
 	private String name;
 
+	@NotBlank
 	@UIStructure(order = 3, label = "Ext.")
 	@Column(name = "extension", columnDefinition = "varchar(10)", length = 10, nullable = false)
 	private String extension;
@@ -81,11 +84,10 @@ public class FileEntity extends DefaultEntity implements Serializable {
 
 	@UIStructure(order = 5, label = "External URL")
 	@Column(name = "externalURL", columnDefinition = "varchar(1000)", length = 1000, nullable = true)
-	private String externalURL;
+	private String externalUrl;
 
-	@JsonIgnore
-	@Column(name = "publicToken", columnDefinition = "char(25)", length = 25, nullable = true)
-	private String publicToken;
+	@Column(name = "isPublic", length = 25, nullable = true)
+	private boolean publicAccess;
 
 	@UIStructure(order = 6, label = "Status")
 	@Column(name = "status", columnDefinition = "char(1)", length = 1, nullable = false)
@@ -95,9 +97,9 @@ public class FileEntity extends DefaultEntity implements Serializable {
 		this.status = STORAGE;
 	}
 
-	public FileEntity(BigInteger id, long ownerId, String name, String extension, String type, long fileSize,
-			String storagePath, String externalURL) {
-		if (externalURL == null || externalURL.length() <= 0) {
+	public FileEntity(BigInteger id, int ownerId, String name, String extension, String type, long fileSize,
+			String storagePath, String externalUrl) {
+		if (externalUrl == null || externalUrl.length() <= 0) {
 			this.status = STORAGE;
 		} else {
 			this.status = EXTERNAL;
@@ -127,11 +129,11 @@ public class FileEntity extends DefaultEntity implements Serializable {
 		this.id = id;
 	}
 
-	public long getOwnerId() {
+	public int getOwnerId() {
 		return ownerId;
 	}
 
-	public void setOwnerId(long ownerId) {
+	public void setOwnerId(int ownerId) {
 		this.ownerId = ownerId;
 	}
 
@@ -186,19 +188,19 @@ public class FileEntity extends DefaultEntity implements Serializable {
 	}
 
 	public String getExternalURL() {
-		return externalURL;
+		return externalUrl;
 	}
 
 	public void setExternalURL(String externalURL) {
-		this.externalURL = externalURL;
+		this.externalUrl = externalURL;
+	}
+	
+	public boolean isPublicAccess() {
+		return publicAccess;
 	}
 
-	public String getPublicToken() {
-		return publicToken;
-	}
-
-	public void setPublicToken(String publicToken) {
-		this.publicToken = publicToken;
+	public void setPublicAccess(boolean publicAccess) {
+		this.publicAccess = publicAccess;
 	}
 
 	public char getStatus() {

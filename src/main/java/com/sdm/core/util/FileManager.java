@@ -5,13 +5,6 @@
  */
 package com.sdm.core.util;
 
-import java.io.File;
-import java.util.Date;
-
-import com.sdm.Constants;
-import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
-
 /**
  *
  * @author Htoonlin
@@ -42,27 +35,5 @@ public class FileManager {
 			return new String[] { fileName };
 		}
 		return fileInfo;
-	}
-
-	/*
-	 * public static String publicFileURL(String token, String ext) { String uri =
-	 * Setting.getInstance().BASE_PATH + "/file/public/{token}.{ext}"; return
-	 * UriBuilder.fromUri(uri) .resolveTemplate("token", token)
-	 * .resolveTemplate("ext", ext).build().toString(); }
-	 */
-
-	public static String generateToken() {
-		return Globalizer.generateToken(10) + "-" + Globalizer.getDateString("yyyyMMddHHmmss", new Date());
-	}
-
-	public static File generateFile(int userId, String token, String ext) {
-		String uploadPath = "/" + Constants.USER_PREFIX + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
-		String fileName = token + "." + ext;
-
-		File baseDir = new File(Setting.getInstance().get(Setting.UPLOAD_DIRECTORY) + uploadPath);
-		if (!baseDir.exists()) {
-			baseDir.mkdirs();
-		}
-		return new File(baseDir, fileName);
 	}
 }

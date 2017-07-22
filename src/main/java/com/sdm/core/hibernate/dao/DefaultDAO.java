@@ -43,6 +43,10 @@ public class DefaultDAO {
 		return this.mainSession;
 	}
 
+	public int getUserId() {
+		return this.USER_ID;
+	}
+
 	public void closeSession() {
 		if (this.mainSession.isOpen()) {
 			this.mainSession.close();

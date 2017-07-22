@@ -32,8 +32,13 @@ public class SystemResource extends DefaultResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse welcome() throws Exception {
-		MessageModel message = new MessageModel(200, "Welcome!", "Never give up to be a warrior.");
-		return new DefaultResponse(message);
+		DefaultResponse response = this.validateCache();
+		if(response != null) {
+			return response;
+		}
+		response = new DefaultResponse(new MessageModel(200, "Welcome!", "Never give up to be a warrior."));
+		response.setHeaders(this.buildCache());
+		return response;
 	}
 
 	@GET

@@ -12,8 +12,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.core.util.SecurityManager;
-import com.sdm.facebook.response.User;
 import com.sdm.master.entity.UserEntity;
 
 /**
@@ -36,25 +34,6 @@ public class UserDAO extends RestDAO {
 
 	public UserDAO(Session session, int userId) {
 		super(session, UserEntity.class.getName(), userId);
-	}
-
-	public UserEntity facebookMigrate(User facebookUser, boolean autoCommit) {
-		UserEntity userEntity = getUserByEmail(facebookUser.getEmail());
-		if (userEntity == null) {
-			String randomPassword = SecurityManager.randomPassword(32);
-			// New user registration with random password
-			userEntity = new UserEntity();
-			userEntity.setFacebookId(facebookUser.getId());
-			userEntity.setDisplayName(facebookUser.getName());
-			userEntity.setEmail(facebookUser.getEmail());
-			userEntity.setPassword(SecurityManager.hashString(facebookUser.getEmail(), randomPassword));
-			userEntity.addExtra("locale", facebookUser.getLocale());
-			userEntity.setStatus(UserEntity.ACTIVE);
-			return this.insert(userEntity, autoCommit);
-		} else {
-			userEntity.setFacebookId(facebookUser.getId());
-			return this.update(userEntity, autoCommit);
-		}
 	}
 
 	public UserEntity userAuthByFacebook(String facebookId) {

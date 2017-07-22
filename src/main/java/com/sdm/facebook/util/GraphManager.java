@@ -1,7 +1,5 @@
 package com.sdm.facebook.util;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,12 +8,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.log4j.Logger;
 
 import com.sdm.Constants;
-import com.sdm.core.Globalizer;
+import com.sdm.facebook.model.GraphResponse;
 
 public class GraphManager {
 	private static final Logger LOG = Logger.getLogger(GraphManager.class);
@@ -52,28 +51,23 @@ public class GraphManager {
 		return target;
 	}
 
-	public <T extends Serializable> T getRequest(Class<T> resClass) {
-		try {
-			WebTarget target = this.buildRequest();
-			LOG.info("GET Request => " + target.getUri().toString());
-			String responseString = target.request(MediaType.APPLICATION_JSON).get(String.class);
-			LOG.info("Facebook Response => " + responseString);
-			return Globalizer.jsonMapper().readValue(responseString, resClass);
-		} catch (IOException e) {
-			LOG.error(e);
-			return null;
-		}
+	public GraphResponse getRequest() {
+		WebTarget target = this.buildRequest();
+		LOG.info("GET Request => " + target.getUri().toString());
+		Response response = target.request(MediaType.APPLICATION_JSON).get();
+		GraphResponse graph = new GraphResponse(response.getStatus(), response.getHeaders(),
+				response.readEntity(String.class));
+		LOG.info("Response " + graph.getLog());
+		return graph;
 	}
 
-	public <T extends Serializable> T postRequest(Entity data, Class<T> resClass) {
-		try {
-			WebTarget target = this.buildRequest();
-			LOG.info("POST Request => " + target.getUri().toString());
-			String responseString = target.request(MediaType.APPLICATION_JSON).post(data, String.class);
-			return Globalizer.jsonMapper().readValue(responseString, resClass);
-		} catch (IOException e) {
-			LOG.error(e);
-			return null;
-		}
+	public GraphResponse postRequest(Entity data) {
+		WebTarget target = this.buildRequest();
+		LOG.info("POST Request => " + target.getUri().toString());
+		Response response = target.request(MediaType.APPLICATION_JSON).post(data);
+		GraphResponse graph = new GraphResponse(response.getStatus(), response.getHeaders(),
+				response.readEntity(String.class));
+		LOG.info("Response " + graph.getLog());
+		return graph;
 	}
 }

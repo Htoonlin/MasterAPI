@@ -5,20 +5,24 @@
  */
 package com.sdm.master.resource;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
@@ -35,17 +39,20 @@ import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
+import com.sdm.core.util.FileManager;
 import com.sdm.master.dao.FileDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.FileEntity;
 import com.sdm.master.entity.UserEntity;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 /**
  *
  * @author Htoonlin
  */
 @Path("file")
-public class FileResource extends RestResource<FileEntity, Long> {
+public class FileResource extends RestResource<FileEntity, BigInteger> {
 
 	private static final Logger LOG = Logger.getLogger(FileResource.class.getName());
 	private FileDAO mainDAO;
@@ -62,7 +69,7 @@ public class FileResource extends RestResource<FileEntity, Long> {
 		}
 	}
 
-	private Response downloadFile(final FileEntity entity) {
+	private Response downloadFile(final FileEntity entity, final Dimension dimension) {
 		StreamingOutput fileStream = new StreamingOutput() {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
@@ -70,15 +77,25 @@ public class FileResource extends RestResource<FileEntity, Long> {
 					String filePath = Setting.getInstance().get(Setting.UPLOAD_DIRECTORY) + entity.getStoragePath();
 					File savedFile = new File(filePath);
 					if (savedFile.exists()) {
-						byte[] data = Files.readAllBytes(savedFile.toPath());
-						output.write(data);
-						output.flush();
+						//If it is image and include dimension, it will process image on dimension
+						if(entity.getType().contains("image") && dimension != null) {
+							Thumbnails.of(savedFile)
+							.size(dimension.width, dimension.height)
+							.keepAspectRatio(true)
+							.useOriginalFormat()
+							.toOutputStream(output);
+						}else {
+							byte[] data = Files.readAllBytes(savedFile.toPath());
+							output.write(data);
+							output.flush();	
+						}
 					}
 				} catch (Exception e) {
 					throw new WebApplicationException("File not found!");
 				}
 			}
 		};
+		
 		CacheControl cc = new CacheControl();
 
 		// Cache will hold 30 days to file
@@ -106,7 +123,19 @@ public class FileResource extends RestResource<FileEntity, Long> {
 						"You neeed to register new account to upload file.");
 				return new DefaultResponse<>(message);
 			}
-			FileEntity entity = mainDAO.saveFile(inputFile, fileDetail);
+			
+			String[] fileInfo = FileManager.fileNameSplitter(fileDetail.getFileName());
+			FileEntity rawEntity = new FileEntity();
+			rawEntity.setName(fileInfo[0]);
+			if (fileInfo.length == 2) {
+				rawEntity.setExtension(fileInfo[1]);
+			}
+			rawEntity.setPublicAccess(false);
+			rawEntity.setOwnerId(getUserId());
+			rawEntity.setStatus(FileEntity.STORAGE);
+			
+			FileEntity entity = mainDAO.createFile(inputFile, rawEntity, true);
+			
 			this.modifiedResource();
 			return new DefaultResponse<FileEntity>(entity);
 		} catch (Exception e) {
@@ -117,26 +146,49 @@ public class FileResource extends RestResource<FileEntity, Long> {
 
 	@PermitAll
 	@GET
-	@Path("public/{token}.{ext}")
-	public Response publicDownload(@PathParam("token") String token, @PathParam("ext") String ext) throws Exception {
-		FileEntity entity = mainDAO.fetchByToken(token, ext);
-		if (entity != null) {
-			return this.downloadFile(entity);
+	@Path("{id:\\d+}/public")
+	public Response publicDownload(@PathParam("id") BigInteger id,
+			@DefaultValue("0") @QueryParam("width") int width,
+			@DefaultValue("0") @QueryParam("height") int height) throws Exception {
+		FileEntity entity = mainDAO.fetchById(id);
+		if (entity == null || !entity.isPublicAccess()) {
+			MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
+			return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
 		}
-		MessageModel message = new MessageModel(204, "No File!", "There is no file for your requested token.");
-		return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
+		
+		Dimension dimension = null;
+		if(width > 0 && height <= 0) {
+			dimension = new Dimension(width, width);
+		}else if(height > 0 && width <= 0) {
+			dimension = new Dimension(height, height);
+		}else if(width > 0 && height > 0) {
+			dimension = new Dimension(width, height);
+		}
+
+		return this.downloadFile(entity, dimension);
 	}
 
 	@GET
 	@Path("{id:\\d+}/download")
-	public Response privateDownload(@PathParam("id") double id) throws Exception {
+	public Response privateDownload(@PathParam("id") BigInteger id,
+			@DefaultValue("0") @QueryParam("width") int width,
+			@DefaultValue("0") @QueryParam("height") int height) throws Exception {
 		FileEntity entity = mainDAO.fetchById(id);
 		if (entity == null) {
 			MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
 			return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
 		}
+		
+		Dimension dimension = null;
+		if(width > 0 && height <= 0) {
+			dimension = new Dimension(width, width);
+		}else if(height > 0 && width <= 0) {
+			dimension = new Dimension(height, height);
+		}else if(width > 0 && height > 0) {
+			dimension = new Dimension(width, height);
+		}
 
-		return this.downloadFile(entity);
+		return this.downloadFile(entity, dimension);
 	}
 
 	@Override

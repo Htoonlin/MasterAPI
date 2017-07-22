@@ -5,8 +5,12 @@
  */
 package com.sdm.facebook.util;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sdm.core.Globalizer;
@@ -99,34 +101,29 @@ public class MessengerManager {
 		}
 	}
 
-	public void sendJsonTemplate(String recipientId, String jsonFileURL, IFacebookListener listener) {
-		try {
-			JSONParser parser = new JSONParser();
-			JSONObject payload = (JSONObject) parser.parse(new FileReader(jsonFileURL));
+	public void sendJsonTemplate(String recipientId, String jsonFileURL, IFacebookListener listener) throws IOException, URISyntaxException {
+		byte[] jsonData = Files.readAllBytes(Paths.get(new URI(jsonFileURL)));
+		JSONObject payload = new JSONObject(new String(jsonData, Charset.forName("UTF-8")));
 
-			// Build recipient
-			JSONObject recipient = new JSONObject();
-			recipient.put("id", recipientId);
+		// Build recipient
+		JSONObject recipient = new JSONObject();
+		recipient.put("id", recipientId);
 
-			// Build Template
-			JSONObject template = new JSONObject();
-			template.put("type", "template");
-			template.put("payload", payload);
+		// Build Template
+		JSONObject template = new JSONObject();
+		template.put("type", "template");
+		template.put("payload", payload);
 
-			// Build message
-			JSONObject message = new JSONObject();
-			message.put("attachment", template);
+		// Build message
+		JSONObject message = new JSONObject();
+		message.put("attachment", template);
 
-			// Build data
-			JSONObject data = new JSONObject();
-			data.put("recipient", recipient);
-			data.put("message", message);
+		// Build data
+		JSONObject data = new JSONObject();
+		data.put("recipient", recipient);
+		data.put("message", message);
 
-			Response response = this.postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, data.toJSONString());
-			processResponse(response, listener);
-		} catch (IOException | ParseException ex) {
-			this.sendMessage(new Recipient(recipientId), new Message("Invalid Template File."), listener);
-			LOG.error(ex);
-		}
+		Response response = this.postRequest(MESSAGE_API + PAGE_ACCESS_TOKEN, data.toString());
+		processResponse(response, listener);
 	}
 }
