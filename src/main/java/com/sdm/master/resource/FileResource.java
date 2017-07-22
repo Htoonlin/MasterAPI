@@ -56,6 +56,7 @@ import net.coobird.thumbnailator.Thumbnails;
 public class FileResource extends RestResource<FileEntity, BigInteger> {
 
 	private static final Logger LOG = Logger.getLogger(FileResource.class.getName());
+	private final int CACHE_AGE = 3600 * 24 * 7;
 	private FileDAO mainDAO;
 
 	@Override
@@ -71,7 +72,8 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
 	}
 
 	private Response downloadFile(final FileEntity entity, final Dimension dimension) {
-		DefaultResponse cacheResponse = this.validateCache();
+		
+		DefaultResponse cacheResponse = this.validateCache(CACHE_AGE);
 		if (cacheResponse != null) {
 			return Response.ok(cacheResponse, MediaType.APPLICATION_JSON).build();
 		}
@@ -100,7 +102,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
 		};
 
 		//Create cache with 1 week
-		Map<String, Object> cacheHeaders = this.buildCache(3600 * 24 * 7);
+		Map<String, Object> cacheHeaders = this.buildCache(CACHE_AGE);
 		
 		String fileName = entity.getName() + "." + entity.getExtension();
 

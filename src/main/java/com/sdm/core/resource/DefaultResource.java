@@ -63,14 +63,18 @@ public class DefaultResource implements IBaseResource {
 		lastModified = new Date();
 	}
 
-	protected DefaultResponse<MessageModel> validateCache() {
+	protected DefaultResponse<MessageModel> validateCache(){
+		return this.validateCache(Setting.getInstance().getInt(Setting.CC_MAX_AGE));
+	}
+	
+	protected DefaultResponse<MessageModel> validateCache(int cacheAge) {
 		ResponseBuilder builder = request.evaluatePreconditions(lastModified);
 		if (builder != null) {
 			MessageModel message = new MessageModel(HttpStatus.SC_NOT_MODIFIED, "NO_CHANGE",
 					"There is no any changes for your request.");
 			DefaultResponse<MessageModel> response = new DefaultResponse<>(HttpStatus.SC_NOT_MODIFIED,
 					ResponseType.INFO, message);
-			response.setHeaders(this.buildCache());
+			response.setHeaders(this.buildCache(cacheAge));
 			return response;
 		}
 		return null;
