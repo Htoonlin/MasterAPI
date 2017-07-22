@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -30,6 +31,7 @@ import com.sdm.core.hibernate.entity.UIStructure;
  * @author Htoonlin
  */
 @Audited
+@DynamicUpdate(value = true)
 @Entity(name = "PermissionEntity")
 @Table(name = "tbl_permission")
 public class PermissionEntity extends DefaultEntity implements Serializable {

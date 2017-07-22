@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -37,6 +38,7 @@ import com.sdm.core.hibernate.entity.UIStructure;
  * @author Htoonlin
  */
 @Audited
+@DynamicUpdate(value = true)
 @Entity(name = "RoleEntity")
 @Table(name = "tbl_role")
 public class RoleEntity extends DefaultEntity implements Serializable {

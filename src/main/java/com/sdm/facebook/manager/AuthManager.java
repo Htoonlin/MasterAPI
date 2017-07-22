@@ -1,6 +1,5 @@
 package com.sdm.facebook.manager;
 
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.json.JSONObject;
 
@@ -37,7 +36,7 @@ public class AuthManager extends GraphManager {
 			JSONObject jsonBody = new JSONObject(response.getBody());
 			FacebookUser facebookUser = this.convertToUser(jsonBody);
 			UserEntity authUser = userDao.userAuthByFacebook(facebookUser.id);
-			//If new user, migrate or create user
+			// If new user, migrate or create user
 			if (authUser == null) {
 				authUser = this.facebookMigrate(facebookUser);
 			} else if (!authUser.getFacebookId().equals(facebookUser.id)) {
@@ -86,24 +85,27 @@ public class AuthManager extends GraphManager {
 		UserEntity userEntity = userDao.getUserByEmail(facebookUser.email);
 		if (userEntity == null) {
 			String randomPassword = SecurityManager.randomPassword(32);
-			// Create User Profile Picture by Facebook picture
-			FileEntity userPicture = new FileEntity();
-			userPicture.setExternalURL(facebookUser.picture);
-			userPicture.setOwnerId(userDao.getUserId());
-			userPicture.setName(facebookUser.id);
-			userPicture.setExtension("jpg");
-			FileDAO fileDao = new FileDAO(userDao.getSession(), userDao.getUserId());
-
 			// New user registration with random password
 			userEntity = new UserEntity();
-			userEntity.setProfileImage(fileDao.insert(userPicture, false));
 			userEntity.setFacebookId(facebookUser.id);
 			userEntity.setDisplayName(facebookUser.name);
 			userEntity.setEmail(facebookUser.email);
 			userEntity.setPassword(SecurityManager.hashString(facebookUser.email, randomPassword));
 			userEntity.addExtra("locale", facebookUser.locale);
 			userEntity.setStatus(UserEntity.ACTIVE);
-			return userDao.insert(userEntity, false);
+			userEntity = userDao.insert(userEntity, false);
+
+			// Create User Profile Picture by Facebook
+			FileEntity userPicture = new FileEntity();
+			userPicture.setExternalURL(facebookUser.picture);
+			userPicture.setOwnerId(userEntity.getId());
+			userPicture.setName(facebookUser.name);
+			userPicture.setExtension("jpg");
+			userPicture.setPublicAccess(true);
+			FileDAO fileDao = new FileDAO(userDao.getSession(), userDao.getUserId());
+			userEntity.setProfileImage(fileDao.insert(userPicture, false));
+
+			return userEntity;
 		} else {
 			userEntity.setFacebookId(facebookUser.id);
 			userEntity.addExtra("locale", facebookUser.locale);

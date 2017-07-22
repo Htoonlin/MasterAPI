@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -28,6 +29,7 @@ import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.hibernate.entity.UIStructure;
 
 @Audited
+@DynamicUpdate(value = true)
 @Entity(name = "MenuEntity")
 @Table(name = "tbl_menu")
 public class MenuEntity extends DefaultEntity implements Serializable {

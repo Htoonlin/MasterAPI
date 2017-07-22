@@ -59,6 +59,10 @@
 <body>
 	<div class="container">
 		<h1>SUNDEW MASTER</h1>
+		<div class="pull-right">
+			<img height="64" id="userImage" />
+		</div>
+		<div style="clear:both"></div>
 		<div class="input-group">
 			<span class="input-group-addon">ACCESS TOKEN :</span> <input
 				type="text" readonly="readonly" class="form-control"
@@ -171,8 +175,10 @@
 					success : callback,
 					error : function(data) {
 						var json = data.responseJSON;
-						$("div#mainPanel").attr('class', 'panel panel-danger');
-						show_message('danger', json.status, json.content.message);
+						if(json){
+							$("div#mainPanel").attr('class', 'panel panel-danger');
+							show_message('danger', json.status, json.content.message);	
+						}
 					},
 					complete: function(jqXHR){
 						responseHeaders = JSON.stringify(jqXHR.getAllResponseHeaders());
@@ -348,7 +354,21 @@
 				if (url.trim().length > 0) {
 					select_data();
 				}
-		
+				
+				//Load User Info
+				call_api("me", "GET", null, function(userInfo) {
+					if(userInfo.code == 200 && userInfo.content.profile_image.id){
+						var imageURL = "file/" + userInfo.content.profile_image.id + "/download/";
+						call_api(imageURL, "GET", null, function(imageData){
+							console.log("I am here");
+							var imageSrc = "data:" + userInfo.content.profile_image.type + ";base64," + imageData;
+							console.log(imageSrc);
+							$("img#userImage").src(imageData);
+						});
+						$("img#userImage").attr("alt", userInfo.content.display_name)
+					}
+				});
+				
 				$('input#txtAPIURL').keyup(function(e) {
 					if (e.keyCode === 13) {
 						select_data();

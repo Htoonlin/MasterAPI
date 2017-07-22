@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -33,6 +34,7 @@ import com.sdm.core.util.FileManager;
  * @author Htoonlin
  */
 @Audited
+@DynamicUpdate(value = true)
 @Entity(name = "FileEntity")
 @Table(name = "tbl_file")
 public class FileEntity extends DefaultEntity implements Serializable {

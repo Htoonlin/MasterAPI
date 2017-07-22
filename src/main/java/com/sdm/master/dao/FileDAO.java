@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.util.Date;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
@@ -68,7 +68,14 @@ public class FileDAO extends RestDAO {
 
 	public FileEntity createFile(InputStream fileStream, FileEntity entity, boolean autoCommit) {
 		File saveFile = this.generateFile(entity.getOwnerId(), entity.getExtension());
-		String type = "";
+
+		// Get File Type
+		final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
+		String type = fileTypeMap.getContentType(saveFile);
+		if (type == null || type.length() <= 0) {
+			type = "application/" + entity.getExtension();
+		}
+
 		try (OutputStream out = new FileOutputStream(saveFile)) {
 			int read;
 			byte[] bytes = new byte[1024];
@@ -77,12 +84,6 @@ public class FileDAO extends RestDAO {
 			}
 			out.flush();
 			fileStream.close();
-
-			// Get File Type
-			type = Files.probeContentType(saveFile.toPath());
-			if (type == null || type.length() <= 0) {
-				type = "application/" + entity.getExtension();
-			}
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -104,7 +105,7 @@ public class FileDAO extends RestDAO {
 					new ErrorModel("External URL can't be blank. Otherwise, try to use file upload path.", ""));
 			throw errorResponse;
 		}
-		
+
 		entity.setStatus(FileEntity.EXTERNAL);
 		Client client = ClientBuilder.newClient();
 		Response response = client.target(entity.getExternalURL()).request().get();
