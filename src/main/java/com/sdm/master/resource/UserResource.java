@@ -33,7 +33,7 @@ import com.sdm.master.util.AuthMailSend;
  *
  * @author Htoonlin
  */
-@Path("user")
+@Path("users")
 public class UserResource extends RestResource<UserEntity, Integer> {
 
 	private static final Logger LOG = Logger.getLogger(UserResource.class.getName());

@@ -7,11 +7,13 @@ package com.sdm.core.resource;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
+import javax.validation.Valid;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -155,7 +157,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse create(T request) {
+	public IBaseResponse create(@Valid T request) {
 		try {
 			T entity = getDAO().insert(request, true);
 			this.modifiedResource();
@@ -165,9 +167,30 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 			throw e;
 		}
 	}
+	
+	@Override
+	public IBaseResponse createByList(@Valid List<T> request){
+		try {
+			List<T> processedList = new ArrayList<>();
+			getDAO().beginTransaction();
+			for(T entity : request) {
+				T inserted = getDAO().insert(entity, false);
+				processedList.add(inserted);
+			}
+			getDAO().commitTransaction();
+			this.modifiedResource();
+			
+			ListModel<T> content = new ListModel<>(processedList);
+			return new DefaultResponse(201, ResponseType.SUCCESS, content);
+		} catch (Exception e) {
+			getDAO().rollbackTransaction();
+			getLogger().error(e);
+			throw e;
+		}
+	}
 
 	@Override
-	public IBaseResponse update(T request, PK id) {
+	public IBaseResponse update(@Valid T request, PK id) {
 		try {
 			T dbEntity = getDAO().fetchById(id);
 			if (dbEntity == null) {

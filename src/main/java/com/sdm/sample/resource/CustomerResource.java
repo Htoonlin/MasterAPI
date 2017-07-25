@@ -19,25 +19,25 @@ import com.sdm.sample.entity.CustomerEntity;
  *
  * @author Htoonlin
  */
-@Path("sample/customer")
+@Path("sample/customers")
 public class CustomerResource extends RestResource<CustomerEntity, Integer> {
 
-    private static final Logger LOG = Logger.getLogger(CustomerResource.class.getName());
-    private RestDAO mainDAO;
+	private static final Logger LOG = Logger.getLogger(CustomerResource.class.getName());
+	private RestDAO mainDAO;
 
-    @Override
-    protected Logger getLogger() {
-        return CustomerResource.LOG;
-    }
+	@Override
+	protected Logger getLogger() {
+		return CustomerResource.LOG;
+	}
 
-    @PostConstruct
-    private void init() {
-        mainDAO = new CustomerDAO(getUserId());
-    }
+	@PostConstruct
+	private void init() {
+		mainDAO = new CustomerDAO(getUserId());
+	}
 
-    @Override
-    protected RestDAO getDAO() {
-        return this.mainDAO;
-    }
+	@Override
+	protected RestDAO getDAO() {
+		return this.mainDAO;
+	}
 
 }

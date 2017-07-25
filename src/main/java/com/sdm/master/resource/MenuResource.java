@@ -10,7 +10,7 @@ import com.sdm.core.resource.RestResource;
 import com.sdm.master.dao.MenuDAO;
 import com.sdm.master.entity.MenuEntity;
 
-@Path("menu")
+@Path("menus")
 public class MenuResource extends RestResource<MenuEntity, Long> {
 
 	private MenuDAO mainDAO;
