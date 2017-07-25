@@ -6,6 +6,7 @@
 package com.sdm.core.resource;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -62,6 +63,12 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse create(@Valid T request);
+	
+	@POST
+	@Path("multi")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse createByList(@Valid List<T> request);
 
 	@PUT
 	@Path("{id}")

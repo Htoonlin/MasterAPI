@@ -52,7 +52,7 @@ import net.coobird.thumbnailator.Thumbnails;
  *
  * @author Htoonlin
  */
-@Path("file")
+@Path("files")
 public class FileResource extends RestResource<FileEntity, BigInteger> {
 
 	private static final Logger LOG = Logger.getLogger(FileResource.class.getName());

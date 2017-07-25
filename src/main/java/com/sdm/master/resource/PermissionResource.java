@@ -32,7 +32,7 @@ import com.sdm.master.entity.PermissionEntity;
  *
  * @author Htoonlin
  */
-@Path("permission")
+@Path("permissions")
 public class PermissionResource extends RestResource<PermissionEntity, Long> {
 
 	private static final Logger LOG = Logger.getLogger(PermissionResource.class.getName());

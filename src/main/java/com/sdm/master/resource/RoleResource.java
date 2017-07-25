@@ -19,7 +19,7 @@ import com.sdm.master.entity.RoleEntity;
  *
  * @author Htoonlin
  */
-@Path("role")
+@Path("roles")
 public class RoleResource extends RestResource<RoleEntity, Long> {
 
 	private static final Logger LOG = Logger.getLogger(RoleResource.class.getName());

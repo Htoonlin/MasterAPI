@@ -19,7 +19,7 @@ import com.sdm.sample.entity.CustomerEntity;
  *
  * @author Htoonlin
  */
-@Path("sample/customer")
+@Path("sample/customers")
 public class CustomerResource extends RestResource<CustomerEntity, Long> {
 
 	private static final Logger LOG = Logger.getLogger(CustomerResource.class.getName());
