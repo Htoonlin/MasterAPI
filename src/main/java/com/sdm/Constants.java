@@ -234,6 +234,11 @@ public interface Constants {
 		 * Facebook api_id for OAuth
 		 */
 		String FB_API_ID = "com.sdm.facebook.app_id";
+		
+		/**
+		 * Facebook verify token for messenger platform
+		 */
+		String FB_MESSENGER_TOKEN = "com.sdm.facebook.messenger.token";
 	}
 
 	/**

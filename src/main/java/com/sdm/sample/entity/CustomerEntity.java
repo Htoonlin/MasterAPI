@@ -45,8 +45,8 @@ public class CustomerEntity extends DefaultEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@UIStructure(order = 0, label = "#", readOnly = true)
-	@Column(name = "id", unique = true, nullable = false, columnDefinition = "INT UNSIGNED")
-	private long id;
+	@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+	private int id;
 
 	@UIStructure(order = 1, label = "Customer Name")
 	@Column(name = "name", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
@@ -99,11 +99,11 @@ public class CustomerEntity extends DefaultEntity implements Serializable {
 		this.search = search;
 	}
 
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

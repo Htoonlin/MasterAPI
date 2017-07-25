@@ -39,7 +39,7 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
-import com.sdm.facebook.manager.AuthManager;
+import com.sdm.facebook.service.AuthService;
 import com.sdm.master.dao.TokenDAO;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.TokenEntity;
@@ -167,7 +167,7 @@ public class AuthResource extends DefaultResource {
 			userDao.beginTransaction();
 
 			LOG.info("requesting to facebook by token.");
-			AuthManager facebookAuth = new AuthManager(request.getAccessToken(), userDao);
+			AuthService facebookAuth = new AuthService(request.getAccessToken(), userDao);
 			UserEntity userEntity = facebookAuth.authByFacebook();
 			LOG.info("Finished request to facebook by token.");
 			

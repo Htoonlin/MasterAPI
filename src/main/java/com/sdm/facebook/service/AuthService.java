@@ -1,4 +1,4 @@
-package com.sdm.facebook.manager;
+package com.sdm.facebook.service;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.json.JSONObject;
@@ -12,7 +12,7 @@ import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.FileEntity;
 import com.sdm.master.entity.UserEntity;
 
-public class AuthManager extends GraphManager {
+public class AuthService extends GraphManager {
 
 	private final String REQUEST_FIELDS = "id, name, email, locale, picture.width(512).height(512)";
 	private final UserDAO userDao;
@@ -25,7 +25,7 @@ public class AuthManager extends GraphManager {
 		public String picture;
 	}
 
-	public AuthManager(String accessToken, UserDAO dao) {
+	public AuthService(String accessToken, UserDAO dao) {
 		super(accessToken);
 		this.userDao = dao;
 	}

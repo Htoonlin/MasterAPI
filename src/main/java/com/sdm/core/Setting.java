@@ -135,6 +135,7 @@ public final class Setting implements Constants.Setting {
 			LOG.info("Generating system properites ....");
 			this.settingProps.setProperty(JWT_KEY, SecurityManager.generateJWTKey());
 			this.settingProps.setProperty(ENCRYPT_SALT, SecurityManager.generateSalt());
+			this.settingProps.setProperty(FB_MESSENGER_TOKEN, Globalizer.generateToken(64));
 			LOG.info("Generated system properites.");
 			this.save();
 		}
