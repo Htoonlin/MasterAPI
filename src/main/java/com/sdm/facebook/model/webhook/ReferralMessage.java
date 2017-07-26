@@ -9,7 +9,7 @@ import com.sdm.facebook.model.FacebookSerialize;
  * @author htoonlin Reference :
  *         https://developers.facebook.com/docs/messenger-platform/webhook-reference/referral
  */
-public class ReferralMessage extends FacebookSerialize {
+public class ReferralMessage implements FacebookSerialize {
 
 	/**
 	 * 
@@ -22,7 +22,12 @@ public class ReferralMessage extends FacebookSerialize {
 	private String adId;
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		return new JSONObject(this);
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("source")) {
 			this.source = value.getString("source");
 		}
@@ -38,8 +43,7 @@ public class ReferralMessage extends FacebookSerialize {
 		if (value.has("ad_id")) {
 			this.adId = value.getString("ad_id");
 		}
-		
-		super.setJson(value);
+
 	}
 
 	public String getSource() {

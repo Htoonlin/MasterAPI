@@ -2,9 +2,7 @@ package com.sdm.facebook.model.attachment;
 
 import org.json.JSONObject;
 
-import com.sdm.facebook.model.FacebookSerialize;
-
-public class LocationAttachment extends FacebookSerialize {
+public class LocationAttachment extends GeneralAttachment {
 	/**
 	 * 
 	 */
@@ -20,7 +18,18 @@ public class LocationAttachment extends FacebookSerialize {
 	private double longtitude;
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		JSONObject attachment = super.serialize();
+		attachment.put("type", "location");
+		JSONObject cords = new JSONObject();
+		cords.put("lat", this.latitude);
+		cords.put("long", this.longtitude);
+		attachment.put("payload", new JSONObject().put("coordinates", cords));
+		return attachment;
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("payload") && value.getJSONObject("payload").has("coordinates")) {
 			JSONObject cords = value.getJSONObject("payload").getJSONObject("coordinates");
 			if (cords.has("lat")) {
@@ -31,8 +40,8 @@ public class LocationAttachment extends FacebookSerialize {
 				this.latitude = cords.getDouble("long");
 			}
 		}
-		
-		super.setJson(value);
+
+		super.deserialize(value);
 	}
 
 	public double getLatitude() {

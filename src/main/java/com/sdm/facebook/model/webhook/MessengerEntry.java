@@ -13,7 +13,7 @@ import com.sdm.facebook.model.FacebookSerialize;
  * @author htoonlin
  *
  */
-public class MessengerEntry extends FacebookSerialize {
+public class MessengerEntry implements FacebookSerialize {
 	/**
 	 * 
 	 */
@@ -38,7 +38,25 @@ public class MessengerEntry extends FacebookSerialize {
 	}
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		JSONObject entry = new JSONObject();
+		if (this.pageId != null && this.pageId.length() > 0) {
+			entry.put("id", this.pageId);
+		}
+
+		entry.put("time", this.timestamp);
+		if (this.messages != null && this.messages.size() > 0) {
+			JSONArray messaging = new JSONArray();
+			for (BaseMessage message : this.messages) {
+				messaging.put(message.serialize());
+			}
+			entry.put("messaging", messaging);
+		}
+		return entry;
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("id")) {
 			this.pageId = value.getString("id");
 		}
@@ -51,12 +69,10 @@ public class MessengerEntry extends FacebookSerialize {
 			JSONArray messages = value.getJSONArray("messaging");
 			for (int i = 0; i < messages.length(); i++) {
 				BaseMessage message = new BaseMessage();
-				message.setJson(messages.getJSONObject(i));
+				message.deserialize(messages.getJSONObject(i));
 				this.addMessage(message);
 			}
 		}
-		
-		super.setJson(value);
 	}
 
 	public String getPageId() {

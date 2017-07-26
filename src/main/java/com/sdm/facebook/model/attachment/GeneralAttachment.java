@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import com.sdm.facebook.model.FacebookSerialize;
 import com.sdm.facebook.model.type.AttachmentType;
 
-public class GeneralAttachment extends FacebookSerialize {
+public class GeneralAttachment implements FacebookSerialize {
 	/**
 	 * 
 	 */
@@ -18,7 +18,26 @@ public class GeneralAttachment extends FacebookSerialize {
 	private AttachmentType type;
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		JSONObject attachment = new JSONObject();
+		if (this.type != null) {
+			attachment.put("type", this.type.toString());
+		}
+
+		if (this.title != null && this.title.length() > 0) {
+			attachment.put("title", this.title);
+			if (this.url != null && this.url.length() > 0) {
+				attachment.put("url", this.url);
+			}
+		} else if (this.url != null && this.url.length() > 0) {
+			attachment.put("payload", new JSONObject().put("url", this.url));
+		}
+
+		return attachment;
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("payload") && value.getJSONObject("payload").has("url")) {
 			this.url = value.getJSONObject("payload").getString("url");
 		} else if (value.has("url")) {
@@ -31,7 +50,6 @@ public class GeneralAttachment extends FacebookSerialize {
 		if (value.has("type")) {
 			this.type = AttachmentType.valueOf(value.getString("type"));
 		}
-		super.setJson(value);
 	}
 
 	public String getTitle() {

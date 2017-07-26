@@ -1,7 +1,6 @@
 package com.sdm.facebook.resource;
 
 import javax.annotation.security.PermitAll;
-import javax.enterprise.inject.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -21,8 +20,6 @@ import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
-import com.sdm.facebook.model.type.MessageType;
-import com.sdm.facebook.model.webhook.BaseMessage;
 import com.sdm.facebook.model.webhook.MessengerEntry;
 
 @Path("messenger")
@@ -73,14 +70,14 @@ public class MessengerResource extends DefaultResource {
 		LOG.info("Received from Facebook => " + receive);
 		JSONObject request = new JSONObject(receive);
 		if (request.has("object") && request.getString("object").equalsIgnoreCase(PAGE_OBJECT)) {
-			if(request.has("entry")) {
+			if (request.has("entry")) {
 				JSONArray entries = request.getJSONArray("entry");
-				for(int i = 0; i < entries.length(); i++) {
+				for (int i = 0; i < entries.length(); i++) {
 					MessengerEntry entry = new MessengerEntry();
-					entry.setJson(entries.getJSONObject(i));
+					entry.deserialize(entries.getJSONObject(i));
 				}
 			}
-		}else {
+		} else {
 			LOG.warn("Invalid request or object type");
 		}
 		return Response.ok().build();

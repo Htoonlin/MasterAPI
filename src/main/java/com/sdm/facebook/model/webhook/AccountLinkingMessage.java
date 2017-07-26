@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import com.sdm.facebook.model.FacebookSerialize;
 
-public class AccountLinkingMessage extends FacebookSerialize {
+public class AccountLinkingMessage implements FacebookSerialize {
 
 	/**
 	 * 
@@ -22,7 +22,19 @@ public class AccountLinkingMessage extends FacebookSerialize {
 	private String authorizationCode;
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		JSONObject account_linking = new JSONObject();
+		if (this.linked != null && this.linked.length() > 0) {
+			account_linking.put("status", this.linked);
+		}
+		if (this.authorizationCode != null && this.authorizationCode.length() > 0) {
+			account_linking.put("authorization_code", this.authorizationCode);
+		}
+		return account_linking;
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("status")) {
 			this.linked = value.getString("status");
 		}
@@ -30,7 +42,6 @@ public class AccountLinkingMessage extends FacebookSerialize {
 		if (value.has("authorization_code")) {
 			this.authorizationCode = value.getString("authorization_code");
 		}
-		super.setJson(value);
 	}
 
 	public String getLinked() {

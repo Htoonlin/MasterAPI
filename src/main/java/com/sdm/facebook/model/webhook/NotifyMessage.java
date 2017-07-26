@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import com.sdm.facebook.model.FacebookSerialize;
 
-public class NotifyMessage extends FacebookSerialize {
+public class NotifyMessage implements FacebookSerialize {
 
 	/**
 	 * 
@@ -41,7 +41,12 @@ public class NotifyMessage extends FacebookSerialize {
 	}
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		return new JSONObject(this);
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("watermark")) {
 			this.watermark = value.getLong("watermark");
 		}
@@ -54,7 +59,6 @@ public class NotifyMessage extends FacebookSerialize {
 				this.addMessageId(ids.getString(i));
 			}
 		}
-		super.setJson(value);
 	}
 
 	public String getStatus() {

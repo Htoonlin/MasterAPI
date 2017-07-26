@@ -15,11 +15,21 @@ public class PostBackMessage extends ReferralMessage {
 	private String payload;
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		JSONObject postback = new JSONObject();
+		postback.put("payload", this.payload);
+		postback.put("referral", super.serialize());
+		return postback;
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("payload")) {
 			this.payload = value.getString("payload");
 		}
-		super.setJson(value);
+		if (value.has("referral")) {
+			super.deserialize(value.getJSONObject("referral"));
+		}
 	}
 
 	public String getPayload() {

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import com.sdm.facebook.model.FacebookSerialize;
 import com.sdm.facebook.model.type.MessageType;
 
-public class BaseMessage extends FacebookSerialize {
+public class BaseMessage implements FacebookSerialize {
 
 	/**
 	 * 
@@ -27,7 +27,7 @@ public class BaseMessage extends FacebookSerialize {
 	/**
 	 * Message body
 	 */
-	private FacebookSerialize body;
+	private Object body;
 
 	/**
 	 * Message timestamp
@@ -86,21 +86,21 @@ public class BaseMessage extends FacebookSerialize {
 		this.timestamp = timestamp;
 	}
 
-	@Override
-	public JSONObject getJson() {
-		return null;
+	public Object getBody() {
+		return body;
 	}
 
-	public <T extends FacebookSerialize> T getBody() {
-		return (T) body;
-	}
-
-	public void setBody(FacebookSerialize body) {
+	public void setBody(Object body) {
 		this.body = body;
 	}
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		return new JSONObject(this);
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("sender") && value.getJSONObject("sender").has("id")) {
 			this.senderId = value.getJSONObject("sender").getString("id");
 		}
@@ -115,44 +115,48 @@ public class BaseMessage extends FacebookSerialize {
 
 		if (value.has("message")) {
 			this.type = MessageType.text;
-			this.body = new TextMessage();
-			this.body.setJson(value.getJSONObject("message"));
+			TextMessage message = new TextMessage();
+			message.deserialize(value.getJSONObject("message"));
+			this.body = message;
 		} else if (value.has("delivery")) {
 			this.type = MessageType.delivery;
-			this.body = new NotifyMessage("delivery");
-			this.body.setJson(value.getJSONObject("delivery"));
+			NotifyMessage message = new NotifyMessage("delivery");
+			message.deserialize(value.getJSONObject("delivery"));
+			this.body = message;
 		} else if (value.has("read")) {
 			this.type = MessageType.read;
-			this.body = new NotifyMessage("read");
-			this.body.setJson(value.getJSONObject("read"));
+			NotifyMessage message = new NotifyMessage("read");
+			message.deserialize(value.getJSONObject("read"));
+			this.body = message;
 		} else if (value.has("postback")) {
 			this.type = MessageType.postback;
-			this.body = new PostBackMessage();
-			this.body.setJson(value.getJSONObject("postback"));
+			PostBackMessage message = new PostBackMessage();
+			message.deserialize(value.getJSONObject("postback"));
+			this.body = message;
 		} else if (value.has("optin")) {
 			this.type = MessageType.plugin_optin;
-			this.body.setJson(value.getJSONObject("optin"));
+			if (value.getJSONObject("optin").has("ref")) {
+				this.body = value.getJSONObject("optin").getString("ref");
+			}
 		} else if (value.has("referral")) {
 			this.type = MessageType.referreal;
-			this.body = new ReferralMessage();
-			this.body.setJson(value.getJSONObject("referral"));
+			ReferralMessage message = new ReferralMessage();
+			message.deserialize(value.getJSONObject("referral"));
+			this.body = message;
 		} else if (value.has("payment")) {
 			this.type = MessageType.payment;
-			this.body = new FacebookSerialize();
-			this.body.setJson(value.getJSONObject("payment"));
+			this.body = value.getJSONObject("payment");
 		} else if (value.has("checkout_update")) {
 			this.type = MessageType.checkout;
-			this.body = new FacebookSerialize();
-			this.body.setJson(value.getJSONObject("checkout_update"));
+			this.body = value.getJSONObject("checkout_update");
 		} else if (value.has("pre_checkout")) {
 			this.type = MessageType.pre_checkout;
-			this.body = new FacebookSerialize();
-			this.body.setJson(value.getJSONObject("pre_checkout"));
+			this.body = value.getJSONObject("pre_checkout");
 		} else if (value.has("account_linking")) {
 			this.type = MessageType.account_linking;
-			this.body = new AccountLinkingMessage();
-			this.body.setJson(value.getJSONObject("account_linking"));
+			AccountLinkingMessage message = new AccountLinkingMessage();
+			message.deserialize(value.getJSONObject("account_linking"));
+			this.body = message;
 		}
-		super.setJson(value);
 	}
 }

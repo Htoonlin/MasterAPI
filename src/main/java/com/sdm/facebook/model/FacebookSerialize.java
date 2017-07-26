@@ -4,23 +4,9 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+public interface FacebookSerialize extends Serializable {
 
-public class FacebookSerialize implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5752100670074099844L;	
-
-	@JsonIgnore
-	private JSONObject json;
-
-	public JSONObject getJson() {
-		return json;
-	}
-
-	public void setJson(JSONObject json) {
-		this.json = json;
-	}
+	public void deserialize(JSONObject value);
+	
+	public JSONObject serialize();
 }

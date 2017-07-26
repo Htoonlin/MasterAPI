@@ -10,7 +10,7 @@ import com.sdm.facebook.model.FacebookSerialize;
 import com.sdm.facebook.model.attachment.GeneralAttachment;
 import com.sdm.facebook.model.attachment.LocationAttachment;
 
-public class TextMessage extends FacebookSerialize {
+public class TextMessage implements FacebookSerialize {
 	/**
 	 * 
 	 */
@@ -49,7 +49,33 @@ public class TextMessage extends FacebookSerialize {
 	}
 
 	@Override
-	public void setJson(JSONObject value) {
+	public JSONObject serialize() {
+		JSONObject message = new JSONObject();
+		if (this.text != null && this.text.length() > 0) {
+			message.put("text", this.text);
+		}
+
+		if (this.messageId != null && this.messageId.length() > 0) {
+			message.put("mid", this.text);
+		}
+
+		if (this.quickReply != null && this.quickReply.length() > 0) {
+			message.put("quick_reply", new JSONObject().put("payload", this.quickReply));
+		}
+
+		if (this.attachments != null && this.attachments.size() > 0) {
+			JSONArray attachments = new JSONArray();
+			for (FacebookSerialize attachment : this.attachments) {
+				attachments.put(attachment.serialize());
+			}
+			message.put("attachments", this.attachments);
+		}
+
+		return message;
+	}
+
+	@Override
+	public void deserialize(JSONObject value) {
 		if (value.has("mid")) {
 			this.messageId = value.getString("mid");
 		}
@@ -61,18 +87,18 @@ public class TextMessage extends FacebookSerialize {
 		if (value.has("quick_reply") && value.getJSONObject("quick_reply").has("payload")) {
 			this.quickReply = value.getJSONObject("quick_reply").getString("payload");
 		}
-		
-		if(value.has("attachments")) {
+
+		if (value.has("attachments")) {
 			JSONArray attachArray = value.getJSONArray("attachments");
-			for(int i = 0; i < attachArray.length(); i++) {
+			for (int i = 0; i < attachArray.length(); i++) {
 				JSONObject attachment = attachArray.getJSONObject(i);
-				if(attachment.getString("type").equalsIgnoreCase("location")) {
+				if (attachment.getString("type").equalsIgnoreCase("location")) {
 					LocationAttachment location = new LocationAttachment();
-					location.setJson(attachment);
+					location.deserialize(attachment);
 					this.addAttachment(location);
-				}else {
+				} else {
 					GeneralAttachment attach = new GeneralAttachment();
-					attach.setJson(attachment);
+					attach.deserialize(attachment);
 					this.addAttachment(attach);
 				}
 			}
@@ -89,8 +115,6 @@ public class TextMessage extends FacebookSerialize {
 		if (value.has("metadata")) {
 			this.metadata = value.getString("metadata");
 		}
-		
-		super.setJson(value);
 	}
 
 	public String getMessageId() {
@@ -118,12 +142,12 @@ public class TextMessage extends FacebookSerialize {
 	}
 
 	public void addAttachment(FacebookSerialize attachment) {
-		if(this.attachments == null) {
+		if (this.attachments == null) {
 			this.attachments = new ArrayList<>();
 		}
 		this.attachments.add(attachment);
 	}
-	
+
 	public List<FacebookSerialize> getAttachments() {
 		return attachments;
 	}
