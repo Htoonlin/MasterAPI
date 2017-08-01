@@ -5,26 +5,27 @@
  */
 package com.sdm.master.resource;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.server.model.Resource;
 
+import com.sdm.ApplicationConfig;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
-import com.sdm.core.response.model.MessageModel;
+import com.sdm.core.response.model.RouteInfo;
 import com.sdm.master.dao.PermissionDAO;
 import com.sdm.master.entity.PermissionEntity;
 
@@ -51,31 +52,26 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
 		return this.mainDAO;
 	}
 
-	@POST
-	@Path("/multi")
+	@GET
+	@Path("/routes")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public IBaseResponse multiPermissions(@Valid List<PermissionEntity> permissionList) throws Exception {
-		try {
-			mainDAO.beginTransaction();
-			for (PermissionEntity permission : permissionList) {
-				mainDAO.insert(permission, false);
+	public IBaseResponse getAllRoutes() {
+		ApplicationConfig config = new ApplicationConfig();
+		HashMap<String, List<RouteInfo>> resources = new HashMap<>();
+		for (Class clsResource : config.getClasses()) {
+			Resource resource = Resource.from(clsResource);
+			if (resource != null) {
+				String resourceName = clsResource.getName();
+				List<RouteInfo> routes = collectRoute(resource, "/");
+				resources.put(resourceName, routes);
 			}
-			mainDAO.commitTransaction();
-			this.modifiedResource();
-
-			MessageModel message = new MessageModel(202, "Update Success!",
-					"We updated the record with your request successfully.");
-			return new DefaultResponse<>(message);
-		} catch (Exception e) {
-			mainDAO.rollbackTransaction();
-			LOG.error(e);
-			throw e;
 		}
+		return new DefaultResponse(200, ResponseType.SUCCESS, resources);
 	}
 
 	@GET
 	@Path("/role/{roleId:\\d+}")
+	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
 		DefaultResponse response = this.validateCache();
 		if (response != null) {

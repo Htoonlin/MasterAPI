@@ -23,6 +23,10 @@ public class ListModel<T extends Serializable> implements Serializable {
 	 */
 	private static final long serialVersionUID = 522782444980983172L;
 
+	public ListModel() {
+
+	}
+
 	public ListModel(List<T> data) {
 		this.data = data;
 	}

@@ -63,10 +63,10 @@ public class DefaultResource implements IBaseResource {
 		lastModified = new Date();
 	}
 
-	protected DefaultResponse<MessageModel> validateCache(){
+	protected DefaultResponse<MessageModel> validateCache() {
 		return this.validateCache(Setting.getInstance().getInt(Setting.CC_MAX_AGE));
 	}
-	
+
 	protected DefaultResponse<MessageModel> validateCache(int cacheAge) {
 		ResponseBuilder builder = request.evaluatePreconditions(lastModified);
 		if (builder != null) {
@@ -184,8 +184,8 @@ public class DefaultResource implements IBaseResource {
 				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 				return new DefaultResponse<>(message);
 			}
-			List<RouteInfo> routeList = collectRoute(resource, "/");
-			ListModel<RouteInfo> content = new ListModel<>(routeList);
+			ListModel<RouteInfo> content = new ListModel<>();
+			content.setData(collectRoute(resource, "/"));
 			return new DefaultResponse<>(content);
 		} catch (Exception e) {
 			LOG.error(e);

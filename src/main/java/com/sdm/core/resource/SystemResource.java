@@ -33,14 +33,14 @@ public class SystemResource extends DefaultResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse welcome() throws Exception {
 		DefaultResponse response = this.validateCache();
-		if(response != null) {
+		if (response != null) {
 			return response;
 		}
 		response = new DefaultResponse(new MessageModel(200, "Welcome!", "Never give up to be a warrior."));
 		response.setHeaders(this.buildCache());
 		return response;
 	}
-
+	
 	@GET
 	@Path("setting")
 	@Produces(MediaType.APPLICATION_JSON)
