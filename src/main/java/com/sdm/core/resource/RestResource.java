@@ -27,7 +27,7 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.response.model.Pagination;
-import com.sdm.core.response.model.UIProperty;
+import com.sdm.core.ui.UIProperty;
 
 /**
  *

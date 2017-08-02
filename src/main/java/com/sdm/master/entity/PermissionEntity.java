@@ -24,7 +24,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.ui.UIInputType;
+import com.sdm.core.ui.UIStructure;
 
 /**
  *
@@ -52,7 +53,7 @@ public class PermissionEntity extends DefaultEntity implements Serializable {
 	@Column(name = "id", columnDefinition = "INT UNSIGNED", nullable = false, unique = true)
 	private long id;
 
-	@UIStructure(order = 1, label = "Role-ID")
+	@UIStructure(order = 1, label = "Role-ID", inputType = UIInputType.number)
 	@Column(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED", nullable = false)
 	private int roleId;
 

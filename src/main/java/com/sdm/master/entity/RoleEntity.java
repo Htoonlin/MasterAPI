@@ -31,7 +31,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.ui.UIInputType;
+import com.sdm.core.ui.UIStructure;
 
 /**
  *
@@ -63,7 +64,7 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	@Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
 	private String name;
 
-	@UIStructure(order = 2, label = "Description")
+	@UIStructure(order = 2, label = "Description", inputType = UIInputType.textarea)
 	@Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
 	private String description;
 
@@ -71,6 +72,7 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "roleId", insertable = false, updatable = false, columnDefinition = "MEDIUMINT UNSIGNED")
 	@NotFound(action = NotFoundAction.IGNORE)
+	@UIStructure(order = 3, label = "permissions", inputType = UIInputType.objectlist)
 	private Set<PermissionEntity> permissions;
 
 	public String getSearch() {

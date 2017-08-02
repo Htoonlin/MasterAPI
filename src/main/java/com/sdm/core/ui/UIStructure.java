@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.hibernate.entity;
+package com.sdm.core.ui;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,6 +26,6 @@ public @interface UIStructure {
 
 	String label() default "";
 
-	String inputType() default "text";
+	UIInputType inputType() default UIInputType.text;
 
 }

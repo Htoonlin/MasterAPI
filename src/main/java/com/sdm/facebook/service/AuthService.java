@@ -14,7 +14,7 @@ import com.sdm.master.entity.UserEntity;
 
 public class AuthService extends GraphManager {
 
-	private final String REQUEST_FIELDS = "id, name, email, locale, picture.width(512).height(512)";
+	private final String REQUEST_FIELDS = "id, name, email, locale, picture.width(512).height(512), gender, age_range";
 	private final UserDAO userDao;
 
 	private class FacebookUser {
@@ -23,6 +23,8 @@ public class AuthService extends GraphManager {
 		public String email;
 		public String locale;
 		public String picture;
+		public String gender;
+		public String ageRange;
 	}
 
 	public AuthService(String accessToken, UserDAO dao) {
@@ -67,6 +69,14 @@ public class AuthService extends GraphManager {
 			user.locale = json.getString("locale");
 		}
 
+		if (json.has("gender")) {
+			user.gender = json.getString("gender");
+		}
+
+		if (json.has("age_range")) {
+			user.ageRange = json.getJSONObject("age_range").toString();
+		}
+
 		user.picture = Constants.Facebook.GRAPH_API + Constants.Facebook.API_VERSION
 				+ "/me/picture?width=512&height=512";
 
@@ -92,6 +102,8 @@ public class AuthService extends GraphManager {
 			userEntity.setEmail(facebookUser.email);
 			userEntity.setPassword(SecurityManager.hashString(facebookUser.email, randomPassword));
 			userEntity.addExtra("locale", facebookUser.locale);
+			userEntity.addExtra("gender", facebookUser.gender);
+			userEntity.addExtra("age_range", facebookUser.ageRange);
 			userEntity.setStatus(UserEntity.ACTIVE);
 			userEntity = userDao.insert(userEntity, false);
 

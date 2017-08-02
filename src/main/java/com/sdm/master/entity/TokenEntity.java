@@ -20,7 +20,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.ui.UIInputType;
+import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.SecurityManager;
 
 import io.jsonwebtoken.CompressionCodecs;
@@ -47,7 +48,7 @@ public class TokenEntity extends DefaultEntity implements Serializable {
 	@Column(name = "token", unique = true, nullable = false, length = 36)
 	private String token;
 
-	@UIStructure(order = 1, label = "User ID")
+	@UIStructure(order = 1, label = "User ID", inputType = UIInputType.number)
 	@Column(name = "userId", nullable = false)
 	private int userId;
 

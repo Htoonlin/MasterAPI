@@ -22,10 +22,18 @@
 		<mail.version>1.4.7</mail.version>
 		<itext.version>5.5.11</itext.version>
 		<jwt.version>0.7.0</jwt.version>
+		<graphql.version>3.0.0</graphql.version>
 		<thumbnailator.version>[0.4, 0.5)</thumbnailator.version>
 	</properties>
 
 	<dependencies>
+		<!-- Facebook Graph QL Library -->
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>graphql-java</artifactId>
+			<version>${graphql.version}</version>
+		</dependency>
+		
 		<!-- iText PDF Manager -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>

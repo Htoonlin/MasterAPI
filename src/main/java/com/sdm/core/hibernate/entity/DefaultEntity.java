@@ -21,7 +21,8 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.request.IBaseRequest;
-import com.sdm.core.response.model.UIProperty;
+import com.sdm.core.ui.UIProperty;
+import com.sdm.core.ui.UIStructure;
 
 /**
  *
@@ -99,7 +100,7 @@ public class DefaultEntity implements IBaseRequest {
 			Column column = field.getAnnotation(Column.class);
 			if (column != null) {
 				if (column.nullable()) {
-					property.setNullable(column.nullable());
+					property.setRequired(column.nullable());
 				}
 				property.setLength(column.length());
 			}

@@ -26,7 +26,8 @@ import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.ui.UIInputType;
+import com.sdm.core.ui.UIStructure;
 
 @Audited
 @DynamicUpdate(value = true)
@@ -50,45 +51,45 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 	@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
 	private int id;
 
-	@UIStructure(order = 1, label = "Name", inputType = "text")
+	@UIStructure(order = 1, label = "Name")
 	@Column(name = "name", columnDefinition = "varchar(50)", length = 50, nullable = false)
 	private String name;
 
-	@UIStructure(order = 2, label = "Description", inputType = "text")
+	@UIStructure(order = 2, label = "Description", inputType = UIInputType.textarea)
 	@Column(name = "description", columnDefinition = "varchar(255)", length = 255, nullable = true)
 	private String description;
 
-	@UIStructure(order = 3, label = "State", inputType = "text")
+	@UIStructure(order = 3, label = "State")
 	@Column(name = "state", columnDefinition = "varchar(500)", length = 500, nullable = false)
 	private String state;
 
-	@UIStructure(order = 4, label = "Icon", inputType = "icon")
+	@UIStructure(order = 4, label = "Icon", inputType = UIInputType.image)
 	@Column(name = "icon", columnDefinition = "varchar(50)", length = 50, nullable = false)
 	private String icon;
 
 	/**
 	 * Supported Types : module, toggle, link
 	 */
-	@UIStructure(order = 4, label = "Type", inputType = "text")
+	@UIStructure(order = 4, label = "Type")
 	@Column(name = "type", columnDefinition = "varchar(10)", length = 10, nullable = false)
 	private String type;
 
-	@UIStructure(order = 5, label = "priority", inputType = "number")
+	@UIStructure(order = 5, label = "priority", inputType = UIInputType.number)
 	@Column(name = "priority", columnDefinition = "INT", nullable = false)
 	private int priority;
 
-	@UIStructure(order = 6, label = "Is separator?", inputType = "checkbox")
+	@UIStructure(order = 6, label = "Is separator?", inputType = UIInputType.checkbox)
 	@Column(name = "isDivider", columnDefinition = "bit(1)", nullable = false)
 	private boolean separator;
 
-	@UIStructure(order = 7, label = "Parent Menu", inputType = "number", hideInGrid = true)
+	@UIStructure(order = 7, label = "Parent Menu", inputType = UIInputType.number, hideInGrid = true)
 	@NotAudited
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parentId", columnDefinition = "INT UNSIGNED", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
 	@NotFound(action = NotFoundAction.IGNORE)
 	private Set<MenuEntity> children;
 
-	@UIStructure(order = 8, label = "Roles", inputType = "multi-object", hideInGrid = true)
+	@UIStructure(order = 8, label = "Roles", inputType = UIInputType.objectlist, hideInGrid = true)
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "tbl_menu_permission", joinColumns = {
 			@JoinColumn(name = "menuId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = {

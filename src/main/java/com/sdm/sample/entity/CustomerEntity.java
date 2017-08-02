@@ -21,7 +21,7 @@ import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.ui.UIStructure;
 
 /**
  *

@@ -3,20 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sdm.core.response.model;
+package com.sdm.core.ui;
 
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.sdm.core.Globalizer;
 
 /**
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder({ "name", "request_name", "type", "length", "label", "input_type", "primary", "nullable",
-		"read_only", "hide_in_grid" })
+@JsonPropertyOrder({ "name", "label", "order_index", "@type", "length", "input_type", "is_primary", "is_required",
+		"is_read_only", "is_hide_in_grid" })
 public class UIProperty implements Serializable {
 
 	/**
@@ -24,14 +26,32 @@ public class UIProperty implements Serializable {
 	 */
 	private static final long serialVersionUID = 3497471114097791330L;
 	private String name;
+
+	@JsonProperty(value = "@type")
 	private String type;
-	private Boolean primary;
+
+	@JsonProperty(value = "is_primary")
+	private boolean primary;
+
+	@JsonProperty(value = "label")
 	private String label;
-	private String inputType;
+
+	@JsonProperty(value = "input_type")
+	private UIInputType inputType;
+
+	@JsonProperty(value = "is_read_only")
 	private boolean readOnly;
+
+	@JsonProperty(value = "is_hide_in_grid")
 	private boolean hideInGrid;
-	private boolean nullable;
+
+	@JsonProperty(value = "is_required")
+	private boolean required;
+
+	@JsonProperty(value = "order_index")
 	private int orderIndex;
+
+	@JsonProperty(value = "length")
 	private int length;
 
 	public int getLength() {
@@ -42,7 +62,7 @@ public class UIProperty implements Serializable {
 		this.length = length;
 	}
 
-	@JsonGetter("request_name")
+	@JsonGetter("name")
 	public String getRequestName() {
 		return Globalizer.camelToLowerUnderScore(name);
 	}
@@ -51,6 +71,7 @@ public class UIProperty implements Serializable {
 		return name;
 	}
 
+	@JsonSetter("name")
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -63,20 +84,20 @@ public class UIProperty implements Serializable {
 		this.type = type;
 	}
 
-	public boolean getNullable() {
-		return nullable;
-	}
-
-	public void setNullable(boolean nullable) {
-		this.nullable = nullable;
-	}
-
-	public Boolean getPrimary() {
+	public boolean isPrimary() {
 		return primary;
 	}
 
-	public void setPrimary(Boolean primary) {
+	public void setPrimary(boolean primary) {
 		this.primary = primary;
+	}
+
+	public boolean isRequired() {
+		return required;
+	}
+
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 
 	public String getLabel() {
@@ -87,11 +108,11 @@ public class UIProperty implements Serializable {
 		this.label = label;
 	}
 
-	public String getInputType() {
+	public UIInputType getInputType() {
 		return inputType;
 	}
 
-	public void setInputType(String inputType) {
+	public void setInputType(UIInputType inputType) {
 		this.inputType = inputType;
 	}
 
@@ -124,7 +145,7 @@ public class UIProperty implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + (nullable ? 1231 : 1237);
+		result = prime * result + (required ? 1231 : 1237);
 		result = prime * result + orderIndex;
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
@@ -144,7 +165,7 @@ public class UIProperty implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (nullable != other.nullable)
+		if (required != other.required)
 			return false;
 		if (orderIndex != other.orderIndex)
 			return false;

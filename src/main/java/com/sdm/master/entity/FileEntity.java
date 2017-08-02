@@ -26,7 +26,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.hibernate.entity.UIStructure;
+import com.sdm.core.ui.UIInputType;
+import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.FileManager;
 
 /**
@@ -58,7 +59,7 @@ public class FileEntity extends DefaultEntity implements Serializable {
 	@UIStructure(order = 0, label = "#", readOnly = true)
 	private BigInteger id;
 
-	@UIStructure(order = 1, label = "Owner ID")
+	@UIStructure(order = 1, label = "Owner ID", inputType = UIInputType.number)
 	@Column(name = "owner", columnDefinition = "MEDIUMINT UNSIGNED", nullable = false)
 	private int ownerId;
 
