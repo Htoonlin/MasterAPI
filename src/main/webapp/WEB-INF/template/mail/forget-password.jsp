@@ -38,7 +38,7 @@
 			</p>
 			<p style="margin: 25px 0px;">
 				<a
-					href="<%= Globalizer.getBasePath(request) %>/reset-password.jsp?token=${token}"
+					href="<%= Globalizer.getSystemURL(request) %>/reset-password.jsp?token=${token}"
 					style="text-decoration: none; color: #fff; padding: 8px 20px; background: #FF7500; border: 1px solid #EA9D2A; font-weight: bold;">
 					Click here to reset your account now! </a>
 			</p>

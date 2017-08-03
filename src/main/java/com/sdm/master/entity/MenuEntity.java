@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.ws.rs.core.UriBuilder;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
@@ -24,10 +25,13 @@ import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
+import com.sdm.master.resource.MenuResource;
 
 @Audited
 @DynamicUpdate(value = true)
@@ -114,6 +118,13 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 		this.separator = separator;
 	}
 
+	@JsonGetter("&detail_link")
+	public LinkModel getSelfLink() {
+		String selfLink = UriBuilder.fromResource(MenuResource.class)
+				.path(Integer.toString(this.id)).build().toString();
+		return new LinkModel(selfLink);
+	}
+	
 	public String getSearch() {
 		return search;
 	}

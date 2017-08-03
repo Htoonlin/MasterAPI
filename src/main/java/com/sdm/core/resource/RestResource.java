@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
@@ -42,6 +44,9 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
 	protected abstract RestDAO getDAO();
 
+	@Context
+	protected HttpServletRequest SERVLET_REQUEST;
+
 	@PreDestroy
 	protected void onDestroy() {
 		if (getDAO() != null) {
@@ -66,6 +71,8 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 		try {
 			T instance = getEntityClass().newInstance();
 			response = new DefaultResponse<>(instance.getQueries());
+			response.setCode(HttpStatus.SC_OK);
+			response.setStatus(ResponseType.SUCCESS);
 			// Set Cache Header Info
 			response.setHeaders(this.buildCache());
 			return response;
@@ -85,7 +92,8 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
 		List<HashMap<String, Object>> data = (List<HashMap<String, Object>>) getDAO().fetchByName(queryName, params);
 		ListModel content = new ListModel<>(data);
-		response = new DefaultResponse<>(content);
+		response = new DefaultResponse<>(HttpStatus.SC_OK, ResponseType.SUCCESS, content);
+
 		response.setHeaders(this.buildCache());
 		return response;
 	}
@@ -101,7 +109,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 		try {
 			List<T> data = (List<T>) getDAO().fetchAll();
 			ListModel<T> content = new ListModel<T>(data);
-			response = new DefaultResponse<>(content);
+			response = new DefaultResponse<>(HttpStatus.SC_OK, ResponseType.SUCCESS, content);
 			response.setHeaders(this.buildCache());
 			return response;
 		} catch (Exception e) {
@@ -129,7 +137,11 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
 			Pagination<T> content = new Pagination<T>(data, total, pageId, pageSize);
 
-			response = new DefaultResponse<>(content);
+			// Generate HAL Links
+			content.genreateLinks(this.getClass());
+
+			response = new DefaultResponse<>(HttpStatus.SC_OK, ResponseType.SUCCESS, content);
+
 			response.setHeaders(this.buildCache());
 			return response;
 		} catch (Exception e) {
@@ -151,7 +163,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 			MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
 			return new DefaultResponse<>(message);
 		}
-		response = new DefaultResponse<T>(data);
+		response = new DefaultResponse<T>(HttpStatus.SC_OK, ResponseType.SUCCESS, data);
 		response.setHeaders(this.buildCache());
 		return response;
 	}
@@ -167,19 +179,19 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 			throw e;
 		}
 	}
-	
+
 	@Override
-	public IBaseResponse createByList(@Valid List<T> request){
+	public IBaseResponse createByList(@Valid List<T> request) {
 		try {
 			List<T> processedList = new ArrayList<>();
 			getDAO().beginTransaction();
-			for(T entity : request) {
+			for (T entity : request) {
 				T inserted = getDAO().insert(entity, false);
 				processedList.add(inserted);
 			}
 			getDAO().commitTransaction();
 			this.modifiedResource();
-			
+
 			ListModel<T> content = new ListModel<>(processedList);
 			return new DefaultResponse(201, ResponseType.SUCCESS, content);
 		} catch (Exception e) {
@@ -239,13 +251,12 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 			List<UIProperty> properties = instance.getStructure();
 			ListModel<UIProperty> content = new ListModel<UIProperty>(properties);
 
-			response = new DefaultResponse<>(content);
-			// Cache will hold a week of entity structure
-			response.setHeaders(this.buildCache(3600 * 24 * 7));
+			response = new DefaultResponse<>(HttpStatus.SC_OK, ResponseType.SUCCESS, content);
+			// Cache will hold a year of entity structure
+			response.setHeaders(this.buildCache(3600 * 24 * 365));
 			return response;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new WebApplicationException(e.getLocalizedMessage(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		}
-
 	}
 }

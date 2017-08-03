@@ -5,8 +5,6 @@
  */
 package com.sdm.master.entity;
 
-import static javax.persistence.GenerationType.IDENTITY;
-
 import java.io.Serializable;
 import java.util.Set;
 
@@ -14,11 +12,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.UriBuilder;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
@@ -31,8 +31,10 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
+import com.sdm.master.resource.RoleResource;
 
 /**
  *
@@ -55,7 +57,7 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	private String search;
 
 	@Id
-	@GeneratedValue(strategy = IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@UIStructure(order = 0, label = "#", readOnly = true)
 	@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
 	private int id;
@@ -74,6 +76,13 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	@NotFound(action = NotFoundAction.IGNORE)
 	@UIStructure(order = 3, label = "permissions", inputType = UIInputType.objectlist)
 	private Set<PermissionEntity> permissions;
+
+	@JsonGetter("&detail_link")
+	public LinkModel getSelfLink() {
+		String selfLink = UriBuilder.fromResource(RoleResource.class).path(Integer.toString(this.id)).build()
+				.toString();
+		return new LinkModel(selfLink);
+	}
 
 	public String getSearch() {
 		return search;

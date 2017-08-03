@@ -7,17 +7,23 @@ package com.sdm.core.response.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.ws.rs.core.UriBuilder;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.sdm.core.response.LinkModel;
 
 /**
  *
  * @author Htoonlin
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = { "total", "count", "current_page", "page_size", "page_count", "data" })
+@JsonPropertyOrder(value = { "total", "count", "&pagination_links", "current_page", "page_size", "page_count", "data" })
 public class Pagination<T extends Serializable> implements Serializable {
 
 	/**
@@ -29,6 +35,8 @@ public class Pagination<T extends Serializable> implements Serializable {
 	private int currentPage;
 	private int pageSize;
 
+	private Map<String, LinkModel> paginationLinks;
+
 	public Pagination() {
 	}
 
@@ -39,8 +47,8 @@ public class Pagination<T extends Serializable> implements Serializable {
 		this.pageSize = pageSize;
 	}
 
-	public double getPageCount() {
-		return Math.ceil((double) total / pageSize);
+	public int getPageCount() {
+		return (int) Math.ceil((double) total / pageSize);
 	}
 
 	public int getPageSize() {
@@ -84,6 +92,34 @@ public class Pagination<T extends Serializable> implements Serializable {
 
 	public void setData(List<T> data) {
 		this.data = data;
+	}
+
+	@JsonGetter("&pagination_links")
+	public Map<String, LinkModel> getLinks() {
+		return paginationLinks;
+	}
+
+	public void genreateLinks(Class<?> resourceClass) {
+		UriBuilder builder = UriBuilder.fromResource(resourceClass).queryParam("page", "{pageId}");
+		this.paginationLinks = new HashMap<>();
+		String href = builder.build(this.currentPage).toString();
+		this.paginationLinks.put("self", new LinkModel(href));
+
+		href = builder.build(1).toString();
+		this.paginationLinks.put("first", new LinkModel(href));
+
+		if (this.currentPage > 1) {
+			href = builder.build(this.currentPage - 1).toString();
+			this.paginationLinks.put("prev", new LinkModel(href));
+		}
+
+		if (this.currentPage < getPageCount()) {
+			href = builder.build(this.currentPage + 1).toString();
+			this.paginationLinks.put("next", new LinkModel(href));
+		}
+
+		href = builder.build(getPageCount()).toString();
+		this.paginationLinks.put("last", new LinkModel(href));
 	}
 
 	@Override

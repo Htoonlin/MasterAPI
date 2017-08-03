@@ -30,7 +30,7 @@
 			<p>Please click the following link to activate your account:</p>
 			<p style="margin: 25px 0px;">
 				<a
-					href="<%= Globalizer.getBasePath(request) %>/api/auth/activate/?token=${token}"
+					href="<%= Globalizer.getSystemURL(request) %>/api/auth/activate/?token=${token}"
 					style="text-decoration: none; color: #fff; padding: 8px 20px; background: #FF7500; border: 1px solid #EA9D2A; font-weight: bold;">
 					Click here to activate your account now! </a>
 			</p>

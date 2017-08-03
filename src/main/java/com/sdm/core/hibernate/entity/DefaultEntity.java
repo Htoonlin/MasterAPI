@@ -34,7 +34,7 @@ public class DefaultEntity implements IBaseRequest {
 	 * 
 	 */
 	private static final long serialVersionUID = -1235673932545866165L;
-
+	
 	private Date timestamp;
 
 	public Date getTimestamp() {

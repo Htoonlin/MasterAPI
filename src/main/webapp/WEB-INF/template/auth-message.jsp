@@ -20,7 +20,7 @@
 	crossorigin="anonymous"></script>
 <script type="text/javascript"
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<link href="<%= Globalizer.getBasePath(request) %>/css/auth.css"
+<link href="<%= Globalizer.getSystemURL(request) %>/css/auth.css"
 	rel="stylesheet" type="text/css" />
 </head>
 <body>

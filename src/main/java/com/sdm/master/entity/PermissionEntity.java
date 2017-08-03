@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.UriBuilder;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
@@ -22,10 +23,13 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
+import com.sdm.master.resource.PermissionResource;
 
 /**
  *
@@ -68,6 +72,13 @@ public class PermissionEntity extends DefaultEntity implements Serializable {
 	@UIStructure(order = 4, label = "Http-Method")
 	@Column(name = "requestMethod", columnDefinition = "varchar(10)", length = 10, nullable = false)
 	private String requestMethod;
+
+	@JsonGetter("&detail_link")
+	public LinkModel getSelfLink() {
+		String selfLink = UriBuilder.fromResource(PermissionResource.class).path(Long.toString(this.id)).build()
+				.toString();
+		return new LinkModel(selfLink);
+	}
 
 	public String getSearch() {
 		return search;

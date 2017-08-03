@@ -17,14 +17,14 @@ import com.sdm.core.hibernate.HibernateConnector;
  *
  * @author Htoonlin
  */
-@WebListener
+@WebListener()
 public class SundewServletContextListener implements ServletContextListener {
 
 	private static final Logger LOG = Logger.getLogger(SundewServletContextListener.class.getName());
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		LOG.info("System is starting ....");
+		LOG.info("System is starting ...");
 		Setting.getInstance().init();
 		HibernateConnector.init();
 	}

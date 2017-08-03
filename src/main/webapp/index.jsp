@@ -3,8 +3,10 @@
     Created on : 23-Jul-2016, 14:09:03
     Author     : Htoonlin
 --%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.sdm.core.Globalizer"%>
+<%@page import="com.sdm.core.Setting"%>
+<%@page import="javax.ws.rs.core.UriInfo"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.sdm.Constants"%>
 <%
 	String accessToken = "";
@@ -158,7 +160,7 @@
 				$("div#messageBox").attr('class', 'alert alert-' + type).html(html);
 			}
 			function call_api(url_suffix, method, data, callback) {
-				var url = "<%=Globalizer.getBasePath(request)%>/api/";
+				var url = "<%= Globalizer.getSystemURL(request) %>/api/";
 				url += $('input#txtAPIURL').val() + url_suffix;
 				$('label#lblWaiting').html("CONNECTING:" + url);
 				var request = {

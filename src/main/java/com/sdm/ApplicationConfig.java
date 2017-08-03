@@ -21,6 +21,7 @@ import com.sdm.core.di.HttpSessionFactory;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
+import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.resource.SystemResource;
 import com.sdm.core.util.JSPTemplateService;
 import com.sdm.core.util.mail.MailgunService;
@@ -62,6 +63,9 @@ public class ApplicationConfig extends ResourceConfig {
 				// Inject HttpSession
 				bindFactory(HttpSessionFactory.class).to(HttpSession.class).proxy(true).proxyForSameScope(false)
 						.in(RequestScoped.class);
+				
+				//Inject DefaultEntity
+				bind(DefaultEntity.class).to(DefaultEntity.class);
 
 				// Inject AccessManager
 				bindAsContract(AccessService.class).to(IAccessManager.class);

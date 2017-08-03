@@ -14,14 +14,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.ws.rs.core.UriBuilder;
 
 import org.hibernate.annotations.Formula;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIStructure;
+import com.sdm.sample.resource.CustomerResource;
 
 /**
  *
@@ -89,6 +93,13 @@ public class CustomerEntity extends DefaultEntity implements Serializable {
 	private Date registrationDate;
 
 	public CustomerEntity() {
+	}
+
+	@JsonGetter("&detail_link")
+	public LinkModel getSelfLink() {
+		String selfLink = UriBuilder.fromResource(CustomerResource.class)
+				.path(Integer.toString(this.id)).build().toString();
+		return new LinkModel(selfLink);
 	}
 
 	public String getSearch() {

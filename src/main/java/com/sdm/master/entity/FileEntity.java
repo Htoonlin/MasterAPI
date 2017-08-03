@@ -7,6 +7,8 @@ package com.sdm.master.entity;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -15,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.ws.rs.core.UriBuilder;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
@@ -26,9 +29,11 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.sdm.core.hibernate.entity.DefaultEntity;
+import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.FileManager;
+import com.sdm.master.resource.FileResource;
 
 /**
  *
@@ -116,6 +121,26 @@ public class FileEntity extends DefaultEntity implements Serializable {
 		this.storagePath = storagePath;
 	}
 
+	@JsonGetter("&file_links")
+	public Map<String, LinkModel> getLinks() {
+		UriBuilder baseUri = UriBuilder.fromResource(FileResource.class).path(this.id.toString());
+		Map<String, LinkModel> links = new HashMap<>();
+		String selfLink = baseUri.build().toString();
+		links.put("self", new LinkModel(selfLink));
+
+		baseUri.path("{access}");
+		
+		String privateDownload = baseUri.build("download").toString();
+		links.put("private", new LinkModel(privateDownload));
+
+		if (this.isPublicAccess()) {
+			String publicDownload = baseUri.build("public").toString();
+			links.put("public", new LinkModel(publicDownload));
+		}
+
+		return links;
+	}
+
 	public String getSearch() {
 		return search;
 	}
@@ -197,7 +222,7 @@ public class FileEntity extends DefaultEntity implements Serializable {
 	public void setExternalURL(String externalURL) {
 		this.externalUrl = externalURL;
 	}
-	
+
 	public boolean isPublicAccess() {
 		return publicAccess;
 	}

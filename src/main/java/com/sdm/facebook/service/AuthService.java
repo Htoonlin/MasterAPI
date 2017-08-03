@@ -40,7 +40,21 @@ public class AuthService extends GraphManager {
 			UserEntity authUser = userDao.userAuthByFacebook(facebookUser.id);
 			// If new user, migrate or create user
 			if (authUser == null) {
-				authUser = this.facebookMigrate(facebookUser);
+				authUser = userDao.getUserByEmail(facebookUser.email);
+				if (authUser == null) {
+					// New user registration with random password
+					String randomPassword = SecurityManager.randomPassword(32);
+					authUser = new UserEntity();
+					
+					authUser.setEmail(facebookUser.email);
+					authUser.setPassword(SecurityManager.hashString(facebookUser.email, randomPassword));
+					authUser.setStatus(UserEntity.ACTIVE);
+					this.mergeFacebookUser(authUser, facebookUser);
+					authUser = userDao.insert(authUser, false);
+				} else {
+					this.mergeFacebookUser(authUser, facebookUser);
+					return userDao.update(authUser, false);
+				}
 			} else if (!authUser.getFacebookId().equals(facebookUser.id)) {
 				authUser = null;
 			}
@@ -91,37 +105,22 @@ public class AuthService extends GraphManager {
 		return user;
 	}
 
-	private UserEntity facebookMigrate(FacebookUser facebookUser) {
-		UserEntity userEntity = userDao.getUserByEmail(facebookUser.email);
-		if (userEntity == null) {
-			String randomPassword = SecurityManager.randomPassword(32);
-			// New user registration with random password
-			userEntity = new UserEntity();
-			userEntity.setFacebookId(facebookUser.id);
-			userEntity.setDisplayName(facebookUser.name);
-			userEntity.setEmail(facebookUser.email);
-			userEntity.setPassword(SecurityManager.hashString(facebookUser.email, randomPassword));
-			userEntity.addExtra("locale", facebookUser.locale);
-			userEntity.addExtra("gender", facebookUser.gender);
-			userEntity.addExtra("age_range", facebookUser.ageRange);
-			userEntity.setStatus(UserEntity.ACTIVE);
-			userEntity = userDao.insert(userEntity, false);
+	private void mergeFacebookUser(UserEntity userEntity, FacebookUser facebookUser) {
+		userEntity.setFacebookId(facebookUser.id);
+		userEntity.setDisplayName(facebookUser.name);
 
-			// Create User Profile Picture by Facebook
-			FileEntity userPicture = new FileEntity();
-			userPicture.setExternalURL(facebookUser.picture);
-			userPicture.setOwnerId(userEntity.getId());
-			userPicture.setName(facebookUser.name);
-			userPicture.setExtension("jpg");
-			userPicture.setPublicAccess(true);
-			FileDAO fileDao = new FileDAO(userDao.getSession(), userDao.getUserId());
-			userEntity.setProfileImage(fileDao.insert(userPicture, false));
+		userEntity.addExtra("locale", facebookUser.locale);
+		userEntity.addExtra("gender", facebookUser.gender);
+		userEntity.addExtra("age_range", facebookUser.ageRange);
 
-			return userEntity;
-		} else {
-			userEntity.setFacebookId(facebookUser.id);
-			userEntity.addExtra("locale", facebookUser.locale);
-			return userDao.update(userEntity, false);
-		}
+		// Create User Profile Picture by Facebook
+		FileEntity userPicture = new FileEntity();
+		userPicture.setExternalURL(facebookUser.picture);
+		userPicture.setOwnerId(userEntity.getId());
+		userPicture.setName(facebookUser.name);
+		userPicture.setExtension("jpg");
+		userPicture.setPublicAccess(true);
+		FileDAO fileDao = new FileDAO(userDao.getSession(), userDao.getUserId());
+		userEntity.setProfileImage(fileDao.insert(userPicture, false));
 	}
 }

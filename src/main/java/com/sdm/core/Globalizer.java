@@ -54,7 +54,7 @@ public class Globalizer {
 		return false;
 	}
 
-	public static String getBasePath(HttpServletRequest request) {
+	public static String getSystemURL(HttpServletRequest request) {
 		String url = "";
 		String schema = request.getScheme();
 		String server = request.getServerName();
