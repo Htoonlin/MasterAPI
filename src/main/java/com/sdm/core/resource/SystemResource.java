@@ -19,6 +19,7 @@ import com.sdm.core.Setting;
 import com.sdm.core.exception.InvalidRequestException;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.MessageModel;
 
 /**
@@ -42,7 +43,7 @@ public class SystemResource extends DefaultResource {
 	}
 	
 	@GET
-	@Path("setting")
+	@Path("settings")
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse getAllSetting() {
 		DefaultResponse response = this.validateCache();
@@ -50,13 +51,13 @@ public class SystemResource extends DefaultResource {
 		if (response != null) {
 			return response;
 		}
-		response = new DefaultResponse<>(Setting.getInstance().getProperties());
+		response = new DefaultResponse<>(200, ResponseType.SUCCESS, Setting.getInstance().getProperties());
 		response.setHeaders(this.buildCache());
 		return response;
 	}
 
 	@POST
-	@Path("setting")
+	@Path("settings")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse updateAllSetting(HashMap<String, String> request) {
@@ -76,6 +77,6 @@ public class SystemResource extends DefaultResource {
 		Setting.getInstance().save();
 		this.modifiedResource();
 
-		return new DefaultResponse<>(Setting.getInstance().getProperties());
+		return new DefaultResponse<>(200, ResponseType.SUCCESS, Setting.getInstance().getProperties());
 	}
 }
