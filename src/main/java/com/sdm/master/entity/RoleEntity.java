@@ -70,10 +70,9 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	@Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
 	private String description;
 	
-	@NotAudited
-	@JsonIgnore
+	@NotAudited	
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "roleId", insertable = false, updatable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+	@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
 	@NotFound(action = NotFoundAction.IGNORE)
 	@UIStructure(order = 3, label = "permissions", inputType = UIInputType.objectlist)
 	private Set<PermissionEntity> permissions;
@@ -130,6 +129,9 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 
 	@JsonGetter("permission_count")
 	public int getPermissionCount() {
+		if(this.permissions == null) {
+			return 0;
+		}
 		return this.permissions.size();
 	}
 
