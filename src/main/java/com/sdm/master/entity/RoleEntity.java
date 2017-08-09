@@ -69,8 +69,9 @@ public class RoleEntity extends DefaultEntity implements Serializable {
 	@UIStructure(order = 2, label = "Description", inputType = UIInputType.textarea)
 	@Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
 	private String description;
-
+	
 	@NotAudited
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "roleId", insertable = false, updatable = false, columnDefinition = "MEDIUMINT UNSIGNED")
 	@NotFound(action = NotFoundAction.IGNORE)
