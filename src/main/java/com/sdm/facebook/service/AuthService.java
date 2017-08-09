@@ -108,6 +108,9 @@ public class AuthService extends GraphManager {
 	private void mergeFacebookUser(UserEntity userEntity, FacebookUser facebookUser) {
 		userEntity.setFacebookId(facebookUser.id);
 		userEntity.setDisplayName(facebookUser.name);
+		userEntity.setOtpExpired(null);
+		userEntity.setOtpToken(null);
+		userEntity.setStatus(UserEntity.ACTIVE);
 
 		userEntity.addExtra("locale", facebookUser.locale);
 		userEntity.addExtra("gender", facebookUser.gender);

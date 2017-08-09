@@ -26,6 +26,7 @@ import com.sdm.core.resource.SystemResource;
 import com.sdm.core.util.JSPTemplateService;
 import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.util.mail.WebMailService;
+import com.sdm.generate.resource.GenerateResource;
 import com.sdm.master.util.AccessService;
 
 /**
@@ -50,6 +51,7 @@ public class ApplicationConfig extends ResourceConfig {
 
 		LOG.info("Loading jersey features and providers");
 		register(SystemResource.class);
+		register(GenerateResource.class);
 		register(MultiPartFeature.class);
 		register(LoggingFeature.class);
 		register(JacksonFeature.class);
