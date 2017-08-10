@@ -1,6 +1,6 @@
 # MasterAPI
-This RestFUL framework was developed by using:
-- [jersey 2](https://jersey.github.io/) for restFUL.
+This RESTful framework was developed by following:
+- [jersey 2](https://jersey.github.io/) for RESTful.
 - [maven](https://maven.apache.org/) for repository management.
 - [hibernate ORM](http://hibernate.org/) and mysql jdbc for Database.
 
