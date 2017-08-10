@@ -1,26 +1,55 @@
 # MasterAPI
-### Setting Files
-Clone following files and edit: 
-- example.hibernate.cfg.xml => __hibernate.cfg.xml__ 
-- example.log4j.properties => __log4j.properties__
-- example.setting.properties => __setting.properties__
+This RestFUL framework was developed by using:
+- [jersey 2](https://jersey.github.io/) for restFUL.
+- [maven](https://maven.apache.org/) for repository management.
+- [hibernate ORM](http://hibernate.org/) and mysql jdbc for Database.
 
-### DATABASE Standard
-- Table => tbl_{name_with_snake_case}
-- View => vw_{name_with_snake_case}
-- Procedure => proc_{name_with_snake_case}
-- User Columns => {nameWithCamelCase}
-- Default Columns => {name_with_snake_case}
+So, you have to know about these frameworks and libraries to use the API.
 
-#### Default Columns
-|name|datatype|nullable|other|
----|---|:---:|---
-|version|int(11)|No|
-|created_by|int(11)|No|FK(tbl_user)|
-|modified_by|char(1)|No|FK(tbl_user)|
-|created_at|timestamp|No|Default CURRENT_TIMESTAMP|
-|modified_at|datetime|Yes|		
-|deleted_at|datetime|Yes|		
+## Getting started
+- Clone or download the project from [github](https://github.com/Htoonlin/MasterAPI)
+- Open project in Java IDE such as Eclipse, NetBeans, etc ...
+- Clone following setting file:
+	- example.hibernate.cfg.xml => __hibernate.cfg.xml__ 
+	- example.log4j.properties => __log4j.properties__
+	- example.setting.properties => __setting.properties__
+- Edit setting file
+- Ready for your API system now!
+
+### Require properties to edit in hibernate.cfg.xml
+Change database configuration at  (__line: 8-11__)
+
+```xml
+<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/{your_db_schema}?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=UTF-8</property>
+<property name="hibernate.connection.username">{your_db_user}</property>
+<property name="hibernate.connection.password">{your_db_password}</property>
+<property name="hibernate.default_schema">{your_db_schema}</property>
+```
+
+### Require properties to edit in log4j.properties
+Change Log directory name at (__line: 15__)
+
+```properties
+log4j.appender.fileAppender.File={your_log_directory}/sundew-api.log
+```
+
+### Require properties to edit in setting.properties
+Change directory for system at (__line: 9, 10__)
+
+```properties
+com.sdm.path={system_root_directory}
+com.sdm.path.storage={file_upload_directory}
+```
+
+Change mail setting for system mail service at (__line: 45-49__). You can use your gmail account.
+
+```properties
+com.sdm.mail.host=smtp.gmail.com
+com.sdm.mail.port=465
+com.sdm.mail.is_auth=true
+com.sdm.mail.user={your_gmail_account}
+com.sdm.mail.password={your_gmail_password}
+```
 ___
 
 ### Package Structure
@@ -44,3 +73,12 @@ ___
 - Naming Standard
 	- Property => camelCase
 	- Class => {ObjectNameWithCamelCase}DAO
+___
+	
+### DATABASE Standard
+- Table => tbl_{name_with_snake_case}
+- View => vw_{name_with_snake_case}
+- Procedure => proc_{name_with_snake_case}
+- User Columns => {nameWithCamelCase}	
+___
+
