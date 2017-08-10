@@ -4,7 +4,7 @@ This RestFUL framework was developed by using:
 - [maven](https://maven.apache.org/) for repository management.
 - [hibernate ORM](http://hibernate.org/) and mysql jdbc for Database.
 
-So, you have to know about these frameworks and libraries to use the API.
+So, you have to know about these frameworks and libraries.
 
 ## Getting started
 - Clone or download the project from [github](https://github.com/Htoonlin/MasterAPI)
