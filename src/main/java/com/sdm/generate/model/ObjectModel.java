@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sdm.core.Globalizer;
 
 public class ObjectModel implements Serializable {
 
@@ -20,10 +21,18 @@ public class ObjectModel implements Serializable {
 	private String moduleName;
 	private boolean auditable;
 	private Set<PropertyModel> properties;
-
+	
 	@JsonIgnore
 	public Map<String, Object> getTemplateData(){
 		Map<String, Object> data = new HashMap<>();
+		String packageName = "com.sdm." + moduleName.toLowerCase() + ".entity";
+		String resourceName = "com.sdm." + moduleName.toLowerCase() + ".resource." + Globalizer.capitalize(name) + "Resource";
+		String entityName = Globalizer.capitalize(name) + "Entity";
+		String serial = Long.toString(System.currentTimeMillis()) + "L";
+		if(this.properties != null) {
+			
+		}
+		 
 		data.put("moduleName", moduleName.toLowerCase());
 		data.put("name", this.name);
 		data.put("auditable", this.auditable);

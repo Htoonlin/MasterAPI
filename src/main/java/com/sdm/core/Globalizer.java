@@ -46,6 +46,10 @@ public class Globalizer {
 				"(?<=[A-Za-z])(?=[^A-Za-z])"), " ");
 	}
 
+	public static String capitalize(String word) {
+		return Character.toUpperCase(word.charAt(0)) + word.substring(1);
+	}
+	
 	public static boolean isHttpSuccess(String code) {
 		if (code.matches("\\d{3}")) {
 			int status = Integer.parseInt(code);

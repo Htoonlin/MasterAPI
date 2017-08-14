@@ -10,8 +10,7 @@ public class PropertyModel extends UIProperty implements Serializable {
 	 */
 	private static final long serialVersionUID = 1027044065751863361L;
 
-	private boolean auditable;
-	private boolean searchable;
+	private boolean auditable;	
 	private String jsonName;
 	private boolean jsonIgnore;
 	private String validationRegex;
@@ -22,14 +21,6 @@ public class PropertyModel extends UIProperty implements Serializable {
 
 	public void setAuditable(boolean auditable) {
 		this.auditable = auditable;
-	}
-
-	public boolean isSearchable() {
-		return searchable;
-	}
-
-	public void setSearchable(boolean searchable) {
-		this.searchable = searchable;
 	}
 
 	public String getJsonName() {
