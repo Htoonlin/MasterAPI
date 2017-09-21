@@ -36,62 +36,62 @@ import com.sdm.master.entity.PermissionEntity;
 @Path("permissions")
 public class PermissionResource extends RestResource<PermissionEntity, Long> {
 
-    private static final Logger LOG = Logger.getLogger(PermissionResource.class.getName());
+	private static final Logger LOG = Logger.getLogger(PermissionResource.class.getName());
 
-    private PermissionDAO mainDAO;
+	private PermissionDAO mainDAO;
 
-    @PostConstruct
-    protected void init() {
-        if (this.mainDAO == null) {
-            mainDAO = new PermissionDAO(getUserId());
-        }
-    }
+	@PostConstruct
+	protected void init() {
+		if (this.mainDAO == null) {
+			mainDAO = new PermissionDAO(getUserId());
+		}
+	}
 
-    @Override
-    protected RestDAO getDAO() {
-        return this.mainDAO;
-    }
+	@Override
+	protected RestDAO getDAO() {
+		return this.mainDAO;
+	}
 
-    @GET
-    @Path("/routes")
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getAllRoutes() {
-        ApplicationConfig config = new ApplicationConfig();
-        HashMap<String, List<RouteInfo>> resources = new HashMap<>();
-        for (Class clsResource : config.getClasses()) {
-            Resource resource = Resource.from(clsResource);
-            if (resource != null) {
-                String resourceName = clsResource.getName();
-                List<RouteInfo> routes = collectRoute(resource, "/");
-                resources.put(resourceName, routes);
-            }
-        }
-        return new DefaultResponse(200, ResponseType.SUCCESS, resources);
-    }
+	@GET
+	@Path("/routes")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getAllRoutes() {
+		ApplicationConfig config = new ApplicationConfig();
+		HashMap<String, List<RouteInfo>> resources = new HashMap<>();
+		for (Class clsResource : config.getClasses()) {
+			Resource resource = Resource.from(clsResource);
+			if (resource != null) {
+				String resourceName = clsResource.getName();
+				List<RouteInfo> routes = collectRoute(resource, "/");
+				resources.put(resourceName, routes);
+			}
+		}
+		return new DefaultResponse(200, ResponseType.SUCCESS, resources);
+	}
 
-    @GET
-    @Path("/role/{roleId:\\d+}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
-        DefaultResponse response = this.validateCache();
-        if (response != null) {
-            return response;
-        }
+	@GET
+	@Path("/role/{roleId:\\d+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
+		DefaultResponse response = this.validateCache();
+		if (response != null) {
+			return response;
+		}
 
-        try {
-            List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
-            ListModel<PermissionEntity> content = new ListModel<PermissionEntity>(permissions);
-            response = new DefaultResponse<>(content);
-            response.setHeaders(this.buildCache());
-            return response;
-        } catch (Exception e) {
-            LOG.error(e);
-            throw e;
-        }
-    }
+		try {
+			List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
+			ListModel<PermissionEntity> content = new ListModel<PermissionEntity>(permissions);
+			response = new DefaultResponse<>(content);
+			response.setHeaders(this.buildCache());
+			return response;
+		} catch (Exception e) {
+			LOG.error(e);
+			throw e;
+		}
+	}
 
-    @Override
-    protected Logger getLogger() {
-        return PermissionResource.LOG;
-    }
+	@Override
+	protected Logger getLogger() {
+		return PermissionResource.LOG;
+	}
 }

@@ -16,8 +16,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
  */
 public interface IBaseRequest extends Serializable {
 
-    @JsonSetter("timestamp")
-    void setTimestamp(long date);
+	@JsonSetter("timestamp")
+	void setTimestamp(long date);
 
-    Date getTimestamp();
+	Date getTimestamp();
 }

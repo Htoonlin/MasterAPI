@@ -4,23 +4,23 @@ import org.apache.log4j.Logger;
 
 public final class AuditStorage {
 
-    private static final Logger LOG = Logger.getLogger(AuditStorage.class.getName());
+	private static final Logger LOG = Logger.getLogger(AuditStorage.class.getName());
 
-    public static AuditStorage INSTANCE = new AuditStorage();
+	public static AuditStorage INSTANCE = new AuditStorage();
 
-    private static final ThreadLocal<Integer> storage = new ThreadLocal<>();
+	private static final ThreadLocal<Integer> storage = new ThreadLocal<>();
 
-    public void set(Integer value) {
-        LOG.info("Set User ID " + value);
-        storage.set(value);
-    }
+	public void set(Integer value) {
+		LOG.info("Set User ID " + value);
+		storage.set(value);
+	}
 
-    public void clean() {
-        LOG.info("Clean User ID from local storage.");
-        storage.remove();
-    }
+	public void clean() {
+		LOG.info("Clean User ID from local storage.");
+		storage.remove();
+	}
 
-    public Integer get() {
-        return storage.get();
-    }
+	public Integer get() {
+		return storage.get();
+	}
 }

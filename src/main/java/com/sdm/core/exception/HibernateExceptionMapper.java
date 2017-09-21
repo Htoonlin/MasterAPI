@@ -17,9 +17,9 @@ import org.hibernate.HibernateException;
 @Provider
 public class HibernateExceptionMapper extends DefaultExceptionMapper<HibernateException> {
 
-    @Override
-    public Response toResponse(HibernateException exception) {
-        return buildResponse(500, exception);
-    }
+	@Override
+	public Response toResponse(HibernateException exception) {
+		return buildResponse(500, exception);
+	}
 
 }

@@ -9,9 +9,9 @@ import com.sdm.core.Globalizer;
 @Provider
 public class JsonResolver implements ContextResolver<ObjectMapper> {
 
-    private final ObjectMapper jsonMapper = Globalizer.jsonMapper();
+	private final ObjectMapper jsonMapper = Globalizer.jsonMapper();
 
-    /*
+	/*
 	 * private Map<String, String> validateRequest(Class<I> reqClass, I request) {
 	 * Map<String, String> errors = new HashMap<>();
 	 * 
@@ -33,10 +33,10 @@ public class JsonResolver implements ContextResolver<ObjectMapper> {
 	 * Need to develop DB validation here } }
 	 * 
 	 * return errors; }
-     */
-    @Override
-    public ObjectMapper getContext(Class<?> type) {
-        return this.jsonMapper;
-    }
+	 */
+	@Override
+	public ObjectMapper getContext(Class<?> type) {
+		return this.jsonMapper;
+	}
 
 }

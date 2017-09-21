@@ -13,21 +13,21 @@ import com.sdm.master.entity.MenuEntity;
 @Path("menus")
 public class MenuResource extends RestResource<MenuEntity, Long> {
 
-    private MenuDAO mainDAO;
+	private MenuDAO mainDAO;
 
-    @PostConstruct
-    private void init() {
-        mainDAO = new MenuDAO(getUserId());
-    }
+	@PostConstruct
+	private void init() {
+		mainDAO = new MenuDAO(getUserId());
+	}
 
-    @Override
-    protected Logger getLogger() {
-        return Logger.getLogger(MenuResource.class);
-    }
+	@Override
+	protected Logger getLogger() {
+		return Logger.getLogger(MenuResource.class);
+	}
 
-    @Override
-    protected RestDAO getDAO() {
-        return this.mainDAO;
-    }
+	@Override
+	protected RestDAO getDAO() {
+		return this.mainDAO;
+	}
 
 }

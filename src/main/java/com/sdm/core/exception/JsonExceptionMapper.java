@@ -17,9 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Provider
 public class JsonExceptionMapper extends DefaultExceptionMapper<JsonProcessingException> {
 
-    @Override
-    public Response toResponse(JsonProcessingException exception) {
-        return buildResponse(422, exception);
-    }
+	@Override
+	public Response toResponse(JsonProcessingException exception) {
+		return buildResponse(422, exception);
+	}
 
 }

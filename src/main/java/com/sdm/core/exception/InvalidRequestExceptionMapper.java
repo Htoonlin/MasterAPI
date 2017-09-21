@@ -12,11 +12,11 @@ import com.sdm.core.response.ResponseType;
 @Provider
 public class InvalidRequestExceptionMapper extends DefaultExceptionMapper<InvalidRequestException> {
 
-    @Override
-    public Response toResponse(InvalidRequestException exception) {
-        DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.CLIENT_ERROR,
-                exception.getErrors());
-        return Response.status(HttpStatus.SC_BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON).build();
-    }
+	@Override
+	public Response toResponse(InvalidRequestException exception) {
+		DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.CLIENT_ERROR,
+				exception.getErrors());
+		return Response.status(HttpStatus.SC_BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON).build();
+	}
 
 }

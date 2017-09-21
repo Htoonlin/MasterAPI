@@ -30,123 +30,123 @@ import com.sdm.core.ui.UIStructure;
  */
 public class DefaultEntity implements IBaseRequest {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -1235673932545866165L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -1235673932545866165L;
 
-    private Date timestamp;
+	private Date timestamp;
 
-    public Date getTimestamp() {
-        return this.timestamp;
-    }
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
 
-    @Override
-    public void setTimestamp(long date) {
-        this.timestamp = new Date(date);
-    }
+	@Override
+	public void setTimestamp(long date) {
+		this.timestamp = new Date(date);
+	}
 
-    @JsonIgnore
-    public HashMap<String, Object> getQueries() {
-        HashMap<String, Object> queries = new HashMap<>();
-        NamedQueries namedQueries = this.getClass().getAnnotation(NamedQueries.class);
-        if (namedQueries != null) {
-            for (NamedQuery query : namedQueries.value()) {
-                queries.put(query.name(), query.query());
-            }
-        }
+	@JsonIgnore
+	public HashMap<String, Object> getQueries() {
+		HashMap<String, Object> queries = new HashMap<>();
+		NamedQueries namedQueries = this.getClass().getAnnotation(NamedQueries.class);
+		if (namedQueries != null) {
+			for (NamedQuery query : namedQueries.value()) {
+				queries.put(query.name(), query.query());
+			}
+		}
 
-        for (NamedQuery query : this.getClass().getAnnotationsByType(NamedQuery.class)) {
-            queries.put(query.name(), query.query());
-        }
+		for (NamedQuery query : this.getClass().getAnnotationsByType(NamedQuery.class)) {
+			queries.put(query.name(), query.query());
+		}
 
-        return queries;
-    }
+		return queries;
+	}
 
-    @JsonIgnore
-    public List<UIProperty> getStructure() {
-        List<UIProperty> properties = new ArrayList<>();
-        for (Field field : this.getClass().getDeclaredFields()) {
-            // Check has annotations
-            if (field.getAnnotations().length <= 0) {
-                continue;
-            }
+	@JsonIgnore
+	public List<UIProperty> getStructure() {
+		List<UIProperty> properties = new ArrayList<>();
+		for (Field field : this.getClass().getDeclaredFields()) {
+			// Check has annotations
+			if (field.getAnnotations().length <= 0) {
+				continue;
+			}
 
-            // Check JsonIgnore || Transient
-            if (field.getAnnotation(JsonIgnore.class) != null || field.getAnnotation(Transient.class) != null) {
-                continue;
-            }
+			// Check JsonIgnore || Transient
+			if (field.getAnnotation(JsonIgnore.class) != null || field.getAnnotation(Transient.class) != null) {
+				continue;
+			}
 
-            UIProperty property = new UIProperty();
-            // General info
-            property.setName(field.getName());
-            property.setType(field.getType().getSimpleName());
+			UIProperty property = new UIProperty();
+			// General info
+			property.setName(field.getName());
+			property.setType(field.getType().getSimpleName());
 
-            if (field.getAnnotation(Id.class) != null) {
-                property.setPrimary(true);
-            }
+			if (field.getAnnotation(Id.class) != null) {
+				property.setPrimary(true);
+			}
 
-            // UI Info
-            UIStructure structure = field.getAnnotation(UIStructure.class);
-            if (structure != null) {
-                property.setInputType(structure.inputType());
-                property.setLabel(structure.label());
-                property.setHideInGrid(structure.hideInGrid());
-                property.setReadOnly(structure.readOnly());
-                property.setOrderIndex(structure.order());
-            }
+			// UI Info
+			UIStructure structure = field.getAnnotation(UIStructure.class);
+			if (structure != null) {
+				property.setInputType(structure.inputType());
+				property.setLabel(structure.label());
+				property.setHideInGrid(structure.hideInGrid());
+				property.setReadOnly(structure.readOnly());
+				property.setOrderIndex(structure.order());
+			}
 
-            // Db Info
-            Column column = field.getAnnotation(Column.class);
-            if (column != null) {
-                if (column.nullable()) {
-                    property.setRequired(column.nullable());
-                }
-                property.setLength(column.length());
-            }
+			// Db Info
+			Column column = field.getAnnotation(Column.class);
+			if (column != null) {
+				if (column.nullable()) {
+					property.setRequired(column.nullable());
+				}
+				property.setLength(column.length());
+			}
 
-            // Validations Info
-            properties.add(property);
-        }
+			// Validations Info
+			properties.add(property);
+		}
 
-        Collections.sort(properties, new Comparator<UIProperty>() {
-            @Override
-            public int compare(UIProperty t1, UIProperty t2) {
-                return Integer.compare(t1.getOrderIndex(), t2.getOrderIndex());
-            }
-        });
+		Collections.sort(properties, new Comparator<UIProperty>() {
+			@Override
+			public int compare(UIProperty t1, UIProperty t2) {
+				return Integer.compare(t1.getOrderIndex(), t2.getOrderIndex());
+			}
+		});
 
-        return properties;
-    }
+		return properties;
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        DefaultEntity other = (DefaultEntity) obj;
-        if (timestamp == null) {
-            if (other.timestamp != null) {
-                return false;
-            }
-        } else if (!timestamp.equals(other.timestamp)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		DefaultEntity other = (DefaultEntity) obj;
+		if (timestamp == null) {
+			if (other.timestamp != null) {
+				return false;
+			}
+		} else if (!timestamp.equals(other.timestamp)) {
+			return false;
+		}
+		return true;
+	}
 
 }

@@ -29,47 +29,47 @@ import com.sdm.core.di.ITemplateManager;
 @Service
 public class JSPTemplateService implements ITemplateManager {
 
-    private class TemplateWriter extends HttpServletResponseWrapper {
+	private class TemplateWriter extends HttpServletResponseWrapper {
 
-        private final CharArrayWriter charArray = new CharArrayWriter();
+		private final CharArrayWriter charArray = new CharArrayWriter();
 
-        public TemplateWriter(HttpServletResponse response) {
-            super(response);
-        }
+		public TemplateWriter(HttpServletResponse response) {
+			super(response);
+		}
 
-        @Override
-        public PrintWriter getWriter() throws IOException {
-            return new PrintWriter(charArray);
-        }
+		@Override
+		public PrintWriter getWriter() throws IOException {
+			return new PrintWriter(charArray);
+		}
 
-        public String getContent() {
-            return charArray.toString();
-        }
-    }
+		public String getContent() {
+			return charArray.toString();
+		}
+	}
 
-    private static final Logger LOG = Logger.getLogger(JSPTemplateService.class.getName());
+	private static final Logger LOG = Logger.getLogger(JSPTemplateService.class.getName());
 
-    @Context
-    private HttpServletResponse response;
+	@Context
+	private HttpServletResponse response;
 
-    @Context
-    private HttpServletRequest request;
+	@Context
+	private HttpServletRequest request;
 
-    @Override
-    public String buildTemplate(String template, Map<String, Object> data) {
-        try {
-            for (Map.Entry<String, Object> entry : data.entrySet()) {
-                request.setAttribute(entry.getKey(), entry.getValue());
-            }
-            TemplateWriter writer = new TemplateWriter(response);
-            template = Setting.getInstance().get(Setting.TEMPLATE_DIRECTORY, "/WEB-INF/template/") + template;
-            request.getRequestDispatcher(template).forward(request, writer);
-            return writer.getContent();
-        } catch (ServletException | IOException ex) {
-            LOG.error(ex);
-        }
+	@Override
+	public String buildTemplate(String template, Map<String, Object> data) {
+		try {
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+				request.setAttribute(entry.getKey(), entry.getValue());
+			}
+			TemplateWriter writer = new TemplateWriter(response);
+			template = Setting.getInstance().get(Setting.TEMPLATE_DIRECTORY, "/WEB-INF/template/") + template;
+			request.getRequestDispatcher(template).forward(request, writer);
+			return writer.getContent();
+		} catch (ServletException | IOException ex) {
+			LOG.error(ex);
+		}
 
-        return "";
-    }
+		return "";
+	}
 
 }

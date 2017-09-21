@@ -18,37 +18,37 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
  */
 public final class HibernateConnector {
 
-    private static final Logger LOG = Logger.getLogger(HibernateConnector.class.getName());
-    private static int instance_count = 0;
-    private static SessionFactory mainFactory;
+	private static final Logger LOG = Logger.getLogger(HibernateConnector.class.getName());
+	private static int instance_count = 0;
+	private static SessionFactory mainFactory;
 
-    public static synchronized void init() {
-        LOG.info("Creating new hibernate instance....");
-        StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
-        try {
-            mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-            instance_count++;
-            LOG.info("Current Hibernate Instance Count : " + instance_count);
-        } catch (Exception e) {
-            LOG.error(e);
-            StandardServiceRegistryBuilder.destroy(registry);
-            throw e;
-        }
-    }
+	public static synchronized void init() {
+		LOG.info("Creating new hibernate instance....");
+		StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
+		try {
+			mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+			instance_count++;
+			LOG.info("Current Hibernate Instance Count : " + instance_count);
+		} catch (Exception e) {
+			LOG.error(e);
+			StandardServiceRegistryBuilder.destroy(registry);
+			throw e;
+		}
+	}
 
-    public static synchronized SessionFactory getFactory() throws HibernateException {
-        if (mainFactory.isClosed()) {
-            init();
-        }
-        return mainFactory;
-    }
+	public static synchronized SessionFactory getFactory() throws HibernateException {
+		if (mainFactory.isClosed()) {
+			init();
+		}
+		return mainFactory;
+	}
 
-    public static synchronized void shutdown() {
-        if (mainFactory != null && mainFactory.isOpen()) {
-            LOG.info("Shutting down hibernate session factory");
-            instance_count--;
-            mainFactory.close();
-            LOG.info("Current Hibernate Instance Count : " + instance_count);
-        }
-    }
+	public static synchronized void shutdown() {
+		if (mainFactory != null && mainFactory.isOpen()) {
+			LOG.info("Shutting down hibernate session factory");
+			instance_count--;
+			mainFactory.close();
+			LOG.info("Current Hibernate Instance Count : " + instance_count);
+		}
+	}
 }

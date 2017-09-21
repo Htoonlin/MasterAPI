@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class NullExceptionMapper extends DefaultExceptionMapper<NullPointerException> {
 
-    @Override
-    public Response toResponse(NullPointerException exception) {
-        return buildResponse(204, exception);
-    }
+	@Override
+	public Response toResponse(NullPointerException exception) {
+		return buildResponse(204, exception);
+	}
 
 }

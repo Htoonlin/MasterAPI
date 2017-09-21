@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class IllegalStateExceptionMapper extends DefaultExceptionMapper<IllegalStateException> {
 
-    @Override
-    public Response toResponse(IllegalStateException exception) {
-        return buildResponse(500, exception);
-    }
+	@Override
+	public Response toResponse(IllegalStateException exception) {
+		return buildResponse(500, exception);
+	}
 
 }

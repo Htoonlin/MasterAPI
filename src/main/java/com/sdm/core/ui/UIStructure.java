@@ -18,14 +18,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface UIStructure {
 
-    int order() default 0;
+	int order() default 0;
 
-    boolean hideInGrid() default false;
+	boolean hideInGrid() default false;
 
-    boolean readOnly() default false;
+	boolean readOnly() default false;
 
-    String label() default "";
+	String label() default "";
 
-    UIInputType inputType() default UIInputType.text;
+	UIInputType inputType() default UIInputType.text;
 
 }

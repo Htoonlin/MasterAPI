@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class GenericExceptionMapper extends DefaultExceptionMapper<Exception> {
 
-    @Override
-    public Response toResponse(Exception exception) {
-        return this.buildResponse(500, exception);
-    }
+	@Override
+	public Response toResponse(Exception exception) {
+		return this.buildResponse(500, exception);
+	}
 
 }

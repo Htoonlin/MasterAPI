@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @Provider
 public class JsonMappingExceptionMapper extends DefaultExceptionMapper<JsonMappingException> {
 
-    @Override
-    public Response toResponse(JsonMappingException exception) {
-        return buildResponse(422, exception);
-    }
+	@Override
+	public Response toResponse(JsonMappingException exception) {
+		return buildResponse(422, exception);
+	}
 
 }

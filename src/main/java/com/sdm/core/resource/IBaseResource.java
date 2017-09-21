@@ -19,16 +19,16 @@ import com.sdm.core.response.IBaseResponse;
  */
 public interface IBaseResource {
 
-    public Object getHttpSession();
+	public Object getHttpSession();
 
-    public int getUserId();
+	public int getUserId();
 
-    public UriInfo getUriInfo();
+	public UriInfo getUriInfo();
 
-    public void setUriInfo(UriInfo uriInfo);
+	public void setUriInfo(UriInfo uriInfo);
 
-    @GET
-    @Path("route")
-    @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getRoutes();
+	@GET
+	@Path("route")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse getRoutes();
 }

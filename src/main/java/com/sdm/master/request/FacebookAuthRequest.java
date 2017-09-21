@@ -21,74 +21,74 @@ import com.sdm.core.request.IBaseRequest;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class FacebookAuthRequest implements IBaseRequest {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -637231624670219448L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -637231624670219448L;
 
-    private String accessToken;
+	private String accessToken;
 
-    private String deviceId;
+	private String deviceId;
 
-    private Date timestamp;
+	private Date timestamp;
 
-    @NotBlank(message = "DeviceID can't be blank.")
-    public String getDeviceId() {
-        return this.deviceId;
-    }
+	@NotBlank(message = "DeviceID can't be blank.")
+	public String getDeviceId() {
+		return this.deviceId;
+	}
 
-    public void setDeviceId(String value) {
-        this.deviceId = value;
-    }
+	public void setDeviceId(String value) {
+		this.deviceId = value;
+	}
 
-    @NotBlank(message = "Token can't be blank.")
-    @Size(min = 6, max = 255)
-    public String getAccessToken() {
-        return this.accessToken;
-    }
+	@NotBlank(message = "Token can't be blank.")
+	@Size(min = 6, max = 255)
+	public String getAccessToken() {
+		return this.accessToken;
+	}
 
-    public void setAccessToken(String value) {
-        this.accessToken = value;
-    }
+	public void setAccessToken(String value) {
+		this.accessToken = value;
+	}
 
-    @Override
-    public Date getTimestamp() {
-        return this.timestamp;
-    }
+	@Override
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
 
-    @Override
-    public void setTimestamp(long date) {
-        this.timestamp = new Date(date);
-    }
+	@Override
+	public void setTimestamp(long date) {
+		this.timestamp = new Date(date);
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((accessToken == null) ? 0 : accessToken.hashCode());
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((accessToken == null) ? 0 : accessToken.hashCode());
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        FacebookAuthRequest other = (FacebookAuthRequest) obj;
-        if (accessToken == null) {
-            if (other.accessToken != null) {
-                return false;
-            }
-        } else if (!accessToken.equals(other.accessToken)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		FacebookAuthRequest other = (FacebookAuthRequest) obj;
+		if (accessToken == null) {
+			if (other.accessToken != null) {
+				return false;
+			}
+		} else if (!accessToken.equals(other.accessToken)) {
+			return false;
+		}
+		return true;
+	}
 
 }

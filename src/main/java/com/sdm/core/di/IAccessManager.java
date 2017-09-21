@@ -18,7 +18,7 @@ import io.jsonwebtoken.Claims;
 @Contract
 public interface IAccessManager {
 
-    boolean validateToken(Claims request);
+	boolean validateToken(Claims request);
 
-    boolean checkPermission(Claims request, Method method, String httpMethod);
+	boolean checkPermission(Claims request, Method method, String httpMethod);
 }

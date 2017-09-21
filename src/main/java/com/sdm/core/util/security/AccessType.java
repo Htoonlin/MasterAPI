@@ -11,19 +11,19 @@ package com.sdm.core.util.security;
  */
 public enum AccessType {
 
-    READ(1), // 1 << 0
-    CREATE(2), // 1 << 1
-    UPDATE(4), // 1 << 2
-    DELETE(8); // 1 << 3
+	READ(1), // 1 << 0
+	CREATE(2), // 1 << 1
+	UPDATE(4), // 1 << 2
+	DELETE(8); // 1 << 3
 
-    private final int value;
+	private final int value;
 
-    private AccessType(int value) {
-        this.value = value;
-    }
+	private AccessType(int value) {
+		this.value = value;
+	}
 
-    public int getValue() {
-        return value;
-    }
+	public int getValue() {
+		return value;
+	}
 
 }

@@ -15,9 +15,9 @@ import org.hibernate.type.StandardBasicTypes;
  */
 public class SundewMySQLDialect extends MySQL57InnoDBDialect {
 
-    public SundewMySQLDialect() {
-        super();
-        registerFunction("regexp", new SQLFunctionTemplate(StandardBasicTypes.INTEGER, "?1 REGEXP ?2"));
-    }
+	public SundewMySQLDialect() {
+		super();
+		registerFunction("regexp", new SQLFunctionTemplate(StandardBasicTypes.INTEGER, "?1 REGEXP ?2"));
+	}
 
 }

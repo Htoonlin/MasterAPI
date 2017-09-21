@@ -22,24 +22,24 @@ import com.sdm.master.entity.RoleEntity;
 @Path("roles")
 public class RoleResource extends RestResource<RoleEntity, Integer> {
 
-    private static final Logger LOG = Logger.getLogger(RoleResource.class.getName());
+	private static final Logger LOG = Logger.getLogger(RoleResource.class.getName());
 
-    private RoleDAO mainDAO;
+	private RoleDAO mainDAO;
 
-    @PostConstruct
-    private void init() {
-        if (this.mainDAO == null) {
-            this.mainDAO = new RoleDAO(getUserId());
-        }
-    }
+	@PostConstruct
+	private void init() {
+		if (this.mainDAO == null) {
+			this.mainDAO = new RoleDAO(getUserId());
+		}
+	}
 
-    @Override
-    protected RestDAO getDAO() {
-        return this.mainDAO;
-    }
+	@Override
+	protected RestDAO getDAO() {
+		return this.mainDAO;
+	}
 
-    @Override
-    protected Logger getLogger() {
-        return RoleResource.LOG;
-    }
+	@Override
+	protected Logger getLogger() {
+		return RoleResource.LOG;
+	}
 }
