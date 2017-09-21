@@ -24,7 +24,7 @@ import com.sdm.core.hibernate.audit.AuditStorage;
  */
 public class DefaultDAO {
 
-	private final Session mainSession;
+	private Session mainSession;
 	protected final int USER_ID;
 
 	public DefaultDAO(int userId) {
@@ -36,9 +36,9 @@ public class DefaultDAO {
 		this.mainSession = session;
 	}
 
-	public Session getSession() {
+	public Session getSession() {		
 		if (this.mainSession == null || !this.mainSession.isOpen()) {
-			return HibernateConnector.getFactory().getCurrentSession();
+			this.mainSession = HibernateConnector.getFactory().openSession();
 		}
 		return this.mainSession;
 	}

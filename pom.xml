@@ -27,6 +27,7 @@
     <dependencies>
 
         <!-- iText PDF Manager -->
+        <!-- 
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
@@ -37,7 +38,8 @@
             <artifactId>xmlworker</artifactId>
             <version>${itext.version}</version>
         </dependency>
-
+ 		-->
+ 
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>

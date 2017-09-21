@@ -8,6 +8,7 @@ package com.sdm.core.resource;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -68,18 +69,29 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
 	@Path("multi")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse createByList(@Valid List<T> request);
+	public IBaseResponse multiCreate(@Valid List<T> request);
 
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse update(@Valid T request, @PathParam("id") PK id);
+	
+	@PUT
+	@Path("multi")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse multiUpdate(@Valid List<T> request);
 
 	@DELETE
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public IBaseResponse remove(@PathParam("id") PK id);
+	
+	@DELETE
+	@Path("multi")
+	@Produces(MediaType.APPLICATION_JSON)
+	public IBaseResponse multiRemove(Set<PK> ids);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

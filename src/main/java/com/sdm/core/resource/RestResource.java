@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
@@ -181,7 +182,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
-	public IBaseResponse createByList(@Valid List<T> request) {
+	public IBaseResponse multiCreate(@Valid List<T> request) {
 		try {
 			List<T> processedList = new ArrayList<>();
 			getDAO().beginTransaction();
@@ -219,6 +220,27 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 	}
 
 	@Override
+	public IBaseResponse multiUpdate(@Valid List<T> request) {
+		try {
+			List<T> processedList = new ArrayList<>();
+			getDAO().beginTransaction();
+			for (T entity : request) {
+				T updated = getDAO().update(entity, false);
+				processedList.add(updated);
+			}
+			getDAO().commitTransaction();
+			this.modifiedResource();
+		
+			ListModel<T> content = new ListModel<>(processedList);
+			return new DefaultResponse(202, ResponseType.SUCCESS, content);
+		} catch (Exception e) {
+			getDAO().rollbackTransaction();
+			getLogger().error(e);
+			throw e;
+		}
+	}
+
+	@Override
 	public IBaseResponse remove(PK id) {
 		try {
 			MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
@@ -232,6 +254,30 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
 			message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
 			return new DefaultResponse<>(202, ResponseType.SUCCESS, message);
+		} catch (Exception e) {
+			getLogger().error(e);
+			throw e;
+		}
+	}
+	
+	@Override
+	public IBaseResponse multiRemove(Set<PK> ids) {
+		try {
+			List<T> processedList = new ArrayList<>();
+			getDAO().beginTransaction();
+			for (PK id : ids) {
+				T removeEntity = getDAO().fetchById(id);
+				if(removeEntity == null) {
+					continue;
+				}
+				getDAO().delete(removeEntity, false);
+				processedList.add(removeEntity);
+			}
+			getDAO().commitTransaction();
+			this.modifiedResource();
+		
+			ListModel<T> content = new ListModel<>(processedList);
+			return new DefaultResponse(202, ResponseType.SUCCESS, content);
 		} catch (Exception e) {
 			getLogger().error(e);
 			throw e;
