@@ -12,11 +12,12 @@ import javax.ws.rs.ext.Provider;
 @Priority(Priorities.HEADER_DECORATOR)
 public class HttpMethodOverrideRequestFilter implements ContainerRequestFilter {
 
-	@Override
-	public void filter(ContainerRequestContext requestContext) throws IOException {
-		String methodOverride = requestContext.getHeaderString("X-Http-Method-Override");
-		if (methodOverride != null)
-			requestContext.setMethod(methodOverride);
-	}
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        String methodOverride = requestContext.getHeaderString("X-Http-Method-Override");
+        if (methodOverride != null) {
+            requestContext.setMethod(methodOverride);
+        }
+    }
 
 }

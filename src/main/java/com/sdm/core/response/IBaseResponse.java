@@ -15,20 +15,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder({ "code", "status", "content", "timestamp" })
+@JsonPropertyOrder({"code", "status", "content", "timestamp"})
 public interface IBaseResponse {
-	@JsonGetter("code")
-	public int getCode();
 
-	@JsonGetter("status")
-	public ResponseType getStatus();
+    @JsonGetter("code")
+    public int getCode();
 
-	@JsonGetter("content")
-	public Object getContent();
+    @JsonGetter("status")
+    public ResponseType getStatus();
 
-	@JsonGetter("timestamp")
-	public long getTimestamp();
+    @JsonGetter("content")
+    public Object getContent();
 
-	@JsonIgnore
-	public Map<String, Object> getHeaders();
+    @JsonGetter("timestamp")
+    public long getTimestamp();
+
+    @JsonIgnore
+    public Map<String, Object> getHeaders();
 }

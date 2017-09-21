@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 public interface FacebookSerialize extends Serializable {
 
-	public void deserialize(JSONObject value);
-	
-	public JSONObject serialize();
+    public void deserialize(JSONObject value);
+
+    public JSONObject serialize();
 }

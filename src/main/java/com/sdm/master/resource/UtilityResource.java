@@ -27,59 +27,59 @@ import com.sdm.master.util.GeoIPManager;
 @Path("util")
 public class UtilityResource extends DefaultResource {
 
-	@PermitAll
-	@GET
-	@Path("ip/{address}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse checkIP(@Context HttpServletRequest request,
-			@DefaultValue("") @PathParam("address") String address) throws Exception {
-		GeoIPManager ipManager = new GeoIPManager();
-		if (address.isEmpty()) {
-			address = request.getRemoteAddr();
-		}
-		return new DefaultResponse<HashMap<String, Object>>(ipManager.lookupInfo(address));
-	}
+    @PermitAll
+    @GET
+    @Path("ip/{address}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse checkIP(@Context HttpServletRequest request,
+            @DefaultValue("") @PathParam("address") String address) throws Exception {
+        GeoIPManager ipManager = new GeoIPManager();
+        if (address.isEmpty()) {
+            address = request.getRemoteAddr();
+        }
+        return new DefaultResponse<HashMap<String, Object>>(ipManager.lookupInfo(address));
+    }
 
-	@PermitAll
-	@GET
-	@Path("jwt")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse generateJWTKey() throws Exception {
-		return new DefaultResponse<String>(SecurityManager.generateJWTKey());
-	}
+    @PermitAll
+    @GET
+    @Path("jwt")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse generateJWTKey() throws Exception {
+        return new DefaultResponse<String>(SecurityManager.generateJWTKey());
+    }
 
-	@PermitAll
-	@GET
-	@Path("strRandom/{len}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse generateRandomString(@DefaultValue("10") @PathParam("len") int length) throws Exception {
-		return new DefaultResponse<String>(Globalizer.generateToken(length));
-	}
+    @PermitAll
+    @GET
+    @Path("strRandom/{len}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse generateRandomString(@DefaultValue("10") @PathParam("len") int length) throws Exception {
+        return new DefaultResponse<String>(Globalizer.generateToken(length));
+    }
 
-	@PermitAll
-	@GET
-	@Path("lang")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse langConverter(@QueryParam("input") String input) throws Exception {
-		HashMap<String, String> content = new HashMap<>();
-		if (MyanmarFontManager.isMyanmar(input)) {
-			String msgString = "Yes! It is myanmar";
-			if (MyanmarFontManager.isUnicode(input)) {
-				msgString += " unicode font.";
-				content.put("unicode", input);
-				content.put("zawgyi", MyanmarFontManager.toZawgyi(input));
-			} else if (MyanmarFontManager.isZawgyi(input)) {
-				msgString += " zawgyi font.";
-				content.put("zawgyi", input);
-				content.put("unicode", MyanmarFontManager.toUnicode(input));
-			}
-			content.put("message", msgString);
-			return new DefaultResponse(content);
-		} else {
-			MessageModel message = new MessageModel(HttpStatus.SC_BAD_REQUEST, "Invalid font!",
-					"No! It is not myanmar font.");
-			return new DefaultResponse<>(message);
-		}
-	}
+    @PermitAll
+    @GET
+    @Path("lang")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse langConverter(@QueryParam("input") String input) throws Exception {
+        HashMap<String, String> content = new HashMap<>();
+        if (MyanmarFontManager.isMyanmar(input)) {
+            String msgString = "Yes! It is myanmar";
+            if (MyanmarFontManager.isUnicode(input)) {
+                msgString += " unicode font.";
+                content.put("unicode", input);
+                content.put("zawgyi", MyanmarFontManager.toZawgyi(input));
+            } else if (MyanmarFontManager.isZawgyi(input)) {
+                msgString += " zawgyi font.";
+                content.put("zawgyi", input);
+                content.put("unicode", MyanmarFontManager.toUnicode(input));
+            }
+            content.put("message", msgString);
+            return new DefaultResponse(content);
+        } else {
+            MessageModel message = new MessageModel(HttpStatus.SC_BAD_REQUEST, "Invalid font!",
+                    "No! It is not myanmar font.");
+            return new DefaultResponse<>(message);
+        }
+    }
 
 }

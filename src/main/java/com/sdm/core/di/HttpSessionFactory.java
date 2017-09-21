@@ -18,21 +18,21 @@ import org.glassfish.hk2.api.Factory;
  */
 public class HttpSessionFactory implements Factory<HttpSession> {
 
-	private final HttpServletRequest request;
+    private final HttpServletRequest request;
 
-	@Inject
-	public HttpSessionFactory(Provider<HttpServletRequest> requestProvider) {
-		this.request = requestProvider.get();
-	}
+    @Inject
+    public HttpSessionFactory(Provider<HttpServletRequest> requestProvider) {
+        this.request = requestProvider.get();
+    }
 
-	@Override
-	public HttpSession provide() {
-		return request.getSession();
-	}
+    @Override
+    public HttpSession provide() {
+        return request.getSession();
+    }
 
-	@Override
-	public void dispose(HttpSession instance) {
+    @Override
+    public void dispose(HttpSession instance) {
 
-	}
+    }
 
 }

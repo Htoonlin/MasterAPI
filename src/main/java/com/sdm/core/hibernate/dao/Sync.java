@@ -10,5 +10,5 @@ package com.sdm.core.hibernate.dao;
  * @author htoonlin
  */
 public enum Sync {
-	INSERT, UPDATE, REMOVE;
+    INSERT, UPDATE, REMOVE;
 }

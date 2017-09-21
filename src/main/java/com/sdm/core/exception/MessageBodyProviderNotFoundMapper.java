@@ -6,9 +6,9 @@ import org.glassfish.jersey.message.internal.MessageBodyProviderNotFoundExceptio
 
 public class MessageBodyProviderNotFoundMapper extends DefaultExceptionMapper<MessageBodyProviderNotFoundException> {
 
-	@Override
-	public Response toResponse(MessageBodyProviderNotFoundException exception) {
-		return buildResponse(422, exception);
-	}
+    @Override
+    public Response toResponse(MessageBodyProviderNotFoundException exception) {
+        return buildResponse(422, exception);
+    }
 
 }

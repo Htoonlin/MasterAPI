@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/x-java-source,java; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+         pageEncoding="ISO-8859-1"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="core" %>
 
 package com.sdm.${moduleName}.entity;    
-    
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -30,187 +30,187 @@ import com.sdm.${moduleName}.resource.${name}Resource;
 @Entity(name = "${moduleName}_${name}Entity")
 @Table(name = "${tableName}")
 public class ${name}Entity extends DefaultEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+private static final long serialVersionUID = 1L;
 
-	@NotAudited
-	@JsonIgnore
-	@Formula(value = "concat(name, email, phone, company, address, city, country, remark)")
-	private String search;
+@NotAudited
+@JsonIgnore
+@Formula(value = "concat(name, email, phone, company, address, city, country, remark)")
+private String search;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@UIStructure(order = 0, label = "#", readOnly = true)
-	@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
-	private int id;
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+@UIStructure(order = 0, label = "#", readOnly = true)
+@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+private int id;
 
-	@UIStructure(order = 1, label = "Customer Name")
-	@Column(name = "name", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
-	private String name;
+@UIStructure(order = 1, label = "Customer Name")
+@Column(name = "name", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
+private String name;
 
-	@UIStructure(order = 2, label = "E-mail")
-	@Column(name = "email", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
-	private String email;
+@UIStructure(order = 2, label = "E-mail")
+@Column(name = "email", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
+private String email;
 
-	@UIStructure(order = 3, label = "Phone")
-	@Column(name = "phone", nullable = true, columnDefinition = "VARCHAR(100)", length = 100)
-	private String phone;
+@UIStructure(order = 3, label = "Phone")
+@Column(name = "phone", nullable = true, columnDefinition = "VARCHAR(100)", length = 100)
+private String phone;
 
-	@UIStructure(order = 4, label = "Company Name")
-	@Column(name = "company", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
-	private String company;
+@UIStructure(order = 4, label = "Company Name")
+@Column(name = "company", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
+private String company;
 
-	@UIStructure(order = 5, label = "Bank Account")
-	@Column(name = "bankAccount", nullable = true, columnDefinition = "VARCHAR(34)", length = 34)
-	private String bankAccount;
+@UIStructure(order = 5, label = "Bank Account")
+@Column(name = "bankAccount", nullable = true, columnDefinition = "VARCHAR(34)", length = 34)
+private String bankAccount;
 
-	@UIStructure(order = 6, label = "Address")
-	@Column(name = "address", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
-	private String address;
+@UIStructure(order = 6, label = "Address")
+@Column(name = "address", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
+private String address;
 
-	@UIStructure(order = 7, label = "City")
-	@Column(name = "city", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
-	private String city;
+@UIStructure(order = 7, label = "City")
+@Column(name = "city", nullable = true, columnDefinition = "VARCHAR(255)", length = 255)
+private String city;
 
-	@UIStructure(order = 8, label = "Country")
-	@Column(name = "country", nullable = true, columnDefinition = "VARCHAR(100)", length = 255)
-	private String country;
+@UIStructure(order = 8, label = "Country")
+@Column(name = "country", nullable = true, columnDefinition = "VARCHAR(100)", length = 255)
+private String country;
 
-	@UIStructure(order = 9, label = "Remark")
-	@Column(name = "remark", nullable = true, columnDefinition = "TEXT")
-	private String remark;
+@UIStructure(order = 9, label = "Remark")
+@Column(name = "remark", nullable = true, columnDefinition = "TEXT")
+private String remark;
 
-	@UIStructure(order = 10, label = "Registration Date")
-	@Column(name = "registrationDate", nullable = true, columnDefinition = "DATETIME")
-	private Date registrationDate;
+@UIStructure(order = 10, label = "Registration Date")
+@Column(name = "registrationDate", nullable = true, columnDefinition = "DATETIME")
+private Date registrationDate;
 
-	public CustomerEntity() {
-	}
+public CustomerEntity() {
+}
 
-	@JsonGetter("&detail_link")
-	public LinkModel getSelfLink() {
-		String selfLink = UriBuilder.fromResource(CustomerResource.class)
-				.path(Integer.toString(this.id)).build().toString();
-		return new LinkModel(selfLink);
-	}
+@JsonGetter("&detail_link")
+public LinkModel getSelfLink() {
+String selfLink = UriBuilder.fromResource(CustomerResource.class)
+.path(Integer.toString(this.id)).build().toString();
+return new LinkModel(selfLink);
+}
 
-	public String getSearch() {
-		return search;
-	}
+public String getSearch() {
+return search;
+}
 
-	public void setSearch(String search) {
-		this.search = search;
-	}
+public void setSearch(String search) {
+this.search = search;
+}
 
-	public int getId() {
-		return id;
-	}
+public int getId() {
+return id;
+}
 
-	public void setId(int id) {
-		this.id = id;
-	}
+public void setId(int id) {
+this.id = id;
+}
 
-	public String getName() {
-		return name;
-	}
+public String getName() {
+return name;
+}
 
-	public void setName(String name) {
-		this.name = name;
-	}
+public void setName(String name) {
+this.name = name;
+}
 
-	public String getEmail() {
-		return email;
-	}
+public String getEmail() {
+return email;
+}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+public void setEmail(String email) {
+this.email = email;
+}
 
-	public String getPhone() {
-		return phone;
-	}
+public String getPhone() {
+return phone;
+}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+public void setPhone(String phone) {
+this.phone = phone;
+}
 
-	public String getCompany() {
-		return company;
-	}
+public String getCompany() {
+return company;
+}
 
-	public void setCompany(String company) {
-		this.company = company;
-	}
+public void setCompany(String company) {
+this.company = company;
+}
 
-	public String getBankAccount() {
-		return bankAccount;
-	}
+public String getBankAccount() {
+return bankAccount;
+}
 
-	public void setBankAccount(String bankAccount) {
-		this.bankAccount = bankAccount;
-	}
+public void setBankAccount(String bankAccount) {
+this.bankAccount = bankAccount;
+}
 
-	public String getAddress() {
-		return address;
-	}
+public String getAddress() {
+return address;
+}
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+public void setAddress(String address) {
+this.address = address;
+}
 
-	public String getCity() {
-		return city;
-	}
+public String getCity() {
+return city;
+}
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+public void setCity(String city) {
+this.city = city;
+}
 
-	public String getCountry() {
-		return country;
-	}
+public String getCountry() {
+return country;
+}
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+public void setCountry(String country) {
+this.country = country;
+}
 
-	public String getRemark() {
-		return remark;
-	}
+public String getRemark() {
+return remark;
+}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
+public void setRemark(String remark) {
+this.remark = remark;
+}
 
-	public Date getRegistrationDate() {
-		return registrationDate;
-	}
+public Date getRegistrationDate() {
+return registrationDate;
+}
 
-	public void setRegistrationDate(Date registrationDate) {
-		this.registrationDate = registrationDate;
-	}
+public void setRegistrationDate(Date registrationDate) {
+this.registrationDate = registrationDate;
+}
 
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 19 * hash + (int) (this.id ^ (this.id >>> 32));
-		return hash;
-	}
+@Override
+public int hashCode() {
+int hash = 3;
+hash = 19 * hash + (int) (this.id ^ (this.id >>> 32));
+return hash;
+}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final CustomerEntity other = (CustomerEntity) obj;
-		if (this.id != other.id) {
-			return false;
-		}
-		return true;
-	}
+@Override
+public boolean equals(Object obj) {
+if (this == obj) {
+return true;
+}
+if (obj == null) {
+return false;
+}
+if (getClass() != obj.getClass()) {
+return false;
+}
+final CustomerEntity other = (CustomerEntity) obj;
+if (this.id != other.id) {
+return false;
+}
+return true;
+}
 }

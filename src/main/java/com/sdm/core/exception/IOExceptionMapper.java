@@ -17,9 +17,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class IOExceptionMapper extends DefaultExceptionMapper<IOException> {
 
-	@Override
-	public Response toResponse(IOException exception) {
-		return buildResponse(500, exception);
-	}
+    @Override
+    public Response toResponse(IOException exception) {
+        return buildResponse(500, exception);
+    }
 
 }

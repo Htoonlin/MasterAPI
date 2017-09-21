@@ -55,147 +55,147 @@ import net.coobird.thumbnailator.Thumbnails;
 @Path("files")
 public class FileResource extends RestResource<FileEntity, BigInteger> {
 
-	private static final Logger LOG = Logger.getLogger(FileResource.class.getName());
-	private final int CACHE_AGE = 3600 * 24 * 7;
-	private FileDAO mainDAO;
+    private static final Logger LOG = Logger.getLogger(FileResource.class.getName());
+    private final int CACHE_AGE = 3600 * 24 * 7;
+    private FileDAO mainDAO;
 
-	@Override
-	protected RestDAO getDAO() {
-		return this.mainDAO;
-	}
+    @Override
+    protected RestDAO getDAO() {
+        return this.mainDAO;
+    }
 
-	@PostConstruct
-	protected void init() {
-		if (this.mainDAO == null) {
-			mainDAO = new FileDAO(getUserId());
-		}
-	}
+    @PostConstruct
+    protected void init() {
+        if (this.mainDAO == null) {
+            mainDAO = new FileDAO(getUserId());
+        }
+    }
 
-	private Response downloadFile(final FileEntity entity, final Dimension dimension) {
-		
-		DefaultResponse cacheResponse = this.validateCache(CACHE_AGE);
-		if (cacheResponse != null) {
-			return Response.ok(cacheResponse, MediaType.APPLICATION_JSON).build();
-		}
+    private Response downloadFile(final FileEntity entity, final Dimension dimension) {
 
-		StreamingOutput fileStream = new StreamingOutput() {
-			@Override
-			public void write(OutputStream output) throws IOException, WebApplicationException {
-				try {
-					String filePath = Setting.getInstance().get(Setting.UPLOAD_DIRECTORY) + entity.getStoragePath();
-					File savedFile = new File(filePath);
-					if (savedFile.exists()) {
-						// If it is image and include dimension, it will process image on dimension
-						if (entity.getType().contains("image") && dimension != null) {
-							Thumbnails.of(savedFile).size(dimension.width, dimension.height).keepAspectRatio(true)
-									.useOriginalFormat().toOutputStream(output);
-						} else {
-							byte[] data = Files.readAllBytes(savedFile.toPath());
-							output.write(data);
-							output.flush();
-						}
-					}
-				} catch (Exception e) {
-					throw new WebApplicationException("File not found!");
-				}
-			}
-		};
+        DefaultResponse cacheResponse = this.validateCache(CACHE_AGE);
+        if (cacheResponse != null) {
+            return Response.ok(cacheResponse, MediaType.APPLICATION_JSON).build();
+        }
 
-		//Create cache with 1 week
-		Map<String, Object> cacheHeaders = this.buildCache(CACHE_AGE);
-		
-		String fileName = entity.getName() + "." + entity.getExtension();
+        StreamingOutput fileStream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try {
+                    String filePath = Setting.getInstance().get(Setting.UPLOAD_DIRECTORY) + entity.getStoragePath();
+                    File savedFile = new File(filePath);
+                    if (savedFile.exists()) {
+                        // If it is image and include dimension, it will process image on dimension
+                        if (entity.getType().contains("image") && dimension != null) {
+                            Thumbnails.of(savedFile).size(dimension.width, dimension.height).keepAspectRatio(true)
+                                    .useOriginalFormat().toOutputStream(output);
+                        } else {
+                            byte[] data = Files.readAllBytes(savedFile.toPath());
+                            output.write(data);
+                            output.flush();
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new WebApplicationException("File not found!");
+                }
+            }
+        };
 
-		ResponseBuilder builder = Response.ok(fileStream, entity.getType())
-				.header("content-disposition", "attachment; filename=\"" + fileName + "\"");
-		for (String key : cacheHeaders.keySet()) {
-			builder.header(key, cacheHeaders.get(key));
-		}
-		return builder.build();
-	}
+        //Create cache with 1 week
+        Map<String, Object> cacheHeaders = this.buildCache(CACHE_AGE);
 
-	@POST
-	@Path("upload")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse uploadFile(@FormDataParam("uploadedFile") InputStream inputFile,
-			@FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
-		try {
-			UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
-			UserEntity currentUser = userDAO.fetchById(getUserId());
-			if (currentUser == null) {
-				MessageModel message = new MessageModel(401, "Invalid User!",
-						"You neeed to register new account to upload file.");
-				return new DefaultResponse<>(message);
-			}
+        String fileName = entity.getName() + "." + entity.getExtension();
 
-			String[] fileInfo = FileManager.fileNameSplitter(fileDetail.getFileName());
-			FileEntity rawEntity = new FileEntity();
-			rawEntity.setName(fileInfo[0]);
-			if (fileInfo.length == 2) {
-				rawEntity.setExtension(fileInfo[1]);
-			}
-			rawEntity.setPublicAccess(false);
-			rawEntity.setOwnerId(getUserId());
-			rawEntity.setStatus(FileEntity.STORAGE);
+        ResponseBuilder builder = Response.ok(fileStream, entity.getType())
+                .header("content-disposition", "attachment; filename=\"" + fileName + "\"");
+        for (String key : cacheHeaders.keySet()) {
+            builder.header(key, cacheHeaders.get(key));
+        }
+        return builder.build();
+    }
 
-			FileEntity entity = mainDAO.createFile(inputFile, rawEntity, true);
+    @POST
+    @Path("upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse uploadFile(@FormDataParam("uploadedFile") InputStream inputFile,
+            @FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
+        try {
+            UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
+            UserEntity currentUser = userDAO.fetchById(getUserId());
+            if (currentUser == null) {
+                MessageModel message = new MessageModel(401, "Invalid User!",
+                        "You neeed to register new account to upload file.");
+                return new DefaultResponse<>(message);
+            }
 
-			this.modifiedResource();
-			return new DefaultResponse<FileEntity>(entity);
-		} catch (Exception e) {
-			LOG.error(e);
-			throw e;
-		}
-	}
+            String[] fileInfo = FileManager.fileNameSplitter(fileDetail.getFileName());
+            FileEntity rawEntity = new FileEntity();
+            rawEntity.setName(fileInfo[0]);
+            if (fileInfo.length == 2) {
+                rawEntity.setExtension(fileInfo[1]);
+            }
+            rawEntity.setPublicAccess(false);
+            rawEntity.setOwnerId(getUserId());
+            rawEntity.setStatus(FileEntity.STORAGE);
 
-	@PermitAll
-	@GET
-	@Path("{id:\\d+}/public")
-	public Response publicDownload(@PathParam("id") BigInteger id, @DefaultValue("0") @QueryParam("width") int width,
-			@DefaultValue("0") @QueryParam("height") int height) throws Exception {
-		FileEntity entity = mainDAO.fetchById(id);
-		if (entity == null || !entity.isPublicAccess()) {
-			MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
-			return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
-		}
+            FileEntity entity = mainDAO.createFile(inputFile, rawEntity, true);
 
-		Dimension dimension = null;
-		if (width > 0 && height <= 0) {
-			dimension = new Dimension(width, width);
-		} else if (height > 0 && width <= 0) {
-			dimension = new Dimension(height, height);
-		} else if (width > 0 && height > 0) {
-			dimension = new Dimension(width, height);
-		}
+            this.modifiedResource();
+            return new DefaultResponse<FileEntity>(entity);
+        } catch (Exception e) {
+            LOG.error(e);
+            throw e;
+        }
+    }
 
-		return this.downloadFile(entity, dimension);
-	}
+    @PermitAll
+    @GET
+    @Path("{id:\\d+}/public")
+    public Response publicDownload(@PathParam("id") BigInteger id, @DefaultValue("0") @QueryParam("width") int width,
+            @DefaultValue("0") @QueryParam("height") int height) throws Exception {
+        FileEntity entity = mainDAO.fetchById(id);
+        if (entity == null || !entity.isPublicAccess()) {
+            MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
+            return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
+        }
 
-	@GET
-	@Path("{id:\\d+}/download")
-	public Response privateDownload(@PathParam("id") BigInteger id, @DefaultValue("0") @QueryParam("width") int width,
-			@DefaultValue("0") @QueryParam("height") int height) throws Exception {
-		FileEntity entity = mainDAO.fetchById(id);
-		if (entity == null) {
-			MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
-			return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
-		}
+        Dimension dimension = null;
+        if (width > 0 && height <= 0) {
+            dimension = new Dimension(width, width);
+        } else if (height > 0 && width <= 0) {
+            dimension = new Dimension(height, height);
+        } else if (width > 0 && height > 0) {
+            dimension = new Dimension(width, height);
+        }
 
-		Dimension dimension = null;
-		if (width > 0 && height <= 0) {
-			dimension = new Dimension(width, width);
-		} else if (height > 0 && width <= 0) {
-			dimension = new Dimension(height, height);
-		} else if (width > 0 && height > 0) {
-			dimension = new Dimension(width, height);
-		}
+        return this.downloadFile(entity, dimension);
+    }
 
-		return this.downloadFile(entity, dimension);
-	}
+    @GET
+    @Path("{id:\\d+}/download")
+    public Response privateDownload(@PathParam("id") BigInteger id, @DefaultValue("0") @QueryParam("width") int width,
+            @DefaultValue("0") @QueryParam("height") int height) throws Exception {
+        FileEntity entity = mainDAO.fetchById(id);
+        if (entity == null) {
+            MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
+            return Response.ok(new DefaultResponse<>(message), MediaType.APPLICATION_JSON).build();
+        }
 
-	@Override
-	protected Logger getLogger() {
-		return FileResource.LOG;
-	}
+        Dimension dimension = null;
+        if (width > 0 && height <= 0) {
+            dimension = new Dimension(width, width);
+        } else if (height > 0 && width <= 0) {
+            dimension = new Dimension(height, height);
+        } else if (width > 0 && height > 0) {
+            dimension = new Dimension(width, height);
+        }
+
+        return this.downloadFile(entity, dimension);
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return FileResource.LOG;
+    }
 }

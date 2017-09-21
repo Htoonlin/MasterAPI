@@ -38,153 +38,153 @@ import com.sdm.core.util.mail.response.ValidateResponse;
 @Service
 public class MailgunService implements IMailManager {
 
-	private static final Logger LOG = Logger.getLogger(MailgunService.class.getName());
+    private static final Logger LOG = Logger.getLogger(MailgunService.class.getName());
 
-	private final String MAILGUN_URL = "https://api.mailgun.net/v3/";
-	// private final String SEND_PATH = Setting.getInstance().MAILGUN_DOMAIN +
-	// "/messages";
-	private final String VALIDATE_PATH = "address/validate";
+    private final String MAILGUN_URL = "https://api.mailgun.net/v3/";
+    // private final String SEND_PATH = Setting.getInstance().MAILGUN_DOMAIN +
+    // "/messages";
+    private final String VALIDATE_PATH = "address/validate";
 
-	private final String DEFAULT_SENDER;
-	private final String DOMAIN;
-	private final String PRIVATE_KEY;
-	private final String PUBLIC_KEY;
+    private final String DEFAULT_SENDER;
+    private final String DOMAIN;
+    private final String PRIVATE_KEY;
+    private final String PUBLIC_KEY;
 
-	public MailgunService() {
-		this.DEFAULT_SENDER = Setting.getInstance().get(Setting.MAILGUN_DEFAULT_MAIL, "");
-		this.DOMAIN = Setting.getInstance().get(Setting.MAILGUN_DOMAIN, "");
-		this.PUBLIC_KEY = Setting.getInstance().get(Setting.MAILGUN_PUB_KEY, "");
-		this.PRIVATE_KEY = Setting.getInstance().get(Setting.MAILGUN_PRI_KEY, "");
-	}
+    public MailgunService() {
+        this.DEFAULT_SENDER = Setting.getInstance().get(Setting.MAILGUN_DEFAULT_MAIL, "");
+        this.DOMAIN = Setting.getInstance().get(Setting.MAILGUN_DOMAIN, "");
+        this.PUBLIC_KEY = Setting.getInstance().get(Setting.MAILGUN_PUB_KEY, "");
+        this.PRIVATE_KEY = Setting.getInstance().get(Setting.MAILGUN_PRI_KEY, "");
+    }
 
-	@Override
-	public boolean checkMail(String email) {
-		ValidateResponse response = validateMail(email);
-		return response.isValid();
-	}
+    @Override
+    public boolean checkMail(String email) {
+        ValidateResponse response = validateMail(email);
+        return response.isValid();
+    }
 
-	private MultivaluedMap<String, String> createFormData(MailInfo mailInfo) {
-		MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
-		try {
-			if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
-				mailInfo.setFrom(this.DEFAULT_SENDER);
-			}
-			formData.add("from", mailInfo.getFrom());
+    private MultivaluedMap<String, String> createFormData(MailInfo mailInfo) {
+        MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
+        try {
+            if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
+                mailInfo.setFrom(this.DEFAULT_SENDER);
+            }
+            formData.add("from", mailInfo.getFrom());
 
-			formData.add("to", mailInfo.getTo());
+            formData.add("to", mailInfo.getTo());
 
-			if (mailInfo.getCc() != null) {
-				formData.add("cc", mailInfo.getCc());
-			}
+            if (mailInfo.getCc() != null) {
+                formData.add("cc", mailInfo.getCc());
+            }
 
-			if (mailInfo.getBcc() != null) {
-				formData.add("bcc", mailInfo.getBcc());
-			}
+            if (mailInfo.getBcc() != null) {
+                formData.add("bcc", mailInfo.getBcc());
+            }
 
-			formData.add("subject", mailInfo.getSubject());
-		} catch (Exception e) {
-			LOG.error(e);
-		}
-		return formData;
-	}
+            formData.add("subject", mailInfo.getSubject());
+        } catch (Exception e) {
+            LOG.error(e);
+        }
+        return formData;
+    }
 
-	public ValidateResponse validateMail(String email) {
-		try {
-			Client client = ClientBuilder.newClient();
-			WebTarget target = client.target(MAILGUN_URL).path(VALIDATE_PATH);
-			target.register(HttpAuthenticationFeature.basic("api", PUBLIC_KEY));
-			String result = target.queryParam("address", email).request().get(String.class);
-			return Globalizer.jsonMapper().readValue(result, ValidateResponse.class);
-		} catch (IOException e) {
-			LOG.error(e);
-		}
-		return null;
-	}
+    public ValidateResponse validateMail(String email) {
+        try {
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target(MAILGUN_URL).path(VALIDATE_PATH);
+            target.register(HttpAuthenticationFeature.basic("api", PUBLIC_KEY));
+            String result = target.queryParam("address", email).request().get(String.class);
+            return Globalizer.jsonMapper().readValue(result, ValidateResponse.class);
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+        return null;
+    }
 
-	@Override
-	public Response sendAttachments(MailInfo mailInfo, List<File> attachments) {
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
-		target.register(MultiPartFeature.class);
-		target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
+    @Override
+    public Response sendAttachments(MailInfo mailInfo, List<File> attachments) {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
+        target.register(MultiPartFeature.class);
+        target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
 
-		FormDataMultiPart formData = new FormDataMultiPart();
-		if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
-			mailInfo.setFrom(DEFAULT_SENDER);
-		}
-		formData.field("from", mailInfo.getFrom());
+        FormDataMultiPart formData = new FormDataMultiPart();
+        if (mailInfo.getFrom() == null || mailInfo.getFrom().isEmpty()) {
+            mailInfo.setFrom(DEFAULT_SENDER);
+        }
+        formData.field("from", mailInfo.getFrom());
 
-		formData.field("to", mailInfo.getTo());
+        formData.field("to", mailInfo.getTo());
 
-		if (mailInfo.getCc() != null) {
-			formData.field("cc", mailInfo.getCc());
-		}
+        if (mailInfo.getCc() != null) {
+            formData.field("cc", mailInfo.getCc());
+        }
 
-		if (mailInfo.getBcc() != null) {
-			formData.field("bcc", mailInfo.getBcc());
-		}
+        if (mailInfo.getBcc() != null) {
+            formData.field("bcc", mailInfo.getBcc());
+        }
 
-		formData.field("subject", mailInfo.getSubject());
-		formData.field("html", mailInfo.getBody());
+        formData.field("subject", mailInfo.getSubject());
+        formData.field("html", mailInfo.getBody());
 
-		for (File attachment : attachments) {
-			formData.bodyPart(new FileDataBodyPart("attachment", attachment));
-		}
-		Response response = target.request(MediaType.MULTIPART_FORM_DATA_TYPE)
-				.post(Entity.entity(formData, MediaType.MULTIPART_FORM_DATA));
-		if (response.getStatus() == 200) {
-			return response;
-		}
+        for (File attachment : attachments) {
+            formData.bodyPart(new FileDataBodyPart("attachment", attachment));
+        }
+        Response response = target.request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                .post(Entity.entity(formData, MediaType.MULTIPART_FORM_DATA));
+        if (response.getStatus() == 200) {
+            return response;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public Response sendAttachment(MailInfo mailInfo, File attachment) {
-		List<File> files = new ArrayList<>();
-		files.add(attachment);
-		return this.sendAttachments(mailInfo, files);
-	}
+    @Override
+    public Response sendAttachment(MailInfo mailInfo, File attachment) {
+        List<File> files = new ArrayList<>();
+        files.add(attachment);
+        return this.sendAttachments(mailInfo, files);
+    }
 
-	@Override
-	public Response sendHTML(MailInfo mailInfo) {
-		try {
-			Client client = ClientBuilder.newClient();
-			WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
-			target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
+    @Override
+    public Response sendHTML(MailInfo mailInfo) {
+        try {
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
+            target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
 
-			MultivaluedMap<String, String> formData = createFormData(mailInfo);
-			formData.add("html", mailInfo.getBody());
+            MultivaluedMap<String, String> formData = createFormData(mailInfo);
+            formData.add("html", mailInfo.getBody());
 
-			Response response = target.request(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData));
-			if (response.getStatus() == 200) {
-				return response;
-			}
-		} catch (Exception e) {
-			LOG.error(e);
-			throw e;
-		}
-		return null;
-	}
+            Response response = target.request(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData));
+            if (response.getStatus() == 200) {
+                return response;
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            throw e;
+        }
+        return null;
+    }
 
-	@Override
-	public Response sendRaw(MailInfo mailInfo) {
-		try {
-			Client client = ClientBuilder.newClient();
-			WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
-			target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
+    @Override
+    public Response sendRaw(MailInfo mailInfo) {
+        try {
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target(MAILGUN_URL).path(DOMAIN + "/messages");
+            target.register(HttpAuthenticationFeature.basic("api", PRIVATE_KEY));
 
-			MultivaluedMap<String, String> formData = createFormData(mailInfo);
-			formData.add("text", mailInfo.getBody());
+            MultivaluedMap<String, String> formData = createFormData(mailInfo);
+            formData.add("text", mailInfo.getBody());
 
-			Response response = target.request(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData));
-			if (response.getStatus() == 200) {
-				return response;
-			}
-		} catch (Exception e) {
-			LOG.error(e);
-			throw e;
-		}
-		return null;
-	}
+            Response response = target.request(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData));
+            if (response.getStatus() == 200) {
+                return response;
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            throw e;
+        }
+        return null;
+    }
 }

@@ -55,249 +55,249 @@ import com.sdm.master.resource.UserResource;
 @Table(name = "tbl_user")
 public class UserEntity extends DefaultEntity implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1939600458371706458L;
-	public static final char ACTIVE = 'A';
-	public static final char PENDING = 'P';
-	public static final char INACTIVE = 'D';
-	public static final int TOKEN_LENGTH = 8;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1939600458371706458L;
+    public static final char ACTIVE = 'A';
+    public static final char PENDING = 'P';
+    public static final char INACTIVE = 'D';
+    public static final int TOKEN_LENGTH = 8;
 
-	@JsonIgnore
-	@NotAudited
-	@Formula(value = "concat(email, displayname)")
-	private String search;
+    @JsonIgnore
+    @NotAudited
+    @Formula(value = "concat(email, displayname)")
+    private String search;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@UIStructure(order = 0, label = "#", readOnly = true)
-	@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
-	private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UIStructure(order = 0, label = "#", readOnly = true)
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+    private int id;
 
-	@UIStructure(order = 1, label = "E-mail", inputType = UIInputType.email)
-	@Column(name = "email", nullable = false, length = 255)
-	private String email;
+    @UIStructure(order = 1, label = "E-mail", inputType = UIInputType.email)
+    @Column(name = "email", nullable = false, length = 255)
+    private String email;
 
-	@UIStructure(order = 2, label = "Name", inputType = UIInputType.text)
-	@Column(name = "displayName", nullable = false, length = 255)
-	private String displayName;
+    @UIStructure(order = 2, label = "Name", inputType = UIInputType.text)
+    @Column(name = "displayName", nullable = false, length = 255)
+    private String displayName;
 
-	@UIStructure(order = 7, label = "Roles", hideInGrid = true, inputType = UIInputType.objectlist)
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "tbl_user_role", joinColumns = {
-			@JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = {
-					@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED") })
-	@NotFound(action = NotFoundAction.IGNORE)
-	private Set<RoleEntity> roles = new HashSet<>();
+    @UIStructure(order = 7, label = "Roles", hideInGrid = true, inputType = UIInputType.objectlist)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "tbl_user_role", joinColumns = {
+        @JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED")}, inverseJoinColumns = {
+        @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Set<RoleEntity> roles = new HashSet<>();
 
-	@UIStructure(order = 3, label = "Password", inputType = UIInputType.password)
-	@Column(name = "password", columnDefinition = "VARCHAR(255)", nullable = false, length = 255)
-	private String password;
+    @UIStructure(order = 3, label = "Password", inputType = UIInputType.password)
+    @Column(name = "password", columnDefinition = "VARCHAR(255)", nullable = false, length = 255)
+    private String password;
 
-	@NotAudited
-	@UIStructure(order = 4, label = "Is online?", inputType = UIInputType.checkbox)
-	@Column(name = "isOnline", nullable = false)
-	private boolean online;
+    @NotAudited
+    @UIStructure(order = 4, label = "Is online?", inputType = UIInputType.checkbox)
+    @Column(name = "isOnline", nullable = false)
+    private boolean online;
 
-	@UIStructure(order = 6, label = "Image", inputType = UIInputType.image)
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "profileImage", columnDefinition = "BIGINT UNSIGNED", nullable = true)
-	@NotFound(action = NotFoundAction.IGNORE)
-	private FileEntity profileImage;
+    @UIStructure(order = 6, label = "Image", inputType = UIInputType.image)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "profileImage", columnDefinition = "BIGINT UNSIGNED", nullable = true)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private FileEntity profileImage;
 
-	@Column(name = "facebookId", columnDefinition = "VARCHAR(255)", unique = true, nullable = true, length = 255)
-	private String facebookId;
+    @Column(name = "facebookId", columnDefinition = "VARCHAR(255)", unique = true, nullable = true, length = 255)
+    private String facebookId;
 
-	@JsonIgnore
-	@Column(name = "otpToken", length = TOKEN_LENGTH)
-	private String otpToken;
+    @JsonIgnore
+    @Column(name = "otpToken", length = TOKEN_LENGTH)
+    private String otpToken;
 
-	@JsonIgnore
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "otpExpired", length = 19)
-	private Date otpExpired;
+    @JsonIgnore
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "otpExpired", length = 19)
+    private Date otpExpired;
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@OrderColumn(name = "name")
-	@CollectionTable(name = "tbl_user_extra", joinColumns = @JoinColumn(name = "userId"))
-	@Column(name = "value", nullable = false, columnDefinition = "VARCHAR(500)", length = 500)
-	@MapKeyColumn(name = "name", nullable = false, columnDefinition = "VARCHAR(255)", length = 255)
-	@UIStructure(order = 8, label = "Extras", inputType = UIInputType.map)
-	private Map<String, String> extra = new HashMap<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @OrderColumn(name = "name")
+    @CollectionTable(name = "tbl_user_extra", joinColumns = @JoinColumn(name = "userId"))
+    @Column(name = "value", nullable = false, columnDefinition = "VARCHAR(500)", length = 500)
+    @MapKeyColumn(name = "name", nullable = false, columnDefinition = "VARCHAR(255)", length = 255)
+    @UIStructure(order = 8, label = "Extras", inputType = UIInputType.map)
+    private Map<String, String> extra = new HashMap<>();
 
-	@UIStructure(order = 7, label = "Status", inputType = UIInputType.radio)
-	@Column(name = "status", nullable = false, length = 1)
-	private char status;
+    @UIStructure(order = 7, label = "Status", inputType = UIInputType.radio)
+    @Column(name = "status", nullable = false, length = 1)
+    private char status;
 
-	@Transient
-	@NotAudited
-	private String currentToken;
+    @Transient
+    @NotAudited
+    private String currentToken;
 
-	public UserEntity() {
-	}
+    public UserEntity() {
+    }
 
-	public UserEntity(String email, String displayName, String password, boolean online, char status) {
-		this.email = email;
-		this.displayName = displayName;
-		this.password = password;
-		this.online = online;
-		this.status = status;
-	}
+    public UserEntity(String email, String displayName, String password, boolean online, char status) {
+        this.email = email;
+        this.displayName = displayName;
+        this.password = password;
+        this.online = online;
+        this.status = status;
+    }
 
-	@JsonGetter("&detail_link")
-	public LinkModel getSelfLink() {
-		String selfLink = UriBuilder.fromResource(UserResource.class).path(Integer.toString(this.id)).build()
-				.toString();
-		return new LinkModel(selfLink);
-	}
+    @JsonGetter("&detail_link")
+    public LinkModel getSelfLink() {
+        String selfLink = UriBuilder.fromResource(UserResource.class).path(Integer.toString(this.id)).build()
+                .toString();
+        return new LinkModel(selfLink);
+    }
 
-	public String getSearch() {
-		return search;
-	}
+    public String getSearch() {
+        return search;
+    }
 
-	public void setSearch(String search) {
-		this.search = search;
-	}
+    public void setSearch(String search) {
+        this.search = search;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@Email(message = "Ivalid email format.")
-	@Size(min = 6, max = 255)
-	public String getEmail() {
-		return this.email;
-	}
+    @Email(message = "Ivalid email format.")
+    @Size(min = 6, max = 255)
+    public String getEmail() {
+        return this.email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	@NotNull(message = "Display name is required.")
-	@Size(min = 1, max = 255)
-	public String getDisplayName() {
-		return this.displayName;
-	}
+    @NotNull(message = "Display name is required.")
+    @Size(min = 1, max = 255)
+    public String getDisplayName() {
+        return this.displayName;
+    }
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-	public Set<RoleEntity> getRoles() {
-		return roles;
-	}
+    public Set<RoleEntity> getRoles() {
+        return roles;
+    }
 
-	public void setRoles(Set<RoleEntity> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(Set<RoleEntity> roles) {
+        this.roles = roles;
+    }
 
-	@JsonIgnore
-	@Size(min = 6, max = 255)
-	public String getPassword() {
-		return this.password;
-	}
+    @JsonIgnore
+    @Size(min = 6, max = 255)
+    public String getPassword() {
+        return this.password;
+    }
 
-	@JsonSetter("password")
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    @JsonSetter("password")
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public boolean isOnline() {
-		return online;
-	}
+    public boolean isOnline() {
+        return online;
+    }
 
-	public void setOnline(boolean online) {
-		this.online = online;
-	}
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
 
-	public FileEntity getProfileImage() {
-		return profileImage;
-	}
+    public FileEntity getProfileImage() {
+        return profileImage;
+    }
 
-	public void setProfileImage(FileEntity profileImage) {
-		this.profileImage = profileImage;
-	}
+    public void setProfileImage(FileEntity profileImage) {
+        this.profileImage = profileImage;
+    }
 
-	public String getFacebookId() {
-		return facebookId;
-	}
+    public String getFacebookId() {
+        return facebookId;
+    }
 
-	public void setFacebookId(String facebookID) {
-		this.facebookId = facebookID;
-	}
+    public void setFacebookId(String facebookID) {
+        this.facebookId = facebookID;
+    }
 
-	public String getOtpToken() {
-		return this.otpToken;
-	}
+    public String getOtpToken() {
+        return this.otpToken;
+    }
 
-	public void setOtpToken(String otpToken) {
-		this.otpToken = otpToken;
-	}
+    public void setOtpToken(String otpToken) {
+        this.otpToken = otpToken;
+    }
 
-	public Date getOtpExpired() {
-		return this.otpExpired;
-	}
+    public Date getOtpExpired() {
+        return this.otpExpired;
+    }
 
-	public void setOtpExpired(Date otpExpired) {
-		this.otpExpired = otpExpired;
-	}
+    public void setOtpExpired(Date otpExpired) {
+        this.otpExpired = otpExpired;
+    }
 
-	public char getStatus() {
-		return this.status;
-	}
+    public char getStatus() {
+        return this.status;
+    }
 
-	public void setStatus(char status) {
-		this.status = status;
-	}
+    public void setStatus(char status) {
+        this.status = status;
+    }
 
-	public Map<String, String> getExtra() {
-		return extra;
-	}
+    public Map<String, String> getExtra() {
+        return extra;
+    }
 
-	public void setExtra(Map<String, String> extra) {
-		this.extra = extra;
-	}
+    public void setExtra(Map<String, String> extra) {
+        this.extra = extra;
+    }
 
-	public void addExtra(String key, String value) {
-		if (this.extra == null) {
-			this.extra = new HashMap<>();
-		}
-		this.extra.put(key, value);
-	}
+    public void addExtra(String key, String value) {
+        if (this.extra == null) {
+            this.extra = new HashMap<>();
+        }
+        this.extra.put(key, value);
+    }
 
-	public String getCurrentToken() {
-		return currentToken;
-	}
+    public String getCurrentToken() {
+        return currentToken;
+    }
 
-	public void setCurrentToken(String currentToken) {
-		this.currentToken = currentToken;
-	}
+    public void setCurrentToken(String currentToken) {
+        this.currentToken = currentToken;
+    }
 
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 53 * hash + (int) (this.id ^ (this.id >>> 32));
-		return hash;
-	}
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + (int) (this.id ^ (this.id >>> 32));
+        return hash;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final UserEntity other = (UserEntity) obj;
-		if (this.id != other.id) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UserEntity other = (UserEntity) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
 
 }

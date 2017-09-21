@@ -46,115 +46,115 @@ import com.sdm.master.resource.RoleResource;
 @Table(name = "tbl_role")
 public class RoleEntity extends DefaultEntity implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 739168064520778219L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 739168064520778219L;
 
-	@JsonIgnore
-	@NotAudited
-	@Formula(value = "concat(name, description)")
-	private String search;
+    @JsonIgnore
+    @NotAudited
+    @Formula(value = "concat(name, description)")
+    private String search;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@UIStructure(order = 0, label = "#", readOnly = true)
-	@Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
-	private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UIStructure(order = 0, label = "#", readOnly = true)
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+    private int id;
 
-	@UIStructure(order = 1, label = "Name")
-	@Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
-	private String name;
+    @UIStructure(order = 1, label = "Name")
+    @Column(name = "name", columnDefinition = "varchar(255)", length = 255, nullable = false)
+    private String name;
 
-	@UIStructure(order = 2, label = "Description", inputType = UIInputType.textarea)
-	@Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
-	private String description;
-	
-	@NotAudited	
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
-	@NotFound(action = NotFoundAction.IGNORE)
-	@UIStructure(order = 3, label = "permissions", inputType = UIInputType.objectlist)
-	private Set<PermissionEntity> permissions;
+    @UIStructure(order = 2, label = "Description", inputType = UIInputType.textarea)
+    @Column(name = "description", columnDefinition = "varchar(500)", length = 500, nullable = false)
+    private String description;
 
-	@JsonGetter("&detail_link")
-	public LinkModel getSelfLink() {
-		String selfLink = UriBuilder.fromResource(RoleResource.class).path(Integer.toString(this.id)).build()
-				.toString();
-		return new LinkModel(selfLink);
-	}
+    @NotAudited
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")
+    @NotFound(action = NotFoundAction.IGNORE)
+    @UIStructure(order = 3, label = "permissions", inputType = UIInputType.objectlist)
+    private Set<PermissionEntity> permissions;
 
-	public String getSearch() {
-		return search;
-	}
+    @JsonGetter("&detail_link")
+    public LinkModel getSelfLink() {
+        String selfLink = UriBuilder.fromResource(RoleResource.class).path(Integer.toString(this.id)).build()
+                .toString();
+        return new LinkModel(selfLink);
+    }
 
-	public void setSearch(String search) {
-		this.search = search;
-	}
+    public String getSearch() {
+        return search;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public void setSearch(String search) {
+        this.search = search;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	@NotBlank
-	@Size(min = 1, max = 255)
-	public String getName() {
-		return name;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @NotBlank
+    @Size(min = 1, max = 255)
+    public String getName() {
+        return name;
+    }
 
-	@Size(min = 0, max = 500)
-	public String getDescription() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    @Size(min = 0, max = 500)
+    public String getDescription() {
+        return description;
+    }
 
-	public Set<PermissionEntity> getPermissions() {
-		return permissions;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setPermissions(Set<PermissionEntity> permissions) {
-		this.permissions = permissions;
-	}
+    public Set<PermissionEntity> getPermissions() {
+        return permissions;
+    }
 
-	@JsonGetter("permission_count")
-	public int getPermissionCount() {
-		if(this.permissions == null) {
-			return 0;
-		}
-		return this.permissions.size();
-	}
+    public void setPermissions(Set<PermissionEntity> permissions) {
+        this.permissions = permissions;
+    }
 
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 29 * hash + this.id;
-		return hash;
-	}
+    @JsonGetter("permission_count")
+    public int getPermissionCount() {
+        if (this.permissions == null) {
+            return 0;
+        }
+        return this.permissions.size();
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final RoleEntity other = (RoleEntity) obj;
-		if (this.id != other.id) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RoleEntity other = (RoleEntity) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
 
 }

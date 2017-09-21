@@ -20,45 +20,45 @@ import com.sdm.master.entity.UserEntity;
  */
 public class UserDAO extends RestDAO {
 
-	private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
 
-	private final String SELECT_BY_EMAIL = "from UserEntity u WHERE u.email = :email";
-	private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token";
-	private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password";
-	private final String AUTH_BY_FACEBOOK = "FROM UserEntity u WHERE u.facebookId = :facebookId";
+    private final String SELECT_BY_EMAIL = "from UserEntity u WHERE u.email = :email";
+    private final String GET_USER_BY_TOKEN = "from UserEntity u WHERE u.email = :email AND u.otpToken = :token";
+    private final String AUTH_BY_EMAIL = "FROM UserEntity u WHERE u.email = :email AND u.password = :password";
+    private final String AUTH_BY_FACEBOOK = "FROM UserEntity u WHERE u.facebookId = :facebookId";
 
-	public UserDAO(int userId) {
-		super(UserEntity.class.getName(), userId);
-		LOG.info("Start DAO");
-	}
+    public UserDAO(int userId) {
+        super(UserEntity.class.getName(), userId);
+        LOG.info("Start DAO");
+    }
 
-	public UserDAO(Session session, int userId) {
-		super(session, UserEntity.class.getName(), userId);
-	}
+    public UserDAO(Session session, int userId) {
+        super(session, UserEntity.class.getName(), userId);
+    }
 
-	public UserEntity userAuthByFacebook(String facebookId) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("facebookId", facebookId);
-		return super.fetchOne(AUTH_BY_FACEBOOK, params);
-	}
+    public UserEntity userAuthByFacebook(String facebookId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("facebookId", facebookId);
+        return super.fetchOne(AUTH_BY_FACEBOOK, params);
+    }
 
-	public UserEntity userAuth(String email, String password) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("email", email);
-		params.put("password", password);
-		return super.fetchOne(AUTH_BY_EMAIL, params);
-	}
+    public UserEntity userAuth(String email, String password) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+        return super.fetchOne(AUTH_BY_EMAIL, params);
+    }
 
-	public UserEntity checkToken(String email, String token) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("email", email);
-		params.put("token", token);
-		return super.fetchOne(GET_USER_BY_TOKEN, params);
-	}
+    public UserEntity checkToken(String email, String token) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", email);
+        params.put("token", token);
+        return super.fetchOne(GET_USER_BY_TOKEN, params);
+    }
 
-	public UserEntity getUserByEmail(String email) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("email", email);
-		return super.fetchOne(SELECT_BY_EMAIL, params);
-	}
+    public UserEntity getUserByEmail(String email) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", email);
+        return super.fetchOne(SELECT_BY_EMAIL, params);
+    }
 }

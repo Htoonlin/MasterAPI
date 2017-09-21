@@ -15,9 +15,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ClassNotFoundExceptionMapper extends DefaultExceptionMapper<ClassNotFoundException> {
 
-	@Override
-	public Response toResponse(ClassNotFoundException exception) {
-		return this.buildResponse(501, exception);
-	}
+    @Override
+    public Response toResponse(ClassNotFoundException exception) {
+        return this.buildResponse(501, exception);
+    }
 
 }

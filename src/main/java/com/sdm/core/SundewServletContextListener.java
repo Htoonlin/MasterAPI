@@ -20,20 +20,20 @@ import com.sdm.core.hibernate.HibernateConnector;
 @WebListener()
 public class SundewServletContextListener implements ServletContextListener {
 
-	private static final Logger LOG = Logger.getLogger(SundewServletContextListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(SundewServletContextListener.class.getName());
 
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		LOG.info("System is starting ...");
-		Setting.getInstance().init();
-		HibernateConnector.init();
-	}
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        LOG.info("System is starting ...");
+        Setting.getInstance().init();
+        HibernateConnector.init();
+    }
 
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		LOG.info("System is shutting down ...");
-		HibernateConnector.shutdown();
-		LOG.info("Good bye!");
-	}
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        LOG.info("System is shutting down ...");
+        HibernateConnector.shutdown();
+        LOG.info("Good bye!");
+    }
 
 }

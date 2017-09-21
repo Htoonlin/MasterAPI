@@ -19,18 +19,17 @@ import com.sdm.core.response.model.ErrorModel;
 @Provider
 public class ConstraintViolationExceptionMapper extends DefaultExceptionMapper<ConstraintViolationException> {
 
+    @Override
+    public Response toResponse(ConstraintViolationException exception) {
+        HashMap<String, ErrorModel> content = new HashMap<>();
+        for (ConstraintViolation<?> error : exception.getConstraintViolations()) {
+            PathImpl property = (PathImpl) error.getPropertyPath();
+            String propertyName = Globalizer.camelToLowerUnderScore(property.getLeafNode().getName());
+            content.put(propertyName, new ErrorModel(error));
+        }
 
-	@Override
-	public Response toResponse(ConstraintViolationException exception) {
-		HashMap<String, ErrorModel> content = new HashMap<>();
-		for (ConstraintViolation<?> error : exception.getConstraintViolations()) {
-			PathImpl property = (PathImpl) error.getPropertyPath();
-			String propertyName = Globalizer.camelToLowerUnderScore(property.getLeafNode().getName());
-			content.put(propertyName, new ErrorModel(error));
-		}
-		
-		DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.CLIENT_ERROR, content);
-		return Response.status(HttpStatus.SC_BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON).build();
-	}
+        DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.CLIENT_ERROR, content);
+        return Response.status(HttpStatus.SC_BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON).build();
+    }
 
 }

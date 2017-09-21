@@ -33,56 +33,56 @@ import com.sdm.core.response.IBaseResponse;
  */
 public interface IRestResource<T extends IBaseRequest, PK extends Serializable> {
 
-	@GET
-	@Path("q")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getNamedQueries();
+    @GET
+    @Path("q")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getNamedQueries();
 
-	@POST
-	@Path("q/{name}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse postQuery(@PathParam("name") String queryName, Map<String, Object> params);
+    @POST
+    @Path("q/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse postQuery(@PathParam("name") String queryName, Map<String, Object> params);
 
-	@GET
-	@Path("all")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getAll() throws Exception;
+    @GET
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getAll() throws Exception;
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getPaging(@DefaultValue("") @QueryParam("filter") String filter,
-			@DefaultValue("1") @QueryParam("page") int pageId, @DefaultValue("10") @QueryParam("size") int pageSize,
-			@DefaultValue("id:ASC") @QueryParam("sort") String sort);
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getPaging(@DefaultValue("") @QueryParam("filter") String filter,
+            @DefaultValue("1") @QueryParam("page") int pageId, @DefaultValue("10") @QueryParam("size") int pageSize,
+            @DefaultValue("id:ASC") @QueryParam("sort") String sort);
 
-	@GET
-	@Path("{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getById(@PathParam("id") PK id);
+    @GET
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getById(@PathParam("id") PK id);
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse create(@Valid T request);
-	
-	@POST
-	@Path("multi")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse createByList(@Valid List<T> request);
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse create(@Valid T request);
 
-	@PUT
-	@Path("{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse update(@Valid T request, @PathParam("id") PK id);
+    @POST
+    @Path("multi")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse createByList(@Valid List<T> request);
 
-	@DELETE
-	@Path("{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse remove(@PathParam("id") PK id);
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse update(@Valid T request, @PathParam("id") PK id);
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("struct")
-	public IBaseResponse getStructure();
+    @DELETE
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse remove(@PathParam("id") PK id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("struct")
+    public IBaseResponse getStructure();
 }

@@ -35,54 +35,54 @@ import com.sdm.master.util.AccessService;
 @javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends ResourceConfig {
 
-	private static final Logger LOG = Logger.getLogger(ApplicationConfig.class.getName());
+    private static final Logger LOG = Logger.getLogger(ApplicationConfig.class.getName());
 
-	public ApplicationConfig() {
-		LOG.info("Loading packages");
-		packages("com.sdm.core.exception", "com.sdm.core.filter", "com.sdm.master.resource",
-				"com.sdm.facebook.resource", "com.sdm.sample.resource");
-		LOG.info("Successfully loaded packages.");
+    public ApplicationConfig() {
+        LOG.info("Loading packages");
+        packages("com.sdm.core.exception", "com.sdm.core.filter", "com.sdm.master.resource",
+                "com.sdm.facebook.resource", "com.sdm.sample.resource");
+        LOG.info("Successfully loaded packages.");
 
-		LOG.info("Loading jersey properties");
-		property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
-		property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
-		LOG.info("Successfully loaded jersey properties");
+        LOG.info("Loading jersey properties");
+        property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+        property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
+        LOG.info("Successfully loaded jersey properties");
 
-		LOG.info("Loading jersey features and providers");
-		register(SystemResource.class);
-		register(MultiPartFeature.class);
-		register(LoggingFeature.class);
-		register(JacksonFeature.class);
-		LOG.info("Successfully loaded jersey features and providers");
+        LOG.info("Loading jersey features and providers");
+        register(SystemResource.class);
+        register(MultiPartFeature.class);
+        register(LoggingFeature.class);
+        register(JacksonFeature.class);
+        LOG.info("Successfully loaded jersey features and providers");
 
-		register(new AbstractBinder() {
+        register(new AbstractBinder() {
 
-			@Override
-			protected void configure() {
-				LOG.info("Loading Dependency Injections....");
-				// Inject HttpSession
-				bindFactory(HttpSessionFactory.class).to(HttpSession.class).proxy(true).proxyForSameScope(false)
-						.in(RequestScoped.class);
-				
-				//Inject DefaultEntity
-				bind(DefaultEntity.class).to(DefaultEntity.class);
+            @Override
+            protected void configure() {
+                LOG.info("Loading Dependency Injections....");
+                // Inject HttpSession
+                bindFactory(HttpSessionFactory.class).to(HttpSession.class).proxy(true).proxyForSameScope(false)
+                        .in(RequestScoped.class);
 
-				// Inject AccessManager
-				bindAsContract(AccessService.class).to(IAccessManager.class);
+                //Inject DefaultEntity
+                bind(DefaultEntity.class).to(DefaultEntity.class);
 
-				// Inject TemplateManager
-				bindAsContract(JSPTemplateService.class).to(ITemplateManager.class);
+                // Inject AccessManager
+                bindAsContract(AccessService.class).to(IAccessManager.class);
 
-				// Inject MailManager
-				String mailType = Setting.getInstance().get(Setting.MAIL_TYPE, "webmail");
-				if (mailType.equalsIgnoreCase("mailgun")) {
-					bindAsContract(MailgunService.class).to(IMailManager.class);
-				} else {
-					bindAsContract(WebMailService.class).to(IMailManager.class);
-				}
+                // Inject TemplateManager
+                bindAsContract(JSPTemplateService.class).to(ITemplateManager.class);
 
-				LOG.info("Successfully loaded Dependency Injections....");
-			}
-		});
-	}
+                // Inject MailManager
+                String mailType = Setting.getInstance().get(Setting.MAIL_TYPE, "webmail");
+                if (mailType.equalsIgnoreCase("mailgun")) {
+                    bindAsContract(MailgunService.class).to(IMailManager.class);
+                } else {
+                    bindAsContract(WebMailService.class).to(IMailManager.class);
+                }
+
+                LOG.info("Successfully loaded Dependency Injections....");
+            }
+        });
+    }
 }

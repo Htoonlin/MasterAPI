@@ -11,33 +11,33 @@ package com.sdm.core.util;
  */
 public class MySQLManager {
 
-	private static final String QUOTE = "`";
+    private static final String QUOTE = "`";
 
-	public static String cleanLastChar(String query, String lastChar) {
-		if (query.endsWith(lastChar)) {
-			query = query.substring(0, query.length() - lastChar.length());
-		}
+    public static String cleanLastChar(String query, String lastChar) {
+        if (query.endsWith(lastChar)) {
+            query = query.substring(0, query.length() - lastChar.length());
+        }
 
-		return query;
-	}
+        return query;
+    }
 
-	public static String escapeQuery(String query) {
-		String safeQuery = query;
-		if (query.contains("'")) {
-			safeQuery = query.replaceAll("'", "''");
-		}
-		return safeQuery;
-	}
+    public static String escapeQuery(String query) {
+        String safeQuery = query;
+        if (query.contains("'")) {
+            safeQuery = query.replaceAll("'", "''");
+        }
+        return safeQuery;
+    }
 
-	public static String quoteName(String input) {
-		if (!input.startsWith(QUOTE)) {
-			input = QUOTE + input;
-		}
+    public static String quoteName(String input) {
+        if (!input.startsWith(QUOTE)) {
+            input = QUOTE + input;
+        }
 
-		if (!input.endsWith(QUOTE)) {
-			input += QUOTE;
-		}
+        if (!input.endsWith(QUOTE)) {
+            input += QUOTE;
+        }
 
-		return input;
-	}
+        return input;
+    }
 }

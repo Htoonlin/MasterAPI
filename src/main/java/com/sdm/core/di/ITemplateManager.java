@@ -15,5 +15,6 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface ITemplateManager {
-	String buildTemplate(String template, Map<String, Object> data);
+
+    String buildTemplate(String template, Map<String, Object> data);
 }

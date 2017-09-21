@@ -23,36 +23,36 @@ import com.sdm.master.entity.UserEntity;
 @WebListener
 public class SessionListener implements HttpSessionListener {
 
-	private static final Logger LOG = Logger.getLogger(SessionListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(SessionListener.class.getName());
 
-	private int sessionRecording(String prefix, HttpSessionEvent hse) {
-		HttpSession session = hse.getSession();
-		int userId = 0;
-		if (session.getAttribute(Constants.SessionKey.USER_ID) != null) {
-			userId = (int) session.getAttribute(Constants.SessionKey.USER_ID);
-		}
-		LOG.info(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
-		return userId;
-	}
+    private int sessionRecording(String prefix, HttpSessionEvent hse) {
+        HttpSession session = hse.getSession();
+        int userId = 0;
+        if (session.getAttribute(Constants.SessionKey.USER_ID) != null) {
+            userId = (int) session.getAttribute(Constants.SessionKey.USER_ID);
+        }
+        LOG.info(prefix + "{userId:" + userId + ", SessionId:" + session.getId() + "}");
+        return userId;
+    }
 
-	@Override
-	public void sessionCreated(HttpSessionEvent hse) {
-		sessionRecording("Create new session.", hse);
-	}
+    @Override
+    public void sessionCreated(HttpSessionEvent hse) {
+        sessionRecording("Create new session.", hse);
+    }
 
-	@Override
-	public void sessionDestroyed(HttpSessionEvent hse) {
-		int userId = sessionRecording("Destroyed a session.", hse);
-		UserDAO userDAO = new UserDAO(userId);
-		try {
-			UserEntity user = userDAO.fetchById(userId);
-			if (user != null) {
-				user.setOnline(false);
-				userDAO.update(user, true);
-			}
-		} catch (Exception e) {
-			LOG.error(e);
-		}
-	}
+    @Override
+    public void sessionDestroyed(HttpSessionEvent hse) {
+        int userId = sessionRecording("Destroyed a session.", hse);
+        UserDAO userDAO = new UserDAO(userId);
+        try {
+            UserEntity user = userDAO.fetchById(userId);
+            if (user != null) {
+                user.setOnline(false);
+                userDAO.update(user, true);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+        }
+    }
 
 }

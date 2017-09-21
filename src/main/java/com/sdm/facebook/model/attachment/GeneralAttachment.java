@@ -6,74 +6,75 @@ import com.sdm.facebook.model.FacebookSerialize;
 import com.sdm.facebook.model.type.AttachmentType;
 
 public class GeneralAttachment implements FacebookSerialize {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5249453189678864653L;
 
-	private String url;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 5249453189678864653L;
 
-	private String title;
+    private String url;
 
-	private AttachmentType type;
+    private String title;
 
-	@Override
-	public JSONObject serialize() {
-		JSONObject attachment = new JSONObject();
-		if (this.type != null) {
-			attachment.put("type", this.type.toString());
-		}
+    private AttachmentType type;
 
-		if (this.title != null && this.title.length() > 0) {
-			attachment.put("title", this.title);
-			if (this.url != null && this.url.length() > 0) {
-				attachment.put("url", this.url);
-			}
-		} else if (this.url != null && this.url.length() > 0) {
-			attachment.put("payload", new JSONObject().put("url", this.url));
-		}
+    @Override
+    public JSONObject serialize() {
+        JSONObject attachment = new JSONObject();
+        if (this.type != null) {
+            attachment.put("type", this.type.toString());
+        }
 
-		return attachment;
-	}
+        if (this.title != null && this.title.length() > 0) {
+            attachment.put("title", this.title);
+            if (this.url != null && this.url.length() > 0) {
+                attachment.put("url", this.url);
+            }
+        } else if (this.url != null && this.url.length() > 0) {
+            attachment.put("payload", new JSONObject().put("url", this.url));
+        }
 
-	@Override
-	public void deserialize(JSONObject value) {
-		if (value.has("payload") && value.getJSONObject("payload").has("url")) {
-			this.url = value.getJSONObject("payload").getString("url");
-		} else if (value.has("url")) {
-			this.url = value.getString("url");
-			if (value.has("title")) {
-				this.title = value.getString("title");
-			}
-		}
+        return attachment;
+    }
 
-		if (value.has("type")) {
-			this.type = AttachmentType.valueOf(value.getString("type"));
-		}
-	}
+    @Override
+    public void deserialize(JSONObject value) {
+        if (value.has("payload") && value.getJSONObject("payload").has("url")) {
+            this.url = value.getJSONObject("payload").getString("url");
+        } else if (value.has("url")) {
+            this.url = value.getString("url");
+            if (value.has("title")) {
+                this.title = value.getString("title");
+            }
+        }
 
-	public String getTitle() {
-		return title;
-	}
+        if (value.has("type")) {
+            this.type = AttachmentType.valueOf(value.getString("type"));
+        }
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public AttachmentType getType() {
-		return type;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public void setType(AttachmentType type) {
-		this.type = type;
-	}
+    public AttachmentType getType() {
+        return type;
+    }
+
+    public void setType(AttachmentType type) {
+        this.type = type;
+    }
 
 }
