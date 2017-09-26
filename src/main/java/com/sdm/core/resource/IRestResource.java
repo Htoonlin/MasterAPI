@@ -5,11 +5,12 @@
  */
 package com.sdm.core.resource;
 
+import com.sdm.core.request.IBaseRequest;
+import com.sdm.core.response.IBaseResponse;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -23,9 +24,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.sdm.core.request.IBaseRequest;
-import com.sdm.core.response.IBaseResponse;
-
 /**
  *
  * @author Htoonlin
@@ -34,67 +32,79 @@ import com.sdm.core.response.IBaseResponse;
  */
 public interface IRestResource<T extends IBaseRequest, PK extends Serializable> {
 
-	@GET
-	@Path("q")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getNamedQueries();
+    @GET
+    @Path("q")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getNamedQueries();
 
-	@POST
-	@Path("q/{name}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse postQuery(@PathParam("name") String queryName, Map<String, Object> params);
+    @POST
+    @Path("q/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse postQuery(@PathParam("name") String queryName, Map<String, Object> params);
 
-	@GET
-	@Path("all")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getAll() throws Exception;
+    @GET
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getAll() throws Exception;
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getPaging(@DefaultValue("") @QueryParam("filter") String filter,
-			@DefaultValue("1") @QueryParam("page") int pageId, @DefaultValue("10") @QueryParam("size") int pageSize,
-			@DefaultValue("id:ASC") @QueryParam("sort") String sort);
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getPaging(@DefaultValue("") @QueryParam("filter") String filter,
+            @DefaultValue("1") @QueryParam("page") int pageId, @DefaultValue("10") @QueryParam("size") int pageSize,
+            @DefaultValue("id:ASC") @QueryParam("sort") String sort);
 
-	@GET
-	@Path("{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getById(@PathParam("id") PK id);
+    @GET
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getById(@PathParam("id") PK id);
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse create(@Valid T request);
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse create(@Valid T request);
 
-	@POST
-	@Path("multi")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse multiCreate(@Valid List<T> request);
+    @POST
+    @Path("multi")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse multiCreate(@Valid List<T> request);
 
-	@PUT
-	@Path("{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse update(@Valid T request, @PathParam("id") PK id);
-	
-	@PUT
-	@Path("multi")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse multiUpdate(@Valid List<T> request);
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse update(@Valid T request, @PathParam("id") PK id);
 
-	@DELETE
-	@Path("{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse remove(@PathParam("id") PK id);
-	
-	@DELETE
-	@Path("multi")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse multiRemove(Set<PK> ids);
+    @PUT
+    @Path("multi")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse multiUpdate(@Valid List<T> request);
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("struct")
-	public IBaseResponse getStructure();
+    @DELETE
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse remove(@PathParam("id") PK id);
+
+    @DELETE
+    @Path("multi")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse multiRemove(Set<PK> ids);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("struct")
+    public IBaseResponse getStructure();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id}/versions")
+    public IBaseResponse getVersions(@PathParam("id") PK id,
+            @DefaultValue("1") @QueryParam("page") int pageId,
+            @DefaultValue("10") @QueryParam("size") int pageSize);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id}/versions/{version}")
+    public IBaseResponse getByVersion(@PathParam("id") PK id, @PathParam("version") long version);
 }
