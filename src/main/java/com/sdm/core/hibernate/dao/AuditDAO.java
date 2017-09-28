@@ -53,6 +53,24 @@ public class AuditDAO {
                 .add(AuditEntity.id().eq(id));
     }
 
+    public List<?> getNewDataByVersion(Class entityClass, long version) {
+        AuditQuery query = reader.createQuery()
+                .forRevisionsOfEntity(entityClass, false, true)
+                .add(AuditEntity.revisionNumber().gt(version))
+                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext())
+                .addOrder(AuditEntity.revisionNumber().desc());
+
+        List data = query.getResultList();
+
+        List<Map<String, Object>> responseList = new ArrayList<>();
+        for (Object result : data) {
+            responseList.add(this.convertMap((Object[]) result));
+        }
+
+        return responseList;
+
+    }
+
     public HashMap<String, Object> getDataByVersion(Class entityClass, Object id, long version) {
         Object data = this.getQueryById(entityClass, id)
                 .add(AuditEntity.revisionNumber().eq(version))

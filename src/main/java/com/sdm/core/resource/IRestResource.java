@@ -98,6 +98,11 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("sync/{version}")
+    public IBaseResponse getNewDataByVersion(@DefaultValue("0") @PathParam("version") long version);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/versions")
     public IBaseResponse getVersions(@PathParam("id") PK id,
             @DefaultValue("1") @QueryParam("page") int pageId,

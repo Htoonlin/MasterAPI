@@ -305,6 +305,28 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
     }
 
     @Override
+    public IBaseResponse getNewDataByVersion(long version) {
+        DefaultResponse response = this.validateCache();
+        // Cache validation
+        if (response != null) {
+            return response;
+        }
+
+        try {
+            AuditDAO auditDAO = new AuditDAO(getDAO().getSession());
+            ListModel<HashMap<String, Object>> content = new ListModel(auditDAO.getNewDataByVersion(getEntityClass(), version));
+
+            response = new DefaultResponse<>(HttpStatus.SC_OK, ResponseType.SUCCESS, content);
+
+            response.setHeaders(this.buildCache());
+            return response;
+        } catch (Exception e) {
+            getLogger().error(e);
+            throw e;
+        }
+    }
+
+    @Override
     public IBaseResponse getByVersion(PK id, long version) {
         DefaultResponse response = this.validateCache();
         // Cache validation
