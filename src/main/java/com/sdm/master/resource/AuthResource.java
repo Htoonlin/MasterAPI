@@ -341,7 +341,7 @@ public class AuthResource extends DefaultResource {
                 message = new MessageModel(400, "Token Expired",
                         "Sorry! Your token has expired. We send new link to your email.");
             } else if (user.getEmail().equalsIgnoreCase(request.getEmail())
-                    && user.getPassword().equals(request.getOldPassword()) && user.getOtpToken().equals(token)) {
+                    && user.getPassword().equals(oldPassword) && user.getOtpToken().equals(token)) {
                 String newPassword = SecurityManager.hashString(request.getEmail(), request.getNewPassword());
                 user.setOtpExpired(null);
                 user.setOtpToken(null);
