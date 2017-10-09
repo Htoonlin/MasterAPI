@@ -77,6 +77,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
     @Column(name = "email", nullable = false, length = 255)
     private String email;
 
+    @JsonIgnore
     @UIStructure(order = 2, label = "Name", inputType = UIInputType.text)
     @Column(name = "displayName", nullable = false, length = 255)
     private String displayName;
@@ -178,9 +179,12 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
     @NotNull(message = "Display name is required.")
     @Size(min = 1, max = 255)
-    @JsonIgnore
     public String getDisplayName() {
         return this.displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     @JsonGetter("display_name")
@@ -196,7 +200,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
     }
 
     @JsonSetter("display_name")
-    public void setDisplayName(String displayName) {
+    public void setMMDisplayName(String displayName) {
         if (MyanmarFontManager.isMyanmar(displayName)
                 && MyanmarFontManager.isZawgyi(displayName)) {
             this.displayName = MyanmarFontManager.toUnicode(displayName);
