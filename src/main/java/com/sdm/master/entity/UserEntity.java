@@ -7,6 +7,7 @@ import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
+import com.sdm.core.util.MyanmarFontManager;
 import com.sdm.master.resource.UserResource;
 import java.io.Serializable;
 import java.util.Date;
@@ -177,12 +178,31 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
     @NotNull(message = "Display name is required.")
     @Size(min = 1, max = 255)
+    @JsonIgnore
     public String getDisplayName() {
         return this.displayName;
     }
 
+    @JsonGetter("display_name")
+    public Object getMMDisplayName() {
+        if (MyanmarFontManager.isMyanmar(this.displayName)) {
+            Map<String, String> output = new HashMap<>();
+            output.put("zg", MyanmarFontManager.toZawgyi(this.displayName));
+            output.put("uni", this.displayName);
+            return output;
+        } else {
+            return this.displayName;
+        }
+    }
+
+    @JsonSetter("display_name")
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        if (MyanmarFontManager.isMyanmar(displayName)
+                && MyanmarFontManager.isZawgyi(displayName)) {
+            this.displayName = MyanmarFontManager.toUnicode(displayName);
+        } else {
+            this.displayName = displayName;
+        }
     }
 
     public Set<RoleEntity> getRoles() {
