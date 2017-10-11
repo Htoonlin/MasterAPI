@@ -35,7 +35,7 @@ public class AccessService implements IAccessManager {
 	private TokenEntity currentToken;
 
 	@Override
-	public boolean validateToken(Claims request) {
+	public boolean validateToken(Claims request) {            
 		if (request == null) {
 			return false;
 		}
