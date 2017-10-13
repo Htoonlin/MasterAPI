@@ -1,18 +1,11 @@
 package com.sdm.core.hibernate.entity;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.sdm.core.hibernate.audit.AuditListener;
 import java.io.Serializable;
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Table;
-import org.hibernate.envers.ModifiedEntityNames;
 import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
@@ -37,12 +30,6 @@ public class AuditEntity implements Serializable {
 
     private int userId;
 
-    @ElementCollection
-    @JoinTable(name = "tbl_audit_changes", joinColumns = @JoinColumn(name = "version"))
-    @Column(name = "entity")
-    @ModifiedEntityNames
-    private Set<String> modifiedEntityNames;
-
     public long getVersion() {
         return version;
     }
@@ -65,23 +52,6 @@ public class AuditEntity implements Serializable {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    @JsonGetter("modified_count")
-    public int getModifiedCount() {
-        if (modifiedEntityNames == null) {
-            return 0;
-        }
-
-        return modifiedEntityNames.size();
-    }
-
-    public Set<String> getModifiedEntityNames() {
-        return modifiedEntityNames;
-    }
-
-    public void setModifiedEntityNames(Set<String> modifiedEntityNames) {
-        this.modifiedEntityNames = modifiedEntityNames;
     }
 
     @Override
