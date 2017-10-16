@@ -84,9 +84,9 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
     @UIStructure(order = 7, label = "Roles", hideInGrid = true, inputType = UIInputType.objectlist)
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "tbl_user_role", joinColumns = {
-        @JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED")}, inverseJoinColumns = {
-        @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
+    @JoinTable(name = "tbl_user_role",
+            joinColumns = @JoinColumn(name = "userId", columnDefinition = "MEDIUMINT UNSIGNED"),
+            inverseJoinColumns = @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED"))
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<RoleEntity> roles = new HashSet<>();
 
