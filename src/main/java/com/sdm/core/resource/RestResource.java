@@ -89,7 +89,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
             return response;
         }
 
-        List<HashMap<String, Object>> data = (List<HashMap<String, Object>>) getDAO().fetchByName(queryName, params);
+        List<HashMap<String, Object>> data = (List<HashMap<String, Object>>) getDAO().fetchByNamedQuery(queryName, params);
         ListModel content = new ListModel<>(data);
         response = new DefaultResponse<>(HttpStatus.SC_OK, ResponseType.SUCCESS, content);
 

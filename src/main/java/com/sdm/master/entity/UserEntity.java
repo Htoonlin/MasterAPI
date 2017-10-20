@@ -28,6 +28,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -51,6 +53,18 @@ import org.hibernate.validator.constraints.Email;
 @DynamicUpdate(value = true)
 @Entity(name = "UserEntity")
 @Table(name = "tbl_user")
+@NamedQueries({
+    @NamedQuery(name = "UserEntity.SELECT_BY_EMAIL",
+            query = "FROM UserEntity u WHERE u.email = :email")
+    ,
+    @NamedQuery(name = "UserEntity.GET_USER_BY_TOKEN",
+            query = "FROM UserEntity u WHERE u.email = :email AND u.otpToken = :token")
+    ,
+    @NamedQuery(name = "UserEntity.AUTH_BY_EMAIL",
+            query = "FROM UserEntity u WHERE u.email = :email AND u.password = :password")
+    ,
+    @NamedQuery(name = "UserEntity.AUTH_BY_FACEBOOK",
+            query = "FROM UserEntity u WHERE u.facebookId = :facebookId")})
 public class UserEntity extends DefaultEntity implements Serializable {
 
     /**
