@@ -43,7 +43,7 @@ import org.hibernate.validator.constraints.NotBlank;
             query = "FROM PermissionEntity p WHERE p.roleId = :roleId")
     ,
     @NamedQuery(name = "PermissionEntity.CHECK_ROLE",
-            query = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.resourceClass = :class AND p.resoureMethod = :method AND p.requestMethod like :request")
+            query = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.resourceClass = :class AND p.resourceMethod = :method AND p.requestMethod like :request")
 })
 public class PermissionEntity extends DefaultEntity implements Serializable {
 
