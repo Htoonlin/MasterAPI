@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PreDestroy;
+import javax.persistence.Entity;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.WebApplicationException;
@@ -88,6 +89,14 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
         if (response != null) {
             return response;
         }
+
+        String entityName = getEntityClass().getName();
+        Entity entityAnno = getEntityClass().getAnnotation(Entity.class);
+        if (entityAnno != null) {
+            entityName = entityAnno.name();
+        }
+
+        queryName = entityName + "." + queryName.toUpperCase();
 
         List<HashMap<String, Object>> data = (List<HashMap<String, Object>>) getDAO().fetchByNamedQuery(queryName, params);
         ListModel content = new ListModel<>(data);
