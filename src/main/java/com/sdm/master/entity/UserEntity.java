@@ -55,14 +55,11 @@ import org.hibernate.validator.constraints.Email;
 @Table(name = "tbl_user")
 @NamedQueries({
     @NamedQuery(name = "UserEntity.SELECT_BY_EMAIL",
-            query = "FROM UserEntity u WHERE u.email = :email")
-    ,
+            query = "FROM UserEntity u WHERE u.email = :email"),
     @NamedQuery(name = "UserEntity.GET_USER_BY_TOKEN",
-            query = "FROM UserEntity u WHERE u.email = :email AND u.otpToken = :token")
-    ,
+            query = "FROM UserEntity u WHERE u.email = :email AND u.otpToken = :token"),
     @NamedQuery(name = "UserEntity.AUTH_BY_EMAIL",
-            query = "FROM UserEntity u WHERE u.email = :email AND u.password = :password")
-    ,
+            query = "FROM UserEntity u WHERE u.email = :email AND u.password = :password"),
     @NamedQuery(name = "UserEntity.AUTH_BY_FACEBOOK",
             query = "FROM UserEntity u WHERE u.facebookId = :facebookId")})
 public class UserEntity extends DefaultEntity implements Serializable {

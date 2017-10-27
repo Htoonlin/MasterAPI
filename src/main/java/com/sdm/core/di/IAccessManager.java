@@ -5,11 +5,9 @@
  */
 package com.sdm.core.di;
 
-import java.lang.reflect.Method;
-
-import org.jvnet.hk2.annotations.Contract;
-
 import io.jsonwebtoken.Claims;
+import java.lang.reflect.Method;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  *
@@ -18,7 +16,7 @@ import io.jsonwebtoken.Claims;
 @Contract
 public interface IAccessManager {
 
-	boolean validateToken(Claims request);
+    boolean validateToken(Claims request);
 
-	boolean checkPermission(Claims request, Method method, String httpMethod);
+    boolean checkPermission(Claims request, Method method, String httpMethod);
 }

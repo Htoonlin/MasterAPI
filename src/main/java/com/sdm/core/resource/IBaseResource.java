@@ -5,13 +5,12 @@
  */
 package com.sdm.core.resource;
 
+import com.sdm.core.response.IBaseResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-
-import com.sdm.core.response.IBaseResponse;
 
 /**
  *
@@ -19,16 +18,16 @@ import com.sdm.core.response.IBaseResponse;
  */
 public interface IBaseResource {
 
-	public Object getHttpSession();
+    public Object getHttpSession();
 
-	public int getUserId();
+    public int getUserId();
 
-	public UriInfo getUriInfo();
+    public UriInfo getUriInfo();
 
-	public void setUriInfo(UriInfo uriInfo);
+    public void setUriInfo(UriInfo uriInfo);
 
-	@GET
-	@Path("route")
-	@Produces(MediaType.APPLICATION_JSON)
-	public IBaseResponse getRoutes();
+    @GET
+    @Path("route")
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse getRoutes();
 }

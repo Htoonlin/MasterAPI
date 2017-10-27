@@ -10,43 +10,43 @@ import java.io.Serializable;
  */
 public class LinkModel implements Serializable {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1489532404351163294L;
-	private String href;
-	private String type;
-	private String title;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1489532404351163294L;
+    private String href;
+    private String type;
+    private String title;
 
-	public LinkModel() {
+    public LinkModel() {
 
-	}
+    }
 
-	public LinkModel(String href) {
-		this.href = href;
-	}
+    public LinkModel(String href) {
+        this.href = href;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public String getHref() {
-		return href;
-	}
+    public String getHref() {
+        return href;
+    }
 
-	public void setHref(String href) {
-		this.href = href;
-	}
+    public void setHref(String href) {
+        this.href = href;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 }

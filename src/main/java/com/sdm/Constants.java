@@ -176,8 +176,7 @@ public interface Constants {
         String OTP_LIFE = "com.sdm.security.otp_life";
 
         /**
-         * Expired [Minute] time to request api server. Don't need on SYSTEM_ENV
-         * => DEV.
+         * Expired [Minute] time to request api server. Don't need on SYSTEM_ENV => DEV.
          */
         String SECURITY_TIMESTAMP_LIFE = "com.sdm.security.timestamp_life";
 

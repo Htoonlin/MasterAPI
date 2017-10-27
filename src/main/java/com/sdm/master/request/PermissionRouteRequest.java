@@ -15,7 +15,8 @@ import org.hibernate.validator.constraints.NotBlank;
  * @author YOETHA
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class PermissionRouteRequest implements Serializable{
+public class PermissionRouteRequest implements Serializable {
+
     private static final long serialVersionUID = 4541648496908228267L;
     private Boolean checked;
     private PermissionEntity permission;

@@ -6,7 +6,6 @@
 package com.sdm.core.exception;
 
 import java.sql.SQLException;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
@@ -17,10 +16,10 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class SQLExceptionMapper extends DefaultExceptionMapper<SQLException> {
 
-	@Override
-	public Response toResponse(SQLException exception) {
-		return buildResponse(500, exception.getErrorCode(), exception.getSQLState(), exception.getLocalizedMessage(),
-				exception);
-	}
+    @Override
+    public Response toResponse(SQLException exception) {
+        return buildResponse(500, exception.getErrorCode(), exception.getSQLState(), exception.getLocalizedMessage(),
+                exception);
+    }
 
 }

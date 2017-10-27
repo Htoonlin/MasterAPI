@@ -5,14 +5,25 @@
  */
 package com.sdm.core.filter;
 
+import com.sdm.Constants;
+import com.sdm.core.Setting;
+import com.sdm.core.di.IAccessManager;
+import com.sdm.core.response.model.MessageModel;
+import com.sdm.core.util.SecurityManager;
+import io.jsonwebtoken.ClaimJwtException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Base64;
 import java.util.List;
-
 import javax.annotation.Priority;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Priorities;
@@ -24,23 +35,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
-
-import com.sdm.Constants;
-import com.sdm.core.Setting;
-import com.sdm.core.di.IAccessManager;
-import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.util.SecurityManager;
-
-import io.jsonwebtoken.ClaimJwtException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import javax.annotation.security.RolesAllowed;
 
 /**
  *
@@ -125,12 +121,16 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
                         requestContext.abortWith(errorResponse(403));
                         return;
                     }
+                    // Separate UserID and Save
+                    int userId = Integer
+                            .parseInt(authorizeToken.getSubject().substring(Constants.USER_PREFIX.length()).trim());
                     
                     RolesAllowed roles = resourceClass.getAnnotation(RolesAllowed.class);
                     if (roles != null) {
                         //Skip Data Permission if Resource Permission is user.
                         for (String role : roles.value()) {
                             if (role.equalsIgnoreCase("user")) {
+                                this.saveUserId(userId);
                                 return;
                             }
                         }
@@ -138,10 +138,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
                         requestContext.abortWith(errorResponse(403));
                         return;
                     }
-
-                    // Separate UserID and Save
-                    int userId = Integer
-                            .parseInt(authorizeToken.getSubject().substring(Constants.USER_PREFIX.length()).trim());
+                    
                     this.saveUserId(userId);
                 } catch (ClaimJwtException ex) {
                     requestContext.abortWith(buildResponse(403, ex.getLocalizedMessage()));

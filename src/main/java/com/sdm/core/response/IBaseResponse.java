@@ -5,31 +5,30 @@
  */
 package com.sdm.core.response;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.Map;
 
 /**
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder({ "code", "status", "content", "timestamp" })
+@JsonPropertyOrder({"code", "status", "content", "timestamp"})
 public interface IBaseResponse {
 
-	@JsonGetter("code")
-	public int getCode();
+    @JsonGetter("code")
+    public int getCode();
 
-	@JsonGetter("status")
-	public ResponseType getStatus();
+    @JsonGetter("status")
+    public ResponseType getStatus();
 
-	@JsonGetter("content")
-	public Object getContent();
+    @JsonGetter("content")
+    public Object getContent();
 
-	@JsonGetter("timestamp")
-	public long getTimestamp();
+    @JsonGetter("timestamp")
+    public long getTimestamp();
 
-	@JsonIgnore
-	public Map<String, Object> getHeaders();
+    @JsonIgnore
+    public Map<String, Object> getHeaders();
 }

@@ -16,10 +16,10 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class WebApplicationExceptionMapper extends DefaultExceptionMapper<WebApplicationException> {
 
-	@Override
-	public Response toResponse(WebApplicationException exception) {
-		Response exResponse = exception.getResponse();
-		return buildResponse(exResponse.getStatus(), exception);
-	}
+    @Override
+    public Response toResponse(WebApplicationException exception) {
+        Response exResponse = exception.getResponse();
+        return buildResponse(exResponse.getStatus(), exception);
+    }
 
 }

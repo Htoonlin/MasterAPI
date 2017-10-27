@@ -6,7 +6,6 @@
 package com.sdm.core.di;
 
 import java.util.Map;
-
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -16,5 +15,5 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface ITemplateManager {
 
-	String buildTemplate(String template, Map<String, Object> data);
+    String buildTemplate(String template, Map<String, Object> data);
 }

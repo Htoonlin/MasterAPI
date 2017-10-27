@@ -13,32 +13,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Htoonlin
  */
-@JsonIgnoreProperties({ "parts", "did_you_mean" })
+@JsonIgnoreProperties({"parts", "did_you_mean"})
 public class ValidateResponse {
 
-	private boolean is_valid;
-	private String address;
+    private boolean is_valid;
+    private String address;
 
-	@JsonCreator
-	public ValidateResponse(@JsonProperty("is_valid") boolean valid, @JsonProperty("address") String address) {
-		this.is_valid = valid;
-		this.address = address;
-	}
+    @JsonCreator
+    public ValidateResponse(@JsonProperty("is_valid") boolean valid, @JsonProperty("address") String address) {
+        this.is_valid = valid;
+        this.address = address;
+    }
 
-	public boolean isValid() {
-		return is_valid;
-	}
+    public boolean isValid() {
+        return is_valid;
+    }
 
-	public void setValid(boolean valid) {
-		this.is_valid = valid;
-	}
+    public void setValid(boolean valid) {
+        this.is_valid = valid;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
 }

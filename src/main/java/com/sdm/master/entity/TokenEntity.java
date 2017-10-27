@@ -35,11 +35,9 @@ import org.hibernate.envers.NotAudited;
 @Table(name = "tbl_user_token")
 @NamedQueries({
     @NamedQuery(name = "TokenEntity.CHECK_USER",
-            query = "FROM TokenEntity t WHERE t.userId = :userId AND t.deviceId = :deviceId AND t.deviceOs = :deviceOS")
-    ,
+            query = "FROM TokenEntity t WHERE t.userId = :userId AND t.deviceId = :deviceId AND t.deviceOs = :deviceOS"),
     @NamedQuery(name = "TokenEntity.CLEAN_TOKEN",
-            query = "DELETE FROM TokenEntity t WHERE t.userId = :userId")
-    ,
+            query = "DELETE FROM TokenEntity t WHERE t.userId = :userId"),
     @NamedQuery(name = "TokenEntity.UPDATE_EXPIRED_BY_TOKEN",
             query = "UPDATE TokenEntity t SET t.tokenExpired = :expired WHERE t.token = :token")})
 @JsonPropertyOrder(value = {"token", "deviceId", "device_os", "token_expired"})

@@ -40,8 +40,7 @@ import org.hibernate.validator.constraints.NotBlank;
 @Table(name = "tbl_permission")
 @NamedQueries({
     @NamedQuery(name = "PermissionEntity.GET_BY_ROLE",
-            query = "FROM PermissionEntity p WHERE p.roleId = :roleId")
-    ,
+            query = "FROM PermissionEntity p WHERE p.roleId = :roleId"),
     @NamedQuery(name = "PermissionEntity.CHECK_ROLE",
             query = "FROM PermissionEntity p WHERE p.roleId = :roleId AND p.resourceClass = :class AND p.resourceMethod = :method AND p.requestMethod like :request")
 })

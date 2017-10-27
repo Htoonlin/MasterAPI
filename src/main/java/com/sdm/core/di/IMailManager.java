@@ -5,14 +5,11 @@
  */
 package com.sdm.core.di;
 
+import com.sdm.core.util.mail.MailInfo;
 import java.io.File;
 import java.util.List;
-
 import javax.ws.rs.core.Response;
-
 import org.jvnet.hk2.annotations.Contract;
-
-import com.sdm.core.util.mail.MailInfo;
 
 /**
  *
@@ -21,16 +18,16 @@ import com.sdm.core.util.mail.MailInfo;
 @Contract
 public interface IMailManager {
 
-	public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
+    public final String EMAIL_PATTERN = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
 
-	public boolean checkMail(String email);
+    public boolean checkMail(String email);
 
-	Response sendAttachment(MailInfo mailInfo, File attachment);
+    Response sendAttachment(MailInfo mailInfo, File attachment);
 
-	Response sendAttachments(MailInfo mailInfo, List<File> attachments);
+    Response sendAttachments(MailInfo mailInfo, List<File> attachments);
 
-	Response sendHTML(MailInfo mailInfo);
+    Response sendHTML(MailInfo mailInfo);
 
-	Response sendRaw(MailInfo mailInfo);
+    Response sendRaw(MailInfo mailInfo);
 
 }

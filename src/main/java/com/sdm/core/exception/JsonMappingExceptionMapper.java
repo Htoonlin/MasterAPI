@@ -5,10 +5,9 @@
  */
 package com.sdm.core.exception;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  *
@@ -17,9 +16,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @Provider
 public class JsonMappingExceptionMapper extends DefaultExceptionMapper<JsonMappingException> {
 
-	@Override
-	public Response toResponse(JsonMappingException exception) {
-		return buildResponse(422, exception);
-	}
+    @Override
+    public Response toResponse(JsonMappingException exception) {
+        return buildResponse(422, exception);
+    }
 
 }

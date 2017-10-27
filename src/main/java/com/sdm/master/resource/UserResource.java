@@ -5,15 +5,6 @@
  */
 package com.sdm.master.resource;
 
-import java.util.Objects;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.ws.rs.Path;
-
-import org.apache.log4j.Logger;
-
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.exception.InvalidRequestException;
@@ -27,6 +18,12 @@ import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.util.AuthMailSend;
+import java.util.Objects;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.ws.rs.Path;
+import org.apache.log4j.Logger;
 
 /**
  * REST Web Service
@@ -36,79 +33,79 @@ import com.sdm.master.util.AuthMailSend;
 @Path("users")
 public class UserResource extends RestResource<UserEntity, Integer> {
 
-	private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
-	@Inject
-	ITemplateManager templateManager;
+    @Inject
+    ITemplateManager templateManager;
 
-	@Inject
-	IMailManager mailManager;
+    @Inject
+    IMailManager mailManager;
 
-	private UserDAO userDAO;
+    private UserDAO userDAO;
 
-	@PostConstruct
-	protected void init() {
-		if (this.userDAO == null) {
-			userDAO = new UserDAO(getUserId());
-		}
-	}
+    @PostConstruct
+    protected void init() {
+        if (this.userDAO == null) {
+            userDAO = new UserDAO(getUserId());
+        }
+    }
 
-	@Override
-	protected RestDAO getDAO() {
-		return this.userDAO;
-	}
+    @Override
+    protected RestDAO getDAO() {
+        return this.userDAO;
+    }
 
-	@Override
-	public IBaseResponse create(@Valid UserEntity request) {
-		UserEntity user = userDAO.getUserByEmail(request.getEmail());
-		if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-			InvalidRequestException invalidRequest = new InvalidRequestException();
-			invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
-			throw invalidRequest;
-		}
+    @Override
+    public IBaseResponse create(@Valid UserEntity request) {
+        UserEntity user = userDAO.getUserByEmail(request.getEmail());
+        if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+            InvalidRequestException invalidRequest = new InvalidRequestException();
+            invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
+            throw invalidRequest;
+        }
 
-		String rawPassword = request.getPassword();
-		String password = SecurityManager.hashString(request.getEmail(), rawPassword);
-		request.setPassword(password);
-		request.setStatus('A');
-		UserEntity createdUser = userDAO.insert(request, true);
-		this.modifiedResource();
+        String rawPassword = request.getPassword();
+        String password = SecurityManager.hashString(request.getEmail(), rawPassword);
+        request.setPassword(password);
+        request.setStatus('A');
+        UserEntity createdUser = userDAO.insert(request, true);
+        this.modifiedResource();
 
-		// Send Welcome mail to User
-		AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-		mailSend.welcomeUser(createdUser, rawPassword);
+        // Send Welcome mail to User
+        AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+        mailSend.welcomeUser(createdUser, rawPassword);
 
-		return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
-	}
+        return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
+    }
 
-	@Override
-	public IBaseResponse update(@Valid UserEntity request, Integer id) {
-		try {
-			UserEntity dbEntity = userDAO.fetchById(id);
-			if (dbEntity == null) {
-				MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-				return new DefaultResponse<>(message);
-			} else if (!Objects.equals(dbEntity.getId(), request.getId())) {
-				MessageModel message = new MessageModel(400, "Invalid", "Invalid request ID.");
-				return new DefaultResponse<>(message);
-			}
+    @Override
+    public IBaseResponse update(@Valid UserEntity request, Integer id) {
+        try {
+            UserEntity dbEntity = userDAO.fetchById(id);
+            if (dbEntity == null) {
+                MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
+                return new DefaultResponse<>(message);
+            } else if (!Objects.equals(dbEntity.getId(), request.getId())) {
+                MessageModel message = new MessageModel(400, "Invalid", "Invalid request ID.");
+                return new DefaultResponse<>(message);
+            }
 
-			request.setEmail(dbEntity.getEmail());
-			request.setPassword(dbEntity.getPassword());
-			request.setFacebookId(dbEntity.getFacebookId());
+            request.setEmail(dbEntity.getEmail());
+            request.setPassword(dbEntity.getPassword());
+            request.setFacebookId(dbEntity.getFacebookId());
 
-			userDAO.update(request, true);
-			this.modifiedResource();
+            userDAO.update(request, true);
+            this.modifiedResource();
 
-			return new DefaultResponse<UserEntity>(202, ResponseType.SUCCESS, request);
-		} catch (Exception e) {
-			LOG.error(e);
-			throw e;
-		}
-	}
+            return new DefaultResponse<UserEntity>(202, ResponseType.SUCCESS, request);
+        } catch (Exception e) {
+            LOG.error(e);
+            throw e;
+        }
+    }
 
-	@Override
-	protected Logger getLogger() {
-		return UserResource.LOG;
-	}
+    @Override
+    protected Logger getLogger() {
+        return UserResource.LOG;
+    }
 }

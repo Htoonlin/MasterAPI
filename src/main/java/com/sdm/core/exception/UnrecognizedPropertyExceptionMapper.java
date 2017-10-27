@@ -5,10 +5,9 @@
  */
 package com.sdm.core.exception;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  *
@@ -17,9 +16,9 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 @Provider
 public class UnrecognizedPropertyExceptionMapper extends DefaultExceptionMapper<UnrecognizedPropertyException> {
 
-	@Override
-	public Response toResponse(UnrecognizedPropertyException exception) {
-		return buildResponse(422, exception);
-	}
+    @Override
+    public Response toResponse(UnrecognizedPropertyException exception) {
+        return buildResponse(422, exception);
+    }
 
 }
