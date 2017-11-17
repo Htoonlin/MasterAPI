@@ -55,9 +55,7 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
             }
         } else if (content instanceof DefaultEntity) {
             this.status = ResponseType.SUCCESS;
-        } else if (this.code == 400) {
-            this.status = ResponseType.INVALID;
-        }
+        } 
 
     }
 
