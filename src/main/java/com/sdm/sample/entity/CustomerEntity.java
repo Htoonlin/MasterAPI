@@ -8,7 +8,7 @@ package com.sdm.sample.entity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.response.LinkModel;
+import com.sdm.core.response.model.LinkModel;
 import com.sdm.core.ui.UIStructure;
 import com.sdm.sample.resource.CustomerResource;
 import java.io.Serializable;

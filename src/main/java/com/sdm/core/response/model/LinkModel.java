@@ -1,4 +1,4 @@
-package com.sdm.core.response;
+package com.sdm.core.response.model;
 
 import java.io.Serializable;
 

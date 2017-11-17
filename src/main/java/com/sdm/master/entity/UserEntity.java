@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.response.LinkModel;
+import com.sdm.core.response.model.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.MyanmarFontManager;

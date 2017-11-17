@@ -13,7 +13,7 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
 import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.response.model.Pagination;
+import com.sdm.core.response.model.PaginationModel;
 import com.sdm.core.ui.UIProperty;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -143,7 +143,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
                 return new DefaultResponse<>(message);
             }
 
-            Pagination<T> content = new Pagination<T>(data, total, pageId, pageSize);
+            PaginationModel<T> content = new PaginationModel<T>(data, total, pageId, pageSize);
 
             // Generate HAL Links
             content.genreateLinks(this.getClass());
@@ -368,7 +368,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
             AuditDAO auditDAO = new AuditDAO(getDAO().getSession());
             long total = auditDAO.getTotal(getEntityClass(), id);
             List<HashMap<String, Object>> data = (List<HashMap<String, Object>>) auditDAO.getVersions(getEntityClass(), id, pageId, pageSize);
-            Pagination<HashMap<String, Object>> content = new Pagination<>(data, total, pageId, pageSize);
+            PaginationModel<HashMap<String, Object>> content = new PaginationModel<>(data, total, pageId, pageSize);
 
             // Generate HAL Links
             content.genreateLinks(this.getClass());

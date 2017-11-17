@@ -12,7 +12,7 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
 import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.response.model.RouteInfo;
+import com.sdm.core.response.model.RouteModel;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -135,8 +135,8 @@ public class DefaultResource implements IBaseResource {
         return getUriInfo().getAbsolutePath().toString();
     }
 
-    protected List<RouteInfo> collectRoute(Resource resource, String basePath) {
-        List<RouteInfo> routeList = new ArrayList<>();
+    protected List<RouteModel> collectRoute(Resource resource, String basePath) {
+        List<RouteModel> routeList = new ArrayList<>();
         String parentPath = "";
         for (ResourceMethod method : resource.getResourceMethods()) {
             Invocable invocable = method.getInvocable();
@@ -146,7 +146,7 @@ public class DefaultResource implements IBaseResource {
                 continue;
             }
 
-            RouteInfo route = new RouteInfo();
+            RouteModel route = new RouteModel();
             // Set Resource Class
             route.setResourceClass(this.getClass().getName());
 
@@ -181,7 +181,7 @@ public class DefaultResource implements IBaseResource {
                 MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
                 return new DefaultResponse<>(message);
             }
-            ListModel<RouteInfo> content = new ListModel<>();
+            ListModel<RouteModel> content = new ListModel<>();
             content.setData(collectRoute(resource, "/"));
             return new DefaultResponse<>(content);
         } catch (Exception e) {
