@@ -48,15 +48,15 @@ public class DefaultResponse<T extends Serializable> implements IBaseResponse {
                 this.status = ResponseType.INFO;
             } else if (this.code >= 200 && this.code < 300) {
                 this.status = ResponseType.SUCCESS;
-            } else if (this.code == 400) {
-                this.status = ResponseType.INVALID;
-            } else if (this.code > 400 && this.code < 500) {
+            } else if (this.code >= 400 && this.code < 500) {
                 this.status = ResponseType.CLIENT_ERROR;
             } else if (this.code >= 500 && this.code < 600) {
                 this.status = ResponseType.CLIENT_ERROR;
             }
         } else if (content instanceof DefaultEntity) {
             this.status = ResponseType.SUCCESS;
+        } else if (this.code == 400) {
+            this.status = ResponseType.INVALID;
         }
 
     }
