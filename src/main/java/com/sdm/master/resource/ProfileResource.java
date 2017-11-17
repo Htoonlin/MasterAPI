@@ -5,6 +5,7 @@
  */
 package com.sdm.master.resource;
 
+import com.sdm.core.exception.InvalidRequestException;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
@@ -105,8 +106,9 @@ public class ProfileResource extends DefaultResource {
             }
 
             if (!(user.getEmail().equalsIgnoreCase(request.getEmail()) && user.getPassword().equals(oldPassword))) {
-                message = new MessageModel(400, "Invalid Password", "Hey! your old password is wrong. pls try again.");
-                return new DefaultResponse<>(message);
+                throw new InvalidRequestException("old_password",  
+                        "Hey! your old password is wrong. pls try again.", 
+                        request.getOldPassword()); 
             }
             String newPassword = SecurityManager.hashString(request.getEmail(), request.getNewPassword());
             user.setPassword(newPassword);

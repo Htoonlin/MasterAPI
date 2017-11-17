@@ -36,6 +36,7 @@ public class DefaultEntity implements IBaseRequest {
 
     private Date timestamp;
 
+    @Override
     public Date getTimestamp() {
         return this.timestamp;
     }

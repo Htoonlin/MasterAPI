@@ -10,5 +10,5 @@ package com.sdm.core.response;
  * @author Htoonlin
  */
 public enum ResponseType {
-    SUCCESS, INFO, CLIENT_ERROR, SERVER_ERROR, EXCEPTION, UNKNOWN
+    SUCCESS, INFO, CLIENT_ERROR, INVALID, SERVER_ERROR, EXCEPTION, UNKNOWN
 }

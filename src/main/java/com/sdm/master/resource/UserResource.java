@@ -18,7 +18,6 @@ import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.util.AuthMailSend;
-import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -85,10 +84,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             if (dbEntity == null) {
                 MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
                 return new DefaultResponse<>(message);
-            } else if (!Objects.equals(dbEntity.getId(), request.getId())) {
-                MessageModel message = new MessageModel(400, "Invalid", "Invalid request ID.");
-                return new DefaultResponse<>(message);
-            }
+            } 
 
             request.setEmail(dbEntity.getEmail());
             request.setPassword(dbEntity.getPassword());

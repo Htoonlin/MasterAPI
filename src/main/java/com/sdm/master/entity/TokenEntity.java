@@ -59,7 +59,7 @@ public class TokenEntity extends DefaultEntity implements Serializable {
     private String deviceId;
 
     @UIStructure(order = 3, label = "Device-OS")
-    @Column(name = "deviceOS", nullable = false, length = 10)
+    @Column(name = "deviceOS", nullable = false, length = 255)
     private String deviceOs;
 
     @NotAudited
