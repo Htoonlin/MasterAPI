@@ -8,6 +8,7 @@ package com.sdm.core.filter;
 import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
+import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
 import io.jsonwebtoken.ClaimJwtException;
@@ -167,7 +168,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
     private Response buildResponse(int code, String description) {
         MessageModel message = new MessageModel(code, HttpStatus.getStatusText(code), description);
-        return Response.status(code).entity(message).build();
+        return Response.status(code).entity(new DefaultResponse<>(message)).build();
     }
 
     private void saveUserId(int userId) {
