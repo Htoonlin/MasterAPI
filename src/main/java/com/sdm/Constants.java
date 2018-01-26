@@ -226,6 +226,11 @@ public interface Constants {
         String CORS_MAX_AGE = "com.sdm.cors.age";
 
         /**
+         * CORS max age.
+         */
+        String CORS_ALLOW_HEADERS = "com.sdm.cors.headers";
+        
+        /**
          * Supported mail type => webmail, mailgun
          */
         String MAIL_TYPE = "com.sdm.mail";

@@ -5,6 +5,18 @@
  */
 package com.sdm.master.resource;
 
+import com.sdm.core.Setting;
+import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.core.resource.RestResource;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.MessageModel;
+import com.sdm.core.util.FileManager;
+import com.sdm.master.dao.FileDAO;
+import com.sdm.master.dao.UserDAO;
+import com.sdm.master.entity.FileEntity;
+import com.sdm.master.entity.UserEntity;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +26,6 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Base64;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -31,25 +42,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
-
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-
-import com.sdm.core.Setting;
-import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.core.resource.RestResource;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.util.FileManager;
-import com.sdm.master.dao.FileDAO;
-import com.sdm.master.dao.UserDAO;
-import com.sdm.master.entity.FileEntity;
-import com.sdm.master.entity.UserEntity;
-
-import net.coobird.thumbnailator.Thumbnails;
 
 /**
  *
@@ -158,7 +154,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             FileEntity entity = mainDAO.createFile(inputFile, rawEntity, true);
 
             this.modifiedResource();
-            return new DefaultResponse<FileEntity>(entity);
+            return new DefaultResponse<>(entity);
         } catch (Exception e) {
             LOG.error(e);
             throw e;
@@ -237,5 +233,5 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             getLogger().error(e);
             throw e;
         }
-    }
+    }    
 }
