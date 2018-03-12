@@ -21,6 +21,7 @@
         <mail.version>1.4.7</mail.version>
         <itext.version>5.5.11</itext.version>
         <jwt.version>0.7.0</jwt.version>
+        <mmtool.version>1.0.1</mmtool.version>
         <thumbnailator.version>[0.4, 0.5)</thumbnailator.version>
     </properties>
 
@@ -156,7 +157,11 @@
             <version>20170516</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.google.myanmartools</groupId>
+            <artifactId>myanmar-tools</artifactId>
+            <version>${mmtool.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>${project.name}-${project.version}</finalName>
