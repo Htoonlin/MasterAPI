@@ -10,6 +10,7 @@ import com.sdm.core.request.IBaseRequest;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.entity.UserEntity;
 import java.util.Date;
+import java.util.regex.Pattern;
 import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -26,7 +27,7 @@ public class AuthRequest implements IBaseRequest {
      */
     private static final long serialVersionUID = -341416570638461653L;
 
-    private String email;
+    private String user;
 
     private String password;
 
@@ -44,12 +45,23 @@ public class AuthRequest implements IBaseRequest {
         this.deviceId = value;
     }
 
-    @Email(message = "Ivalid email format.")
+    @NotBlank(message = "Email can't be blank.")
+    @Size(min = 6, max = 255)
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+    
+    /*
+    @Email(message = "Invalid email format.")
     @NotBlank(message = "Email can't be blank.")
     @Size(min = 6, max = 255)
     public String getEmail() {
         return this.email;
-    }
+    }*/
 
     @NotBlank(message = "Password can't be blank.")
     @Size(min = 2, max = 255)
@@ -57,24 +69,33 @@ public class AuthRequest implements IBaseRequest {
         return this.password;
     }
 
+    /*
     public void setEmail(String value) {
         this.email = value;
-    }
+    }*/
 
     public void setPassword(String value) {
         this.password = value;
     }
 
     public String getCryptPassword() {
-        return SecurityManager.hashString(this.email, this.password);
+        return SecurityManager.hashString(this.user, this.password);
     }
 
     public boolean isAuth(UserEntity authUser) {
         if (authUser == null) {
             return false;
         }
+        
+        Pattern pattern=Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+        boolean isEmail = pattern.matcher(user).matches();
+        
         String cryptPassword = this.getCryptPassword();
-        return (authUser.getEmail().equalsIgnoreCase(this.email) && authUser.getPassword().equals(cryptPassword));
+        if(isEmail)
+            return (authUser.getEmail().equalsIgnoreCase(this.user) && authUser.getPassword().equals(cryptPassword));
+        else{
+            return (authUser.getUserName().equalsIgnoreCase(this.user) && authUser.getuPassword().equals(cryptPassword));
+        }
     }
 
     @Override
@@ -92,7 +113,7 @@ public class AuthRequest implements IBaseRequest {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((deviceId == null) ? 0 : deviceId.hashCode());
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
         result = prime * result + ((password == null) ? 0 : password.hashCode());
         return result;
     }
@@ -116,11 +137,11 @@ public class AuthRequest implements IBaseRequest {
         } else if (!deviceId.equals(other.deviceId)) {
             return false;
         }
-        if (email == null) {
-            if (other.email != null) {
+        if (user == null) {
+            if (other.user != null) {
                 return false;
             }
-        } else if (!email.equals(other.email)) {
+        } else if (!user.equals(other.user)) {
             return false;
         }
         if (password == null) {

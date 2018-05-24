@@ -16,11 +16,6 @@ public class InvalidRequestException extends WebApplicationException {
     public InvalidRequestException() {
         this.errors = new HashMap<>();
     }
-    
-    public InvalidRequestException(String property, String message, Object value){
-        this();
-        this.errors.put(property, new ErrorModel(message, value));
-    }
 
     public InvalidRequestException(HashMap<String, ErrorModel> errors) {
         this.errors = errors;

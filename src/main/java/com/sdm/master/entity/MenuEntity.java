@@ -3,7 +3,7 @@ package com.sdm.master.entity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.response.model.LinkModel;
+import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
 import com.sdm.master.resource.MenuResource;
@@ -29,7 +29,19 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.*;
+import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.*;
+import java.util.*;
+import javax.persistence.*;
+import java.math.*;
+import com.sdm.core.util.MyanmarFontManager;
 
+/**
+ * 
+ * @Author ayeyin
+ * @Since 2017-11-17 14:33:42
+ */
 @Audited
 @DynamicUpdate(value = true)
 @Entity(name = "MenuEntity")
@@ -43,67 +55,63 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 
     @JsonIgnore
     @NotAudited
-    @Formula(value = "concat(name, state, icon, type)")
+    @Formula(value = "concat(icon, name, state, type)")
     private String search;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @UIStructure(order = 0, label = "#", readOnly = true)
-    @Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+    @UIStructure(order = 0, label = "#", inputType = UIInputType.number, hideInGrid = false, readOnly = true)
+    @Column(name = "id", columnDefinition = "MEDIUMINT UNSIGNED")
     private int id;
 
-    @UIStructure(order = 1, label = "Name")
-    @Column(name = "name", columnDefinition = "varchar(50)", length = 50, nullable = false)
+    @UIStructure(order = 1, label = "Name", inputType = UIInputType.text, hideInGrid = false, readOnly = false)
+    @Column(name = "name", nullable = false, columnDefinition = "varchar(50)")
     private String name;
 
-    @UIStructure(order = 2, label = "Description", inputType = UIInputType.textarea)
-    @Column(name = "description", columnDefinition = "varchar(255)", length = 255, nullable = true)
+    @UIStructure(order = 2, label = "Description", inputType = UIInputType.textarea, hideInGrid = false, readOnly = false)
+    @Column(name = "description", nullable = true, columnDefinition = "varchar(255)")
     private String description;
 
-    @UIStructure(order = 3, label = "State")
-    @Column(name = "state", columnDefinition = "varchar(500)", length = 500, nullable = false)
+    @UIStructure(order = 3, label = "State", inputType = UIInputType.text, hideInGrid = false, readOnly = false)
+    @Column(name = "state", nullable = false, columnDefinition = "varchar(500)")
     private String state;
 
-    @UIStructure(order = 4, label = "Icon", inputType = UIInputType.image)
-    @Column(name = "icon", columnDefinition = "varchar(50)", length = 50, nullable = false)
+    @UIStructure(order = 4, label = "Icon", inputType = UIInputType.image, hideInGrid = false, readOnly = false)
+    @Column(name = "icon", nullable = false, columnDefinition = "varchar(50)")
     private String icon;
 
     /**
      * Supported Types : module, toggle, link
      */
-    @UIStructure(order = 4, label = "Type")
-    @Column(name = "type", columnDefinition = "varchar(10)", length = 10, nullable = false)
+    @UIStructure(order = 4, label = "Type", inputType = UIInputType.text, hideInGrid = false, readOnly = false)
+    @Column(name = "type", nullable = false, columnDefinition = "varchar(10)")
     private String type;
 
-    @UIStructure(order = 5, label = "priority", inputType = UIInputType.number)
-    @Column(name = "priority", columnDefinition = "INT", nullable = false)
+    @UIStructure(order = 5, label = "priority", inputType = UIInputType.number, hideInGrid = false, readOnly = false)
+    @Column(name = "priority", nullable = false, columnDefinition = "INT")
     private int priority;
 
-    @UIStructure(order = 6, label = "Is separator?", inputType = UIInputType.checkbox)
-    @Column(name = "isDivider", columnDefinition = "bit(1)", nullable = false)
+    @UIStructure(order = 6, label = "Is separator?", inputType = UIInputType.checkbox, hideInGrid = false, readOnly = false)
+    @Column(name = "isDivider", nullable = false, columnDefinition = "bit(1)")
     private boolean separator;
 
-    @UIStructure(order = 7, label = "Parent Menu", inputType = UIInputType.number, hideInGrid = true)
-    @NotAudited
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parentId", columnDefinition = "INT UNSIGNED", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     @NotFound(action = NotFoundAction.IGNORE)
+    @NotAudited
+    @UIStructure(order = 7, label = "Parent Menu", inputType = UIInputType.number, hideInGrid = true, readOnly = false)
+    @JoinColumn(name = "parentId", columnDefinition = "INT UNSIGNED", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<MenuEntity> children;
 
-    @UIStructure(order = 8, label = "Roles", inputType = UIInputType.objectlist, hideInGrid = true)
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "tbl_menu_permission", joinColumns = {
-        @JoinColumn(name = "menuId", columnDefinition = "MEDIUMINT UNSIGNED")}, inverseJoinColumns = {
-        @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED")})
     @NotFound(action = NotFoundAction.IGNORE)
+    @UIStructure(order = 8, label = "Roles", inputType = UIInputType.objectlist, hideInGrid = true, readOnly = false)
+    @JoinTable(name = "tbl_menu_permission", joinColumns = { @JoinColumn(name = "menuId", columnDefinition = "MEDIUMINT UNSIGNED") }, inverseJoinColumns = { @JoinColumn(name = "roleId", columnDefinition = "MEDIUMINT UNSIGNED") })
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<RoleEntity> roles;
 
     public MenuEntity() {
-
     }
 
-    public MenuEntity(int id, String name, String description, String state, String icon, String type, int priority,
-            boolean separator) {
+    public MenuEntity(int id, String name, String description, String state, String icon, String type, int priority, boolean separator) {
         super();
         this.id = id;
         this.name = name;
@@ -117,8 +125,7 @@ public class MenuEntity extends DefaultEntity implements Serializable {
 
     @JsonGetter("&detail_link")
     public LinkModel getSelfLink() {
-        String selfLink = UriBuilder.fromResource(MenuResource.class).path(Integer.toString(this.id)).build()
-                .toString();
+        String selfLink = UriBuilder.fromResource(MenuResource.class).path(Integer.toString(this.id)).build().toString();
         return new LinkModel(selfLink);
     }
 
@@ -234,5 +241,9 @@ public class MenuEntity extends DefaultEntity implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public boolean getSeparator() {
+        return separator;
     }
 }

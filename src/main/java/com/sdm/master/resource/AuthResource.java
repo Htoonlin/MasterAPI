@@ -90,11 +90,7 @@ public class AuthResource extends DefaultResource {
 
     private String getDeviceOS() {
         UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
-        String deviceOS = userAgent.getOperatingSystem().getName();
-        if(deviceOS.length() > 255){
-            deviceOS = deviceOS.substring(0, 255);
-        }
-        return deviceOS;
+        return userAgent.getOperatingSystem().getName();
     }
 
     private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
@@ -106,7 +102,8 @@ public class AuthResource extends DefaultResource {
                 message = new MessageModel(401, "Blocked!",
                         "Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
             } else {
-                UserEntity authUser = userDao.userAuth(request.getEmail(), request.getCryptPassword());
+                UserEntity authUser = userDao.userAuth(request.getUser(), request.getCryptPassword());
+                
                 if (authUser != null && authUser.getStatus() == UserEntity.ACTIVE && request.isAuth(authUser)) {
                     userDao.beginTransaction();
                     TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
@@ -225,12 +222,25 @@ public class AuthResource extends DefaultResource {
                         request.getEmail());
             }
 
+            if (request.getUserName().contains(" ") || !request.getUserName().matches("[^a-z A-Z0-9_.]")) {
+                invalidRequest.addError("user name", "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09",
+                        request.getUserName());
+            }
+
+            user = userDao.getUserByName(request.getUserName());
+            if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
+                invalidRequest.addError("user name", "Sorry! someone already registered with this user name",
+                        request.getUserName());
+            }
+
             if (invalidRequest.getErrors().size() > 0) {
                 throw invalidRequest;
             }
 
             String password = SecurityManager.hashString(request.getEmail(), request.getPassword());
-            user = new UserEntity(request.getEmail(), request.getDisplayName(), password, true, UserEntity.PENDING);
+            String uPassword = SecurityManager.hashString(request.getUserName(), request.getPassword());
+            user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(), password, uPassword, true, UserEntity.PENDING);
+
             AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
             mailSend.activateLink(user, userAgentString);
             userDao.insert(user, true);
@@ -294,9 +304,9 @@ public class AuthResource extends DefaultResource {
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.activateLink(user, userAgentString);
                 userDao.update(user, true);
-                throw new InvalidRequestException("token",  
-                        "Sorry! Your token has expired. We send new token to your email.", 
-                        request.getToken());
+                MessageModel message = new MessageModel(400, "Token Expired",
+                        "Sorry! Your token has expired. We send new token to your email.");
+                return new DefaultResponse<>(message);
             }
 
             userDao.beginTransaction();
@@ -328,31 +338,55 @@ public class AuthResource extends DefaultResource {
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse resetPassword(@Valid ChangePasswordRequest request) throws Exception {
         try {
-            MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
+            MessageModel message = new MessageModel(400, "Invalid!", "Sorry! Requested token is invalid or expired.");
             String token = request.getToken();
-            String oldPassword = SecurityManager.hashString(request.getEmail(), request.getOldPassword());
-            UserEntity user = userDao.userAuth(request.getEmail(), oldPassword);
+            //String oldPassword = SecurityManager.hashString(request.getUser(), request.getOldPassword());
+            UserEntity user = userDao.userAuth(request.getUser(), request.getOldPassword());
 
+            if (user == null) {
+                message = new MessageModel(204, "No Data", "There is no data for your request.");
+                return new DefaultResponse<>(message);
+            }
+
+            String testToken=user.getOtpToken();
+            Date otpexp=user.getOtpExpired();
+            boolean test=user.getOtpExpired().before(new Date());
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.forgetPasswordLink(user);
                 userDao.update(user, true);
-                throw new InvalidRequestException("token",  
-                        "Sorry! Your token has expired. We send new token to your email.", 
-                        request.getToken());
-            } else if (user.getEmail().equalsIgnoreCase(request.getEmail())
-                    && user.getPassword().equals(oldPassword) && user.getOtpToken().equals(token)) {
-                String newPassword = SecurityManager.hashString(request.getEmail(), request.getNewPassword());
+                message = new MessageModel(400, "Token Expired",
+                        "Sorry! Your token has expired. We send new link to your email.");
+            }else{
+                if(Globalizer.isEmail(request.getUser())){
+                    if(!(user.getEmail().equalsIgnoreCase(request.getUser()) && user.getPassword().equals(request.getOldPassword())
+                            && user.getOtpToken().equals(token))){
+                        return new DefaultResponse<>(new MessageModel(400, "Token Expired",
+                        "Sorry! Something went wrong. pls try again."));
+                    }
+                }else{
+                    if (!(user.getUserName().equalsIgnoreCase(request.getUser()) && user.getuPassword().equals(request.getOldPassword())
+                            && user.getOtpToken().equals(token))) {
+                        return new DefaultResponse<>(new MessageModel(400, "Token Expired",
+                        "Sorry! Something went wrong. pls try again."));
+                    }
+                }
+                
+                String newPassword = SecurityManager.hashString(user.getEmail(), request.getNewPassword());
+                String newuPassword = SecurityManager.hashString(user.getUserName(), request.getNewPassword());
+                
                 user.setOtpExpired(null);
                 user.setOtpToken(null);
                 user.setPassword(newPassword);
+                user.setuPassword(newuPassword);
                 userDao.update(user, true);
                 message = new MessageModel(202, "OK", "We updated the new password on your request successfully.");
-            }else{
-                throw new InvalidRequestException("token",  
-                        "Sorry! Your token is invalid or expired.", 
-                        request.getToken());
-            }
+            } 
+            /*else if (user.getEmail().equalsIgnoreCase(request.getEmail())
+                    && user.getPassword().equals(oldPassword) && user.getOtpToken().equals(token)) {
+                
+            }*/
+
             return new DefaultResponse<>(message);
         } catch (Exception e) {
             LOG.error(e);
@@ -369,13 +403,11 @@ public class AuthResource extends DefaultResource {
         MessageModel message;
         try {
             if (!mailManager.checkMail(email)) {
-                throw new InvalidRequestException("email",  
-                        "Invalid email address.", email); 
+                message = new MessageModel(400, "Invalid!", "Invalid email address.");
             } else {
                 UserEntity user = userDao.getUserByEmail(email);
                 if (user == null) {
-                    throw new InvalidRequestException("email",  
-                        "Invalid email address.", email); 
+                    message = new MessageModel(400, "Invalid!", "Invalid email address");
                 } else {
 
                     AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);

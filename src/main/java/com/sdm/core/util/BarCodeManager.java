@@ -31,9 +31,15 @@ public class BarCodeManager {
     private static void imageWriter(File outputFile, BitMatrix byteMatrix) throws IOException {
         int matrixWidth = byteMatrix.getWidth();
         int matrixHeight = byteMatrix.getHeight();
+        //transparant need to change to argb
+        //BufferedImage image = new BufferedImage(matrixWidth, matrixHeight, BufferedImage.TYPE_INT_ARGB);
         BufferedImage image = new BufferedImage(matrixWidth, matrixHeight, BufferedImage.TYPE_INT_RGB);
         image.createGraphics();
         Graphics2D graphics = (Graphics2D) image.getGraphics();
+
+        //transparent
+        //Color myColour = new Color(255, 255, 255, 0);
+        //graphics.setColor(myColour);
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, matrixWidth, matrixHeight);
         graphics.setColor(Color.BLACK);

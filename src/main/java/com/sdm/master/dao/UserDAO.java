@@ -5,10 +5,12 @@
  */
 package com.sdm.master.dao;
 
+import com.sdm.core.Globalizer;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.UserEntity;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -37,11 +39,22 @@ public class UserDAO extends RestDAO {
     }
 
     @Deprecated
-    public UserEntity userAuth(String email, String password) {
+    public UserEntity userAuth(String user, String password) {
+
+        boolean isEmail = Globalizer.isEmail(user);
+
         Map<String, Object> params = new HashMap<>();
-        params.put("email", email);
+        String nameQuery = "";
+        if (isEmail) {
+            params.put("email", user);
+            nameQuery = "UserEntity.AUTH_BY_EMAIL";
+        } else {
+            params.put("user", user);
+            nameQuery = "UserEntity.AUTH_BY_USER";
+        }
+
         params.put("password", password);
-        return super.fetchOneByNamedQuery("UserEntity.AUTH_BY_EMAIL", params);
+        return super.fetchOneByNamedQuery(nameQuery, params);
     }
 
     @Deprecated
@@ -57,5 +70,11 @@ public class UserDAO extends RestDAO {
         Map<String, Object> params = new HashMap<>();
         params.put("email", email);
         return super.fetchOneByNamedQuery("UserEntity.SELECT_BY_EMAIL", params);
+    }
+
+    public UserEntity getUserByName(String name) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        return super.fetchOneByNamedQuery("UserEntity.SELECT_BY_USER", params);
     }
 }

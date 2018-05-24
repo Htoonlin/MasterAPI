@@ -63,3 +63,7 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 /bin/
+/src/main/java/com/sdm/master/resource/KeywordsResource.java
+/src/main/java/com/sdm/master/entity/KeywordsSimpleEntity.java
+/src/main/java/com/sdm/master/entity/KeywordsEntity.java
+/src/main/java/com/sdm/master/dao/KeywordsDAO.java

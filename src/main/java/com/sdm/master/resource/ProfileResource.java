@@ -5,7 +5,7 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.core.exception.InvalidRequestException;
+import com.sdm.core.Globalizer;
 import com.sdm.core.resource.DefaultResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
@@ -74,11 +74,16 @@ public class ProfileResource extends DefaultResource {
                         "There is no user. (or) User is not active.");
                 return new DefaultResponse<>(message);
             }
+            /*
             request.setPassword(currentUser.getPassword());
+            request.setuPassword(currentUser.getuPassword());
             request.setEmail(currentUser.getEmail());
             request.setFacebookId(currentUser.getFacebookId());
+            request.setUserName(currentUser.getUserName());
+            */
+            currentUser.setDisplayName(request.getDisplayName());
 
-            currentUser = userDAO.update(request, true);
+            currentUser = userDAO.update(currentUser, true);
             this.modifiedResource();
             return new DefaultResponse<UserEntity>(currentUser);
         } catch (Exception e) {
@@ -97,21 +102,33 @@ public class ProfileResource extends DefaultResource {
             MessageModel message = new MessageModel(202, "Changed password",
                     "We updated the new password on your request successfully.");
 
-            String oldPassword = SecurityManager.hashString(request.getEmail(), request.getOldPassword());
-            UserEntity user = userDAO.userAuth(request.getEmail(), oldPassword);
-
+            String oldPassword = SecurityManager.hashString(request.getUser(), request.getOldPassword());
+            UserEntity user = userDAO.userAuth(request.getUser(), oldPassword);
+            int id=getUserId();
+            int id2=user.getId();
+            
             if (user == null || user.getId() != getUserId()) {
                 message = new MessageModel(204, "Invalid User", "There is no user. (or) User is not active.");
                 return new DefaultResponse<>(message);
             }
 
-            if (!(user.getEmail().equalsIgnoreCase(request.getEmail()) && user.getPassword().equals(oldPassword))) {
-                throw new InvalidRequestException("old_password",  
-                        "Hey! your old password is wrong. pls try again.", 
-                        request.getOldPassword()); 
+            if (Globalizer.isEmail(request.getUser())) {
+                if (!(user.getEmail().equalsIgnoreCase(request.getUser()) && user.getPassword().equals(oldPassword))) {
+                    message = new MessageModel(400, "Invalid Password", "Hey! your old password is wrong. pls try again.");
+                    return new DefaultResponse<>(message);
+                }
+            } else {
+                if (!(user.getUserName().equalsIgnoreCase(request.getUser()) && user.getuPassword().equals(oldPassword))) {
+                    message = new MessageModel(400, "Invalid Password", "Hey! your old password is wrong. pls try again.");
+                    return new DefaultResponse<>(message);
+                }
             }
-            String newPassword = SecurityManager.hashString(request.getEmail(), request.getNewPassword());
+            
+            String newPassword = SecurityManager.hashString(user.getEmail(), request.getNewPassword());
+            String newuPassword = SecurityManager.hashString(user.getUserName(), request.getNewPassword());
+
             user.setPassword(newPassword);
+            user.setuPassword(newuPassword);
             userDAO.update(user, true);
             this.modifiedResource();
             return new DefaultResponse<>(message);

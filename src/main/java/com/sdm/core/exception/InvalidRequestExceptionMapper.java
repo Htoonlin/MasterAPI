@@ -12,7 +12,7 @@ public class InvalidRequestExceptionMapper extends DefaultExceptionMapper<Invali
 
     @Override
     public Response toResponse(InvalidRequestException exception) {
-        DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.INVALID,
+        DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.CLIENT_ERROR,
                 exception.getErrors());
         return Response.status(HttpStatus.SC_BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON).build();
     }

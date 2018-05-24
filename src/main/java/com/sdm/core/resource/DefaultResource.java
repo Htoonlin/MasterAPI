@@ -12,7 +12,7 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
 import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.response.model.RouteModel;
+import com.sdm.core.response.model.RouteInfo;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -135,8 +135,8 @@ public class DefaultResource implements IBaseResource {
         return getUriInfo().getAbsolutePath().toString();
     }
 
-    protected List<RouteModel> collectRoute(Resource resource, String basePath) {
-        List<RouteModel> routeList = new ArrayList<>();
+    protected List<RouteInfo> collectRoute(Resource resource, String basePath, Class clsResource) {
+        List<RouteInfo> routeList = new ArrayList<>();
         String parentPath = "";
         for (ResourceMethod method : resource.getResourceMethods()) {
             Invocable invocable = method.getInvocable();
@@ -146,9 +146,13 @@ public class DefaultResource implements IBaseResource {
                 continue;
             }
 
-            RouteModel route = new RouteModel();
+            RouteInfo route = new RouteInfo();
             // Set Resource Class
-            route.setResourceClass(this.getClass().getName());
+            if (clsResource != null) {
+                route.setResourceClass(clsResource.getName());
+            } else {
+                route.setResourceClass(this.getClass().getName());
+            }
 
             // Set Resource Method
             route.setResourceMethod(invocable.getHandlingMethod().getName());
@@ -167,7 +171,7 @@ public class DefaultResource implements IBaseResource {
         }
 
         for (Resource childResource : resource.getChildResources()) {
-            routeList.addAll(collectRoute(childResource, parentPath));
+            routeList.addAll(collectRoute(childResource, parentPath, clsResource));
         }
 
         return routeList;
@@ -181,8 +185,8 @@ public class DefaultResource implements IBaseResource {
                 MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
                 return new DefaultResponse<>(message);
             }
-            ListModel<RouteModel> content = new ListModel<>();
-            content.setData(collectRoute(resource, "/"));
+            ListModel<RouteInfo> content = new ListModel<>();
+            content.setData(collectRoute(resource, "/", null));
             return new DefaultResponse<>(content);
         } catch (Exception e) {
             LOG.error(e);

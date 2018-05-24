@@ -16,8 +16,14 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
+import com.sdm.master.dao.UserExtraDAO;
 import com.sdm.master.entity.UserEntity;
+import com.sdm.master.entity.UserExtraEntity;
 import com.sdm.master.util.AuthMailSend;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -41,40 +47,77 @@ public class UserResource extends RestResource<UserEntity, Integer> {
     IMailManager mailManager;
 
     private UserDAO userDAO;
+    private UserExtraDAO extraDAO;
 
     @PostConstruct
     protected void init() {
         if (this.userDAO == null) {
             userDAO = new UserDAO(getUserId());
         }
+
+        extraDAO = new UserExtraDAO(userDAO.getSession(), getUserId());
     }
 
     @Override
     protected RestDAO getDAO() {
         return this.userDAO;
     }
-
+    
     @Override
     public IBaseResponse create(@Valid UserEntity request) {
-        UserEntity user = userDAO.getUserByEmail(request.getEmail());
-        if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-            InvalidRequestException invalidRequest = new InvalidRequestException();
-            invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
-            throw invalidRequest;
+        try {
+            UserEntity user = userDAO.getUserByEmail(request.getEmail());
+            if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+                InvalidRequestException invalidRequest = new InvalidRequestException();
+                invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
+                throw invalidRequest;
+            }
+
+            Pattern pattern=Pattern.compile("[a-zA-Z0-9_\\.]+");
+            boolean isValid = pattern.matcher(request.getUserName()).matches();
+            LOG.debug(isValid);
+            
+            if (request.getUserName().contains(" ") || !isValid) {
+                InvalidRequestException invalidRequest = new InvalidRequestException();
+                invalidRequest.addError("user name", "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09", request.getUserName());
+                throw invalidRequest;
+            }
+
+            user = userDAO.getUserByName(request.getUserName());
+            if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
+                InvalidRequestException invalidRequest = new InvalidRequestException();
+                invalidRequest.addError("user name", "Sorry! someone already registered with this user name", request.getUserName());
+                throw invalidRequest;
+            }
+
+            String rawPassword = request.getPassword();
+            String password = SecurityManager.hashString(request.getEmail(), rawPassword);
+            String uPassword = SecurityManager.hashString(request.getUserName(), rawPassword);
+            request.setPassword(password);
+            request.setuPassword(uPassword);
+            request.setStatus('A');
+            userDAO.beginTransaction();
+            UserEntity createdUser = userDAO.insert(request, false);
+
+            Set<UserExtraEntity> extras = request.getExtra();
+            for (UserExtraEntity extra : extras) {
+                extra.setUserId(createdUser.getId());
+                extraDAO.insert(extra, false);
+            }
+
+            userDAO.commitTransaction();
+
+            this.modifiedResource();
+            // Send Welcome mail to User
+            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+            mailSend.welcomeUser(createdUser, rawPassword);
+
+            return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
+        } catch (Exception ex) {
+            userDAO.rollbackTransaction();
+            getLogger().error(ex);
+            throw ex;
         }
-
-        String rawPassword = request.getPassword();
-        String password = SecurityManager.hashString(request.getEmail(), rawPassword);
-        request.setPassword(password);
-        request.setStatus('A');
-        UserEntity createdUser = userDAO.insert(request, true);
-        this.modifiedResource();
-
-        // Send Welcome mail to User
-        AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-        mailSend.welcomeUser(createdUser, rawPassword);
-
-        return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
     }
 
     @Override
@@ -84,18 +127,73 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             if (dbEntity == null) {
                 MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
                 return new DefaultResponse<>(message);
-            } 
+            } else if (!Objects.equals(dbEntity.getId(), request.getId())) {
+                MessageModel message = new MessageModel(400, "Invalid", "Invalid request ID.");
+                return new DefaultResponse<>(message);
+            }
 
+            userDAO.beginTransaction();
+
+            request.setUserName(dbEntity.getUserName());
             request.setEmail(dbEntity.getEmail());
             request.setPassword(dbEntity.getPassword());
             request.setFacebookId(dbEntity.getFacebookId());
 
-            userDAO.update(request, true);
+            userDAO.update(request, false);
+
+            Set<UserExtraEntity> extras = request.getExtra();
+
+            //Delete All Extras
+            List<UserExtraEntity> oldExtras = extraDAO.getUserExtraByUser(dbEntity.getId());
+            for (UserExtraEntity oldExtra : oldExtras) {
+                extraDAO.delete(oldExtra, false);
+            }
+
+            //Insert Back All User Extras
+            for (UserExtraEntity extra : extras) {
+                extra.setUserId(dbEntity.getId());
+
+                extraDAO.insert(extra, false);
+            }
+
+            userDAO.commitTransaction();
             this.modifiedResource();
 
             return new DefaultResponse<UserEntity>(202, ResponseType.SUCCESS, request);
         } catch (Exception e) {
+            userDAO.rollbackTransaction();
             LOG.error(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public IBaseResponse remove(Integer id) {
+        try {
+            MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
+            UserEntity entity = userDAO.fetchById(id);
+            if (entity == null) {
+                return new DefaultResponse<>(message);
+            }
+
+            userDAO.beginTransaction();
+
+            //Delete All Extras
+            List<UserExtraEntity> extras = extraDAO.getUserExtraByUser(id);
+            for (UserExtraEntity extra : extras) {
+                extraDAO.delete(extra, false);
+            }
+
+            userDAO.delete(entity, false);
+
+            userDAO.commitTransaction();
+            this.modifiedResource();
+
+            message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
+            return new DefaultResponse<>(202, ResponseType.SUCCESS, message);
+        } catch (Exception e) {
+            userDAO.rollbackTransaction();
+            getLogger().error(e);
             throw e;
         }
     }

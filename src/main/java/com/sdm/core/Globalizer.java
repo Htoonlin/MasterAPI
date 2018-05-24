@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -112,5 +113,10 @@ public class Globalizer {
         byte allow = (byte) Character.digit(permission.charAt(accessor.ordinal()), 16);
         byte access = (byte) type.getValue();
         return ((allow & access) == access);
+    }
+    
+    public static boolean isEmail(String email){
+        Pattern pattern=Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+        return pattern.matcher(email).matches();
     }
 }

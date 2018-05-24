@@ -26,12 +26,24 @@ public class RegistrationRequest implements IBaseRequest {
 
     private String email;
 
+    private String userName;
+    
     private String displayName;
 
     private String password;
 
     private Date timestamp;
 
+    @NotBlank(message = "User name is required.")
+    @Size(min = 1, max = 255)
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    
     @NotBlank(message = "Display name is required.")
     @Size(min = 1, max = 255)
     public String getDisplayName() {

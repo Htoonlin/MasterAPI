@@ -27,5 +27,4 @@ public class MenuResource extends RestResource<MenuEntity, Long> {
     protected RestDAO getDAO() {
         return this.mainDAO;
     }
-
 }

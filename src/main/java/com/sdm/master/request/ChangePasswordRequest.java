@@ -23,17 +23,16 @@ public class ChangePasswordRequest implements IBaseRequest {
      *
      */
     private static final long serialVersionUID = 6890755299063523487L;
-    private String email;
+    private String user;
 
-    @Email(message = "Invalid email format.")
     @NotBlank(message = "Email field can't be blank.")
     @Size(min = 6, max = 255)
-    public String getEmail() {
-        return this.email;
+    public String getUser() {
+        return user;
     }
 
-    public void setEmail(String value) {
-        this.email = value;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     private String oldPassword;
@@ -96,7 +95,7 @@ public class ChangePasswordRequest implements IBaseRequest {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
         result = prime * result + ((token == null) ? 0 : token.hashCode());
         return result;
     }
@@ -113,11 +112,11 @@ public class ChangePasswordRequest implements IBaseRequest {
             return false;
         }
         ChangePasswordRequest other = (ChangePasswordRequest) obj;
-        if (email == null) {
-            if (other.email != null) {
+        if (user == null) {
+            if (other.user != null) {
                 return false;
             }
-        } else if (!email.equals(other.email)) {
+        } else if (!user.equals(other.user)) {
             return false;
         }
         if (token == null) {

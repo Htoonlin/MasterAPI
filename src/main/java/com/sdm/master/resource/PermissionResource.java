@@ -25,7 +25,7 @@ import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
-import com.sdm.core.response.model.RouteModel;
+import com.sdm.core.response.model.RouteInfo;
 import com.sdm.master.dao.PermissionDAO;
 import com.sdm.master.entity.PermissionEntity;
 import com.sdm.master.request.PermissionRouteRequest;
@@ -61,12 +61,12 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getAllRoutes() {
         ApplicationConfig config = new ApplicationConfig();
-        HashMap<String, List<RouteModel>> resources = new HashMap<>();
+        HashMap<String, List<RouteInfo>> resources = new HashMap<>();
         for (Class clsResource : config.getClasses()) {
             Resource resource = Resource.from(clsResource);
             if (resource != null) {
                 String resourceName = clsResource.getName();
-                List<RouteModel> routes = collectRoute(resource, "/");
+                List<RouteInfo> routes = collectRoute(resource, "/",clsResource);
                 resources.put(resourceName, routes);
             }
         }
@@ -126,7 +126,7 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
             getDAO().commitTransaction();
             this.modifiedResource();
 
-            ListModel<PermissionEntity> content = new ListModel<>(processedList);
+                ListModel<PermissionEntity> content = new ListModel<>(processedList);
             return new DefaultResponse(201, ResponseType.SUCCESS, content);
         } catch (Exception e) {
             getDAO().rollbackTransaction();

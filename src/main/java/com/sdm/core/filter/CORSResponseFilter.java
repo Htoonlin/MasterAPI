@@ -32,8 +32,8 @@ public class CORSResponseFilter implements ContainerResponseFilter {
         headers.add("Access-Control-Allow-Methods",
                 Setting.getInstance().get(Setting.CORS_METHODS, "GET,POST,PUT,DELETE,OPTIONS"));
         headers.add("Access-Control-Max-Age", Setting.getInstance().getInt(Setting.CORS_MAX_AGE, "36000"));
-        headers.add("Access-Control-Allow-Headers", Setting.getInstance().get(Setting.CORS_ALLOW_HEADERS, "Content-Type,Authorization"));
         headers.add("Access-Control-Expose-Headers", "xsrf-token");
+        headers.add("Access-Control-Allow-Headers", Setting.getInstance().get(Setting.CORS_ALLOW_HEADERS,"Content-Type,Authorization"));
         if ("OPTIONS".equals(requestContext.getMethod())) {
             responseContext.setStatus(200);
         }

@@ -36,7 +36,6 @@ public class DefaultEntity implements IBaseRequest {
 
     private Date timestamp;
 
-    @Override
     public Date getTimestamp() {
         return this.timestamp;
     }
@@ -107,8 +106,8 @@ public class DefaultEntity implements IBaseRequest {
             // Db Info
             Column column = field.getAnnotation(Column.class);
             if (column != null) {
-                if (column.nullable()) {
-                    property.setRequired(column.nullable());
+                if (!column.nullable()) {
+                    property.setRequired(!column.nullable());
                 }
                 property.setLength(column.length());
             }

@@ -8,7 +8,6 @@ package com.sdm.core.filter;
 import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
-import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
 import io.jsonwebtoken.ClaimJwtException;
@@ -76,6 +75,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         Method method = resourceInfo.getResourceMethod();
         Class<?> resourceClass = resourceInfo.getResourceClass();
+        
         //Skip Data Permission if Resource Permission is public.
         if (resourceClass.isAnnotationPresent(PermitAll.class)) {
             return;
@@ -135,7 +135,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
                                 return;
                             }
                         }
-                    } else if (!accessManager.checkPermission(authorizeToken, method, requestContext.getMethod())) {
+                    } else if (!accessManager.checkPermission(authorizeToken, method, requestContext.getMethod(),resourceClass)) {
                         requestContext.abortWith(errorResponse(403));
                         return;
                     }
@@ -168,7 +168,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
     private Response buildResponse(int code, String description) {
         MessageModel message = new MessageModel(code, HttpStatus.getStatusText(code), description);
-        return Response.status(code).entity(new DefaultResponse<>(message)).build();
+        return Response.status(code).entity(message).build();
     }
 
     private void saveUserId(int userId) {

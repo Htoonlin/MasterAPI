@@ -25,7 +25,7 @@ public class ConstraintViolationExceptionMapper extends DefaultExceptionMapper<C
             content.put(propertyName, new ErrorModel(error));
         }
 
-        DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.INVALID, content);
+        DefaultResponse response = new DefaultResponse<>(HttpStatus.SC_BAD_REQUEST, ResponseType.CLIENT_ERROR, content);
         return Response.status(HttpStatus.SC_BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON).build();
     }
 

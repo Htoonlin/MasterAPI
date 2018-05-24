@@ -78,7 +78,7 @@ public class AccessService implements IAccessManager {
     }
 
     @Override
-    public boolean checkPermission(Claims request, Method method, String httpMethod) {
+    public boolean checkPermission(Claims request, Method method, String httpMethod, Class<?> resourceClass) {
         int authUserId = Integer.parseInt(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
 
         if (currentToken == null || currentToken.getUserId() != authUserId) {
@@ -124,7 +124,8 @@ public class AccessService implements IAccessManager {
         }
 
         // Check Permission by User Roles
-        String className = method.getDeclaringClass().getName();
+        //String className = method.getDeclaringClass().getName();
+        String className = resourceClass.getName();
         PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), authUserId);
         boolean permission = false;
         for (RoleEntity role : user.getRoles()) {

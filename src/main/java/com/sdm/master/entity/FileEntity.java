@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.sdm.core.hibernate.entity.DefaultEntity;
-import com.sdm.core.response.model.LinkModel;
+import com.sdm.core.response.LinkModel;
 import com.sdm.core.ui.UIInputType;
 import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.FileManager;
@@ -130,9 +130,15 @@ public class FileEntity extends DefaultEntity implements Serializable {
         String privateDownload = baseUri.build("download").toString();
         links.put("private", new LinkModel(privateDownload));
 
+        String thumbnailDownload = baseUri.build("thumbnail").toString();
+        links.put("thumbnail", new LinkModel(thumbnailDownload));
+
         if (this.isPublicAccess()) {
             String publicDownload = baseUri.build("public").toString();
             links.put("public", new LinkModel(publicDownload));
+
+            String publicthumbnailDownload = baseUri.build("public/thumbnail").toString();
+            links.put("publicThumbnail", new LinkModel(publicthumbnailDownload));
         }
 
         return links;

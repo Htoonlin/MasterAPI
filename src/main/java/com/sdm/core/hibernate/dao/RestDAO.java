@@ -39,24 +39,14 @@ public class RestDAO extends DefaultDAO {
     protected String fetchHQL() {
         return "FROM " + this.ENTITY_NAME + " WHERE 1 = 1";
     }
-    
-    public String buildGlobalFilter(String keyword, Map<String, Object> params, boolean isCaseSensitive){
-        if(keyword == null || keyword.length() <= 0 || params == null){
-            return "";
-        }
-        
-        params.put("filter", "%" + keyword + "%");
-        String hql = " AND LOWER(" + GLOBAL_FILTER + " LIKE LOWER(:filter)";
-        if(isCaseSensitive){
-            hql = " AND " + GLOBAL_FILTER + " LIKE :filter";
-        }
-        return hql;
-    }
 
     public long getTotal(String filter) {
         String hql = "SELECT COUNT(*) " + fetchHQL();
         HashMap<String, Object> params = new HashMap<>();
-        this.buildGlobalFilter(filter, params, false);
+        if (filter != null && filter.length() > 0) {
+            params.put("filter", "%" + filter + "%");
+            hql += " AND LOWER(" + GLOBAL_FILTER + ") LIKE LOWER(:filter)";
+        }
 
         return (long) this.createQuery(hql, params).getSingleResult();
     }
@@ -66,7 +56,10 @@ public class RestDAO extends DefaultDAO {
 
         // Init Filter
         HashMap<String, Object> params = new HashMap<>();
-        this.buildGlobalFilter(filter, params, false);
+        if (filter != null && filter.length() > 0) {
+            params.put("filter", "%" + filter + "%");
+            hql += " AND LOWER(" + GLOBAL_FILTER + ") LIKE LOWER(:filter)";
+        }
 
         // Build SortMap
         if (sortString.length() > 0) {
