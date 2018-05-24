@@ -51,7 +51,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"> <span
                                             class="glyphicon glyphicon-envelope"></span>
-                                    </span> <input type="email" id="txtEmail" class="form-control"
+                                    </span> <input type="text" id="txtEmail" class="form-control"
                                                    placeholder="E-mail" />
                                 </div>
                             </div>
@@ -148,7 +148,7 @@
                 event.preventDefault();
                 $("#server-message").removeClass('alert alert-danger').html('');
                 var data = {
-                    "email": $('#txtEmail').val(),
+                    "user": $('#txtEmail').val(),
                     "password": $('#txtPassword').val(),
                     "device_id": navigator.userAgent,
                     "timestamp": (new Date()).getTime()
