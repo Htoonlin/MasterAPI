@@ -31,6 +31,7 @@ import eu.bitwalker.useragentutils.UserAgent;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -221,8 +222,10 @@ public class AuthResource extends DefaultResource {
                 invalidRequest.addError("email", "Sorry! someone already registered with this email",
                         request.getEmail());
             }
-
-            if (request.getUserName().contains(" ") || !request.getUserName().matches("[^a-z A-Z0-9_.]")) {
+            
+            Pattern pattern=Pattern.compile("[a-zA-Z0-9_\\.]+");
+            boolean isValid = pattern.matcher(request.getUserName()).matches();
+            if (request.getUserName().contains(" ") || !isValid) {
                 invalidRequest.addError("user name", "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09",
                         request.getUserName());
             }
