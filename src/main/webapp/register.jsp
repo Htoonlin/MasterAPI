@@ -47,6 +47,16 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="control-label">User Name : </label> <span
+                                    class="label label-danger" id="msgUserName"></span>
+                                <div class="input-group">
+                                    <span class="input-group-addon"> <span
+                                            class="glyphicon glyphicon-envelope"></span>
+                                    </span> <input type="text" id="txtUserName" class="form-control"
+                                                   placeholder="User Name" />
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="control-label">E-mail : </label> <span
                                     class="label label-danger" id="msgEmail"></span>
                                 <div class="input-group">
@@ -103,6 +113,7 @@
                 event.preventDefault();
                 var data = {
                     "display_name": $('#txtFullName').val(),
+                    "user_name":$('#txtUserName').val(),
                     "email": $('#txtEmail').val(),
                     "password": $('#txtPassword').val(),
                     "timestamp": (new Date()).getTime()
