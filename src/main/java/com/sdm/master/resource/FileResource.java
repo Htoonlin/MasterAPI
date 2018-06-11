@@ -5,6 +5,18 @@
  */
 package com.sdm.master.resource;
 
+import com.sdm.core.Setting;
+import com.sdm.core.hibernate.dao.RestDAO;
+import com.sdm.core.resource.RestResource;
+import com.sdm.core.response.DefaultResponse;
+import com.sdm.core.response.IBaseResponse;
+import com.sdm.core.response.ResponseType;
+import com.sdm.core.response.model.MessageModel;
+import com.sdm.core.util.FileManager;
+import com.sdm.master.dao.FileDAO;
+import com.sdm.master.dao.UserDAO;
+import com.sdm.master.entity.FileEntity;
+import com.sdm.master.entity.UserEntity;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +26,6 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Base64;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -31,25 +42,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
-
-import org.apache.log4j.Logger;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-
-import com.sdm.core.Setting;
-import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.core.resource.RestResource;
-import com.sdm.core.response.DefaultResponse;
-import com.sdm.core.response.IBaseResponse;
-import com.sdm.core.response.ResponseType;
-import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.util.FileManager;
-import com.sdm.master.dao.FileDAO;
-import com.sdm.master.dao.UserDAO;
-import com.sdm.master.entity.FileEntity;
-import com.sdm.master.entity.UserEntity;
-
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  *
@@ -74,7 +70,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
         }
     }
 
-    private Response downloadFile(final FileEntity entity, final Dimension dimension, boolean is64) {
+    private Response downloadFile(final FileEntity entity, final Dimension dimension, boolean is64, boolean isDownload) {
 
         DefaultResponse cacheResponse = this.validateCache(CACHE_AGE);
         if (cacheResponse != null) {
@@ -119,11 +115,15 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
 
         // Create cache with 1 week
         Map<String, Object> cacheHeaders = this.buildCache(CACHE_AGE);
-
-        String fileName = entity.getName() + "." + entity.getExtension();
-
-        ResponseBuilder builder = Response.ok(fileStream, entity.getType()).header("content-disposition",
-                "attachment; filename=\"" + fileName + "\"");
+        ResponseBuilder builder = Response.ok(fileStream, entity.getType());
+        
+        //if download directly
+        if(isDownload){    
+            String fileName = entity.getName() + "." + entity.getExtension();
+            builder.header("content-disposition", "attachment; filename=\"" + fileName + "\"");
+        }
+        
+        //Set Cache Headers
         for (String key : cacheHeaders.keySet()) {
             builder.header(key, cacheHeaders.get(key));
         }
@@ -135,7 +135,8 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse uploadFile(@FormDataParam("uploadedFile") InputStream inputFile,
-            @FormDataParam("uploadedFile") FormDataContentDisposition fileDetail) throws Exception {
+            @FormDataParam("uploadedFile") FormDataBodyPart fileBody,
+            @DefaultValue("false" ) @FormDataParam("isPublic") boolean isPublic) throws Exception {
         try {
             UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
             UserEntity currentUser = userDAO.fetchById(getUserId());
@@ -145,7 +146,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
                 return new DefaultResponse<>(message);
             }
 
-            String[] fileInfo = FileManager.fileNameSplitter(fileDetail.getFileName());
+            String[] fileInfo = FileManager.fileNameSplitter(fileBody.getContentDisposition().getFileName());
             FileEntity rawEntity = new FileEntity();
             rawEntity.setName(fileInfo[0]);
             if (fileInfo.length == 2) {
@@ -153,7 +154,8 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             }
             //TODO: To Change Back Public Access To `False` when File Permission Finish
             //rawEntity.setPublicAccess(false);
-            rawEntity.setPublicAccess(true);
+            rawEntity.setType(fileBody.getMediaType().toString());
+            rawEntity.setPublicAccess(isPublic);
             rawEntity.setOwnerId(getUserId());
             rawEntity.setStatus(FileEntity.STORAGE);
 
@@ -170,8 +172,11 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
     @PermitAll
     @GET
     @Path("{id:\\d+}/public")
-    public Response publicDownload(@PathParam("id") BigInteger id, @DefaultValue("0") @QueryParam("width") int width,
-            @DefaultValue("0") @QueryParam("height") int height, @DefaultValue("false") @QueryParam("is64") boolean is64) throws Exception {
+    public Response publicDownload(@PathParam("id") BigInteger id, 
+            @DefaultValue("0") @QueryParam("width") int width,
+            @DefaultValue("0") @QueryParam("height") int height, 
+            @DefaultValue("false") @QueryParam("is64") boolean is64,
+            @DefaultValue("false") @QueryParam("isDownload") boolean isDownload) throws Exception {
         FileEntity entity = mainDAO.fetchById(id);
         if (entity == null || !entity.isPublicAccess()) {
             MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
@@ -187,14 +192,16 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             dimension = new Dimension(width, height);
         }
 
-        return this.downloadFile(entity, dimension, is64);
+        return this.downloadFile(entity, dimension, is64, isDownload);
     }
 
     @GET
     @Path("{id:\\d+}/download")
-    public Response privateDownload(@PathParam("id") BigInteger id, @DefaultValue("0") @QueryParam("width") int width,
+    public Response privateDownload(@PathParam("id") BigInteger id, 
+            @DefaultValue("0") @QueryParam("width") int width,
             @DefaultValue("0") @QueryParam("height") int height,
-            @DefaultValue("false") @QueryParam("is64") boolean is64) throws Exception {
+            @DefaultValue("false") @QueryParam("is64") boolean is64,
+            @DefaultValue("false") @QueryParam("isDownload") boolean isDownload) throws Exception {
         FileEntity entity = mainDAO.fetchById(id);
         if (entity == null) {
             MessageModel message = new MessageModel(204, "No File!", "There is no file for your request.");
@@ -210,7 +217,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             dimension = new Dimension(width, height);
         }
 
-        return this.downloadFile(entity, dimension, is64);
+        return this.downloadFile(entity, dimension, is64, isDownload);
     }
 
     @Override

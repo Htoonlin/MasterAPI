@@ -44,6 +44,7 @@ public class ApplicationConfig extends ResourceConfig {
         LOG.info("Loading jersey properties");
         property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
         property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
+        property(ServerProperties.OUTBOUND_CONTENT_LENGTH_BUFFER, 0);
         LOG.info("Successfully loaded jersey properties");
 
         LOG.info("Loading jersey features and providers");

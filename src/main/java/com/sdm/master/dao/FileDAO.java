@@ -66,11 +66,11 @@ public class FileDAO extends RestDAO {
     public FileEntity createFile(InputStream fileStream, FileEntity entity, boolean autoCommit) {
         File saveFile = this.generateFile(entity.getOwnerId(), entity.getExtension());
 
-        // Get File Type
-        final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
-        String type = fileTypeMap.getContentType(saveFile);
-        if (type == null || type.length() <= 0) {
-            type = "application/" + entity.getExtension();
+        // Get File Type from saved file.
+        if(entity.getType() == null || entity.getType().length() <= 0){
+            final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();    
+            String type = fileTypeMap.getContentType(saveFile);
+            entity.setType(type);
         }
 
         try (OutputStream out = new FileOutputStream(saveFile)) {
@@ -86,7 +86,6 @@ public class FileDAO extends RestDAO {
         }
 
         // Set File Info
-        entity.setType(type);
         entity.setFileSize(saveFile.length());
         entity.setStoragePath(
                 saveFile.getPath().substring(Setting.getInstance().get(Setting.UPLOAD_DIRECTORY).length()));
