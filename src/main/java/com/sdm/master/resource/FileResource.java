@@ -18,6 +18,7 @@ import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.FileEntity;
 import com.sdm.master.entity.UserEntity;
 import java.awt.Dimension;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,6 +71,16 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
         }
     }
 
+    private Response buildWithCache(ResponseBuilder builder) {
+        // Create cache with 1 week
+        Map<String, Object> cacheHeaders = this.buildCache(CACHE_AGE);
+        //Set Cache Headers
+        for (String key : cacheHeaders.keySet()) {
+            builder.header(key, cacheHeaders.get(key));
+        }
+        return builder.build();
+    }
+
     private Response downloadFile(final FileEntity entity, final Dimension dimension, boolean is64, boolean isDownload) {
 
         DefaultResponse cacheResponse = this.validateCache(CACHE_AGE);
@@ -84,50 +95,51 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             return Response.noContent().build();
         }
 
-        if (is64) {
-            try {
-                byte[] data = Files.readAllBytes(savedFile.toPath());
-                String base64String = Base64.getMimeEncoder().encodeToString(data);
-                return Response.ok(base64String, MediaType.TEXT_PLAIN).build();
-            } catch (IOException e) {
-                return Response.noContent().build();
+        byte[] data;
+
+        try {
+            // If it is image and include dimension, it will process image on dimension
+            if (entity.getType().contains("image") && dimension != null) {
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                Thumbnails.of(savedFile).size(dimension.width, dimension.height).keepAspectRatio(true)
+                        .useOriginalFormat().toOutputStream(output);
+                data = output.toByteArray();
+            } else {
+                data = Files.readAllBytes(savedFile.toPath());
             }
+        } catch (IOException ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Response.noContent().build();
+        }
+
+        if (is64) {
+            String base64String = Base64.getMimeEncoder().encodeToString(data);
+            ResponseBuilder builder = Response.ok(base64String, MediaType.TEXT_PLAIN);
+            return buildWithCache(builder);
         }
 
         StreamingOutput fileStream = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
-                    // If it is image and include dimension, it will process image on dimension
-                    if (entity.getType().contains("image") && dimension != null) {
-                        Thumbnails.of(savedFile).size(dimension.width, dimension.height).keepAspectRatio(true)
-                                .useOriginalFormat().toOutputStream(output);
-                    } else {
-                        byte[] data = Files.readAllBytes(savedFile.toPath());
-                        output.write(data);
-                        output.flush();
-                    }
-                } catch (Exception e) {
+                    output.write(data);
+                    output.flush();
+                } catch (Exception ex) {
+                    LOG.error(ex.getMessage(), ex);
                     throw new WebApplicationException("File not found!");
                 }
             }
         };
 
-        // Create cache with 1 week
-        Map<String, Object> cacheHeaders = this.buildCache(CACHE_AGE);
         ResponseBuilder builder = Response.ok(fileStream, entity.getType());
-        
+
         //if download directly
-        if(isDownload){    
+        if (isDownload) {
             String fileName = entity.getName() + "." + entity.getExtension();
             builder.header("content-disposition", "attachment; filename=\"" + fileName + "\"");
         }
-        
-        //Set Cache Headers
-        for (String key : cacheHeaders.keySet()) {
-            builder.header(key, cacheHeaders.get(key));
-        }
-        return builder.build();
+
+        return buildWithCache(builder);
     }
 
     @POST
@@ -136,7 +148,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse uploadFile(@FormDataParam("uploadedFile") InputStream inputFile,
             @FormDataParam("uploadedFile") FormDataBodyPart fileBody,
-            @DefaultValue("false" ) @FormDataParam("isPublic") boolean isPublic) throws Exception {
+            @DefaultValue("false") @FormDataParam("isPublic") boolean isPublic) throws Exception {
         try {
             UserDAO userDAO = new UserDAO(mainDAO.getSession(), getUserId());
             UserEntity currentUser = userDAO.fetchById(getUserId());
@@ -172,9 +184,9 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
     @PermitAll
     @GET
     @Path("{id:\\d+}/public")
-    public Response publicDownload(@PathParam("id") BigInteger id, 
+    public Response publicDownload(@PathParam("id") BigInteger id,
             @DefaultValue("0") @QueryParam("width") int width,
-            @DefaultValue("0") @QueryParam("height") int height, 
+            @DefaultValue("0") @QueryParam("height") int height,
             @DefaultValue("false") @QueryParam("is64") boolean is64,
             @DefaultValue("false") @QueryParam("isDownload") boolean isDownload) throws Exception {
         FileEntity entity = mainDAO.fetchById(id);
@@ -197,7 +209,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
 
     @GET
     @Path("{id:\\d+}/download")
-    public Response privateDownload(@PathParam("id") BigInteger id, 
+    public Response privateDownload(@PathParam("id") BigInteger id,
             @DefaultValue("0") @QueryParam("width") int width,
             @DefaultValue("0") @QueryParam("height") int height,
             @DefaultValue("false") @QueryParam("is64") boolean is64,
