@@ -12,7 +12,8 @@ import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.ListModel;
 import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.response.model.RouteInfo;
+import com.sdm.core.response.model.RouteModel;
+import com.sdm.core.response.model.RouteParamModel;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.model.Invocable;
+import org.glassfish.jersey.server.model.Parameter;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.ResourceMethod;
 
@@ -135,8 +137,8 @@ public class DefaultResource implements IBaseResource {
         return getUriInfo().getAbsolutePath().toString();
     }
 
-    protected List<RouteInfo> collectRoute(Resource resource, String basePath, Class clsResource) {
-        List<RouteInfo> routeList = new ArrayList<>();
+    protected List<RouteModel> collectRoute(Resource resource, String basePath, Class clsResource) {
+        List<RouteModel> routeList = new ArrayList<>();
         String parentPath = "";
         for (ResourceMethod method : resource.getResourceMethods()) {
             Invocable invocable = method.getInvocable();
@@ -146,7 +148,7 @@ public class DefaultResource implements IBaseResource {
                 continue;
             }
 
-            RouteInfo route = new RouteInfo();
+            RouteModel route = new RouteModel();
             // Set Resource Class
             if (clsResource != null) {
                 route.setResourceClass(clsResource.getName());
@@ -167,6 +169,25 @@ public class DefaultResource implements IBaseResource {
             // Set HTTP Method
             route.setMethod(method.getHttpMethod());
 
+            // Set Response Type
+            route.setResponseType(invocable.getRawResponseType().getSimpleName());
+
+            //Set Params
+            for (Parameter param : invocable.getParameters()) {
+                String name = param.getSourceName();
+                RouteParamModel paramModel = new RouteParamModel(param.getDefaultValue(), param.getRawType().getSimpleName());
+
+                if (param.getSource() == Parameter.Source.QUERY) {
+                    route.addQueryParam(param.getSourceName(), paramModel);
+                } else {
+                    paramModel.setParamType(param.getSource().name());
+                    if (name == null) {
+                        name = paramModel.getType();
+                    }
+                    route.addOtherParam(name, paramModel);
+                }
+            }
+
             routeList.add(route);
         }
 
@@ -185,9 +206,9 @@ public class DefaultResource implements IBaseResource {
                 MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
                 return new DefaultResponse<>(message);
             }
-            ListModel<RouteInfo> content = new ListModel<>();
+            ListModel<RouteModel> content = new ListModel<>();
             content.setData(collectRoute(resource, "/", null));
-            return new DefaultResponse<>(content);
+            return new DefaultResponse<>(200, ResponseType.SUCCESS, content);
         } catch (Exception e) {
             LOG.error(e);
             throw e;

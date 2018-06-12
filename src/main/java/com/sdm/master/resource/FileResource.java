@@ -124,9 +124,11 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
                 try {
                     output.write(data);
                     output.flush();
-                } catch (Exception ex) {
+                } catch (IOException ex) {
                     LOG.error(ex.getMessage(), ex);
                     throw new WebApplicationException("File not found!");
+                }finally{
+                    output.close();
                 }
             }
         };

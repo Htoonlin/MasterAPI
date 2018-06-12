@@ -7,12 +7,14 @@ package com.sdm.core.response.model;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author Htoonlin
  */
-@JsonPropertyOrder(value = {"path", "method", "resource_class", "resource_method"})
+@JsonPropertyOrder(value = {"path", "method", "response_type", "query_params,", "entity_params", "form_params", "resource_class", "resource_method"})
 public class RouteModel implements Serializable {
 
     /**
@@ -23,6 +25,9 @@ public class RouteModel implements Serializable {
     private String resourceMethod;
     private String path;
     private String method;
+    private String responseType;
+    private Map<String, RouteParamModel> queryParams;
+    private Map<String, RouteParamModel> otherParams;
 
     public String getResourceClass() {
         return resourceClass;
@@ -54,6 +59,44 @@ public class RouteModel implements Serializable {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public void setResponseType(String responseType) {
+        this.responseType = responseType;
+    }
+
+    public Map<String, RouteParamModel> getQueryParams() {
+        return queryParams;
+    }
+
+    public void setQueryParams(Map<String, RouteParamModel> queryParams) {
+        this.queryParams = queryParams;
+    }
+
+    public void addQueryParam(String name, RouteParamModel body) {
+        if (this.queryParams == null) {
+            this.queryParams = new HashMap<>();
+        }
+        this.queryParams.put(name, body);
+    }
+
+    public Map<String, RouteParamModel> getOtherParams() {
+        return otherParams;
+    }
+
+    public void setOtherParams(Map<String, RouteParamModel> otherParams) {
+        this.otherParams = otherParams;
+    }
+
+    public void addOtherParam(String name, RouteParamModel body) {
+        if (this.otherParams == null) {
+            this.otherParams = new HashMap();
+        }
+        this.otherParams.put(name, body);
     }
 
     @Override

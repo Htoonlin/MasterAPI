@@ -119,6 +119,30 @@ public class PaginationModel<T extends Serializable> implements Serializable {
         this.paginationLinks.put("last", new LinkModel(href));
     }
 
+    public void generateCustomLinks(Class<?> resourceClass, String path) {
+        UriBuilder builder = UriBuilder.fromResource(resourceClass).queryParam("page", "{pageId}");
+        builder.path(path);
+        this.paginationLinks = new HashMap<>();
+        String href = builder.build(this.currentPage).toString();
+        this.paginationLinks.put("self", new LinkModel(href));
+
+        href = builder.build(1).toString();
+        this.paginationLinks.put("first", new LinkModel(href));
+
+        if (this.currentPage > 1) {
+            href = builder.build(this.currentPage - 1).toString();
+            this.paginationLinks.put("prev", new LinkModel(href));
+        }
+
+        if (this.currentPage < getPageCount()) {
+            href = builder.build(this.currentPage + 1).toString();
+            this.paginationLinks.put("next", new LinkModel(href));
+        }
+
+        href = builder.build(getPageCount()).toString();
+        this.paginationLinks.put("last", new LinkModel(href));
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

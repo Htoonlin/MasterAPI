@@ -226,7 +226,7 @@ public interface Constants {
         String CORS_MAX_AGE = "com.sdm.cors.age";
 
         /**
-         * CORS max age.
+         * CORS Allow Headers.
          */
         String CORS_ALLOW_HEADERS = "com.sdm.cors.headers";
         
