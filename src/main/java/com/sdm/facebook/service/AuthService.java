@@ -40,14 +40,21 @@ public class AuthService extends GraphManager {
             UserEntity authUser = userDao.userAuthByFacebook(facebookUser.id);
             // If new user, migrate or create user
             if (authUser == null) {
-                authUser = userDao.getUserByEmail(facebookUser.email);
+                //Check user by email
+                authUser = userDao.checkUser(facebookUser.email);
+                
+                if(authUser == null){
+                    //Check user by user name
+                    authUser = userDao.checkUser(facebookUser.name);
+                }
+                
                 if (authUser == null) {
                     // New user registration with random password
                     String randomPassword = SecurityManager.randomPassword(32);
                     authUser = new UserEntity();
 
                     authUser.setEmail(facebookUser.email);
-                    authUser.setPassword(SecurityManager.hashString(facebookUser.email, randomPassword));
+                    authUser.setPassword(SecurityManager.hashString(randomPassword));
                     authUser.setStatus(UserEntity.ACTIVE);
                     this.mergeFacebookUser(authUser, facebookUser);
                     authUser = userDao.insert(authUser, false);
@@ -55,6 +62,7 @@ public class AuthService extends GraphManager {
                     this.mergeFacebookUser(authUser, facebookUser);
                     return userDao.update(authUser, false);
                 }
+                
             } else if (!authUser.getFacebookId().equals(facebookUser.id)) {
                 authUser = null;
             }
@@ -107,6 +115,7 @@ public class AuthService extends GraphManager {
 
     private void mergeFacebookUser(UserEntity userEntity, FacebookUser facebookUser) {
         userEntity.setFacebookId(facebookUser.id);
+        userEntity.setUserName(facebookUser.name);
         userEntity.setDisplayName(facebookUser.name);
         userEntity.setOtpExpired(null);
         userEntity.setOtpToken(null);

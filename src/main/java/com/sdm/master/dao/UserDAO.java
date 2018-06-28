@@ -5,12 +5,9 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.Globalizer;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.UserEntity;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -31,50 +28,35 @@ public class UserDAO extends RestDAO {
         super(session, UserEntity.class.getName(), userId);
     }
 
-    @Deprecated
+    /**
+     * 'user' parameter must be email/username.
+     *
+     * @param user
+     * @return
+     */
+    public UserEntity checkUser(String user) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("user", user);
+        return super.fetchOneByNamedQuery("UserEntity.CHECK_USER", params);
+    }
+    
+    public UserEntity userAuth(String user, String password){
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("user", user);
+        params.put("password", user);
+        return super.fetchOneByNamedQuery("UserEntity.AUTH_BY_USER", params);
+    }
+    
     public UserEntity userAuthByFacebook(String facebookId) {
-        Map<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>();
         params.put("facebookId", facebookId);
         return super.fetchOneByNamedQuery("UserEntity.AUTH_BY_FACEBOOK", params);
     }
-
-    @Deprecated
-    public UserEntity userAuth(String user, String password) {
-
-        boolean isEmail = Globalizer.isEmail(user);
-
-        Map<String, Object> params = new HashMap<>();
-        String nameQuery = "";
-        if (isEmail) {
-            params.put("email", user);
-            nameQuery = "UserEntity.AUTH_BY_EMAIL";
-        } else {
-            params.put("user", user);
-            nameQuery = "UserEntity.AUTH_BY_USER";
-        }
-
-        params.put("password", password);
-        return super.fetchOneByNamedQuery(nameQuery, params);
-    }
-
-    @Deprecated
+    
     public UserEntity checkToken(String email, String token) {
-        Map<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>();
         params.put("email", email);
         params.put("token", token);
         return super.fetchOneByNamedQuery("UserEntity.GET_USER_BY_TOKEN", params);
-    }
-
-    @Deprecated
-    public UserEntity getUserByEmail(String email) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("email", email);
-        return super.fetchOneByNamedQuery("UserEntity.SELECT_BY_EMAIL", params);
-    }
-
-    public UserEntity getUserByName(String name) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        return super.fetchOneByNamedQuery("UserEntity.SELECT_BY_USER", params);
     }
 }

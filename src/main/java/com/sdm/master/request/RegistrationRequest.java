@@ -8,6 +8,7 @@ package com.sdm.master.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sdm.core.request.IBaseRequest;
 import java.util.Date;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -34,6 +35,8 @@ public class RegistrationRequest implements IBaseRequest {
 
     private Date timestamp;
 
+    @Pattern(regexp = "[a-zA-Z0-9_\\.]+", 
+            message = "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09")
     @NotBlank(message = "User name is required.")
     @Size(min = 1, max = 255)
     public String getUserName() {

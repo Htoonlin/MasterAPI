@@ -31,7 +31,6 @@ import eu.bitwalker.useragentutils.UserAgent;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -104,7 +103,7 @@ public class AuthResource extends DefaultResource {
                         "Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
             } else {
                 UserEntity authUser = userDao.userAuth(request.getUser(), request.getCryptPassword());
-                
+
                 if (authUser != null && authUser.getStatus() == UserEntity.ACTIVE && request.isAuth(authUser)) {
                     userDao.beginTransaction();
                     TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
@@ -213,42 +212,35 @@ public class AuthResource extends DefaultResource {
         try {
             InvalidRequestException invalidRequest = new InvalidRequestException();
 
-            if (!mailManager.checkMail(request.getEmail())) {
-                invalidRequest.addError("email", "Requested email is not valid", request.getEmail());
-            }
-
-            UserEntity user = userDao.getUserByEmail(request.getEmail());
-            if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-                invalidRequest.addError("email", "Sorry! someone already registered with this email",
-                        request.getEmail());
-            }
-            
-            Pattern pattern=Pattern.compile("[a-zA-Z0-9_\\.]+");
-            boolean isValid = pattern.matcher(request.getUserName()).matches();
-            if (request.getUserName().contains(" ") || !isValid) {
-                invalidRequest.addError("user name", "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09",
-                        request.getUserName());
-            }
-
-            user = userDao.getUserByName(request.getUserName());
+            //Check user by user name
+            UserEntity user = userDao.checkUser(request.getUserName());
             if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
-                invalidRequest.addError("user name", "Sorry! someone already registered with this user name",
+                invalidRequest.addError("email", "Sorry! someone already registered with this username",
                         request.getUserName());
-            }
-
-            if (invalidRequest.getErrors().size() > 0) {
                 throw invalidRequest;
             }
 
-            String password = SecurityManager.hashString(request.getEmail(), request.getPassword());
-            String uPassword = SecurityManager.hashString(request.getUserName(), request.getPassword());
-            user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(), password, uPassword, true, UserEntity.PENDING);
+            //Check user by user email
+            user = userDao.checkUser(request.getEmail());
+            if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+                invalidRequest.addError("email", "Sorry! someone already registered with this email",
+                        request.getEmail());
+                throw invalidRequest;
+            }
 
-            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-            mailSend.activateLink(user, userAgentString);
+            String password = SecurityManager.hashString(request.getPassword());
+            user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(), password,
+                    true, UserEntity.PENDING);
             userDao.insert(user, true);
+
+            if (user.hasEmail()) {
+                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+                mailSend.activateLink(user, userAgentString);
+            }
+
             MessageModel message = new MessageModel(200, "Registration Success",
                     "Thank you for your registration. Pls check your mail for activation.");
+            
             return new DefaultResponse<>(message);
         } catch (Exception e) {
             LOG.error(e);
@@ -343,52 +335,28 @@ public class AuthResource extends DefaultResource {
         try {
             MessageModel message = new MessageModel(400, "Invalid!", "Sorry! Requested token is invalid or expired.");
             String token = request.getToken();
-            //String oldPassword = SecurityManager.hashString(request.getUser(), request.getOldPassword());
-            UserEntity user = userDao.userAuth(request.getUser(), request.getOldPassword());
+            UserEntity user = userDao.checkToken(request.getUser(), request.getToken());
 
             if (user == null) {
                 message = new MessageModel(204, "No Data", "There is no data for your request.");
                 return new DefaultResponse<>(message);
             }
 
-            String testToken=user.getOtpToken();
-            Date otpexp=user.getOtpExpired();
-            boolean test=user.getOtpExpired().before(new Date());
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.forgetPasswordLink(user);
                 userDao.update(user, true);
                 message = new MessageModel(400, "Token Expired",
                         "Sorry! Your token has expired. We send new link to your email.");
-            }else{
-                if(Globalizer.isEmail(request.getUser())){
-                    if(!(user.getEmail().equalsIgnoreCase(request.getUser()) && user.getPassword().equals(request.getOldPassword())
-                            && user.getOtpToken().equals(token))){
-                        return new DefaultResponse<>(new MessageModel(400, "Token Expired",
-                        "Sorry! Something went wrong. pls try again."));
-                    }
-                }else{
-                    if (!(user.getUserName().equalsIgnoreCase(request.getUser()) && user.getuPassword().equals(request.getOldPassword())
-                            && user.getOtpToken().equals(token))) {
-                        return new DefaultResponse<>(new MessageModel(400, "Token Expired",
-                        "Sorry! Something went wrong. pls try again."));
-                    }
-                }
-                
-                String newPassword = SecurityManager.hashString(user.getEmail(), request.getNewPassword());
-                String newuPassword = SecurityManager.hashString(user.getUserName(), request.getNewPassword());
-                
+            } else {
+                String newPassword = SecurityManager.hashString(request.getNewPassword());
+
                 user.setOtpExpired(null);
                 user.setOtpToken(null);
                 user.setPassword(newPassword);
-                user.setuPassword(newuPassword);
                 userDao.update(user, true);
                 message = new MessageModel(202, "OK", "We updated the new password on your request successfully.");
-            } 
-            /*else if (user.getEmail().equalsIgnoreCase(request.getEmail())
-                    && user.getPassword().equals(oldPassword) && user.getOtpToken().equals(token)) {
-                
-            }*/
+            }
 
             return new DefaultResponse<>(message);
         } catch (Exception e) {
@@ -408,7 +376,7 @@ public class AuthResource extends DefaultResource {
             if (!mailManager.checkMail(email)) {
                 message = new MessageModel(400, "Invalid!", "Invalid email address.");
             } else {
-                UserEntity user = userDao.getUserByEmail(email);
+                UserEntity user = userDao.checkUser(email);
                 if (user == null) {
                     message = new MessageModel(400, "Invalid!", "Invalid email address");
                 } else {

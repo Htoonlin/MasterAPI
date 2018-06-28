@@ -10,9 +10,7 @@ import com.sdm.core.request.IBaseRequest;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.entity.UserEntity;
 import java.util.Date;
-import java.util.regex.Pattern;
 import javax.validation.constraints.Size;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -79,7 +77,7 @@ public class AuthRequest implements IBaseRequest {
     }
 
     public String getCryptPassword() {
-        return SecurityManager.hashString(this.user, this.password);
+        return SecurityManager.hashString(this.password);
     }
 
     public boolean isAuth(UserEntity authUser) {
@@ -87,15 +85,10 @@ public class AuthRequest implements IBaseRequest {
             return false;
         }
         
-        Pattern pattern=Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-        boolean isEmail = pattern.matcher(user).matches();
+        boolean checkUser = authUser.getEmail().equalsIgnoreCase(this.user) || authUser.getUserName().equalsIgnoreCase(this.user);
         
         String cryptPassword = this.getCryptPassword();
-        if(isEmail)
-            return (authUser.getEmail().equalsIgnoreCase(this.user) && authUser.getPassword().equals(cryptPassword));
-        else{
-            return (authUser.getUserName().equalsIgnoreCase(this.user) && authUser.getuPassword().equals(cryptPassword));
-        }
+        return (checkUser && authUser.getPassword().equals(cryptPassword));
     }
 
     @Override

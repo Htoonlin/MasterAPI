@@ -66,35 +66,35 @@ public class UserResource extends RestResource<UserEntity, Integer> {
     @Override
     public IBaseResponse create(@Valid UserEntity request) {
         try {
-            UserEntity user = userDAO.getUserByEmail(request.getEmail());
-            if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-                InvalidRequestException invalidRequest = new InvalidRequestException();
-                invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
-                throw invalidRequest;
-            }
-
-            Pattern pattern=Pattern.compile("[a-zA-Z0-9_\\.]+");
-            boolean isValid = pattern.matcher(request.getUserName()).matches();
-            LOG.debug(isValid);
-            
-            if (request.getUserName().contains(" ") || !isValid) {
-                InvalidRequestException invalidRequest = new InvalidRequestException();
-                invalidRequest.addError("user name", "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09", request.getUserName());
-                throw invalidRequest;
-            }
-
-            user = userDAO.getUserByName(request.getUserName());
+            //Check user by userName
+            UserEntity user = userDAO.checkUser(request.getUserName());
             if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
                 InvalidRequestException invalidRequest = new InvalidRequestException();
                 invalidRequest.addError("user name", "Sorry! someone already registered with this user name", request.getUserName());
                 throw invalidRequest;
             }
 
+            //Validate user name.
+            Pattern pattern= Pattern.compile("[a-zA-Z0-9_\\.]+");
+            boolean isValid = pattern.matcher(request.getUserName()).matches();
+            if (request.getUserName().contains(" ") || !isValid) {
+                InvalidRequestException invalidRequest = new InvalidRequestException();
+                invalidRequest.addError("user name", "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09", request.getUserName());
+                throw invalidRequest;
+            }
+            
+            //Check user by email.
+            if(request.hasEmail()){
+               user = userDAO.checkUser(request.getEmail());
+               if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+                   InvalidRequestException invalidRequest = new InvalidRequestException();
+                   invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
+                   throw invalidRequest;
+               }   
+            }
+
             String rawPassword = request.getPassword();
-            String password = SecurityManager.hashString(request.getEmail(), rawPassword);
-            String uPassword = SecurityManager.hashString(request.getUserName(), rawPassword);
-            request.setPassword(password);
-            request.setuPassword(uPassword);
+            request.setPassword(SecurityManager.hashString(rawPassword));
             request.setStatus('A');
             userDAO.beginTransaction();
             UserEntity createdUser = userDAO.insert(request, false);
@@ -108,9 +108,12 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             userDAO.commitTransaction();
 
             this.modifiedResource();
+            
             // Send Welcome mail to User
-            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-            mailSend.welcomeUser(createdUser, rawPassword);
+            if(request.hasEmail()){
+                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+                mailSend.welcomeUser(createdUser, rawPassword);
+            }
 
             return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
         } catch (Exception ex) {

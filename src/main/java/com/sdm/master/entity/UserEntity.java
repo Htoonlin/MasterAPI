@@ -3,7 +3,7 @@ package com.sdm.master.entity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.sdm.core.Globalizer;
 import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.response.model.LinkModel;
 import com.sdm.core.ui.UIInputType;
@@ -16,10 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,35 +26,22 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapsId;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.print.attribute.HashAttributeSet;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.core.UriBuilder;
-import org.hibernate.annotations.CollectionId;
-import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.envers.RevisionNumber;
 import org.hibernate.validator.constraints.Email;
 
 /**
@@ -68,18 +52,15 @@ import org.hibernate.validator.constraints.Email;
 @Entity(name = "UserEntity")
 @Table(name = "tbl_user")
 @NamedQueries({
-    @NamedQuery(name = "UserEntity.SELECT_BY_EMAIL",
-            query = "FROM UserEntity u WHERE u.email = :email"),
-    @NamedQuery(name = "UserEntity.SELECT_BY_USER",
-            query = "FROM UserEntity u WHERE u.userName = :name"),
     @NamedQuery(name = "UserEntity.GET_USER_BY_TOKEN",
             query = "FROM UserEntity u WHERE u.email = :email AND u.otpToken = :token"),
-    @NamedQuery(name = "UserEntity.AUTH_BY_EMAIL",
-            query = "FROM UserEntity u WHERE u.email = :email AND u.password = :password"),
+    @NamedQuery(name = "UserEntity.CHECK_USER",
+            query = "FROM UserEntity u WHERE u.email = :user OR u.userName = :user"),
     @NamedQuery(name = "UserEntity.AUTH_BY_USER",
-            query = "FROM UserEntity u WHERE u.userName = :user AND u.uPassword = :password"),
+            query = "FROM UserEntity u WHERE (u.email = :user OR u.userName = :user) AND u.password = :password"),
     @NamedQuery(name = "UserEntity.AUTH_BY_FACEBOOK",
             query = "FROM UserEntity u WHERE u.facebookId = :facebookId")})
+
 public class UserEntity extends DefaultEntity implements Serializable {
 
     /**
@@ -128,11 +109,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
     @UIStructure(order = 9, label = "User Extra", inputType = UIInputType.objectlist)
     private Set<UserExtraEntity> extra = new HashSet<>();
 
-    @JsonIgnore
-    @UIStructure(order = 3, label = "Password", inputType = UIInputType.password)
-    @Column(name = "uPassword", columnDefinition = "VARCHAR(255)", nullable = false, length = 255)
-    private String uPassword;
-    
     @UIStructure(order = 3, label = "Password", inputType = UIInputType.password)
     @Column(name = "password", columnDefinition = "VARCHAR(255)", nullable = false, length = 255)
     private String password;
@@ -171,12 +147,11 @@ public class UserEntity extends DefaultEntity implements Serializable {
     public UserEntity() {
     }
 
-    public UserEntity(String email, String userName, String displayName, String password,String uPassword, boolean online, char status) {
+    public UserEntity(String email, String userName, String displayName, String password, boolean online, char status) {
         this.email = email;
         this.userName = userName;
         this.displayName = displayName;
         this.password = password;
-        this.uPassword=uPassword;
         this.online = online;
         this.status = status;
     }
@@ -212,6 +187,10 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    public boolean hasEmail(){
+        return this.email != null && this.email.length() > 3 && Globalizer.isEmail(this.email);
     }
 
     @Size(min = 5, max = 255)
@@ -261,15 +240,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
     public void setRoles(Set<RoleEntity> roles) {
         this.roles = roles;
-    }
-
-    @JsonIgnore
-    public String getuPassword() {
-        return uPassword;
-    }
-
-    public void setuPassword(String uPassword) {
-        this.uPassword = uPassword;
     }
     
     @JsonIgnore

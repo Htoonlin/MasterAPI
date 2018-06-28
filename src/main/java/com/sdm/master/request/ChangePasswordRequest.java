@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sdm.core.request.IBaseRequest;
 import java.util.Date;
 import javax.validation.constraints.Size;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -25,7 +24,7 @@ public class ChangePasswordRequest implements IBaseRequest {
     private static final long serialVersionUID = 6890755299063523487L;
     private String user;
 
-    @NotBlank(message = "Email field can't be blank.")
+    @NotBlank(message = "User field can't be blank.")
     @Size(min = 6, max = 255)
     public String getUser() {
         return user;
