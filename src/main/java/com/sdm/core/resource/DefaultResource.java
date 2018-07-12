@@ -7,6 +7,7 @@ package com.sdm.core.resource;
 
 import com.sdm.Constants;
 import com.sdm.core.Setting;
+import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
@@ -21,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
@@ -32,6 +31,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.model.Invocable;
 import org.glassfish.jersey.server.model.Parameter;
 import org.glassfish.jersey.server.model.Resource;
@@ -41,19 +41,23 @@ import org.glassfish.jersey.server.model.ResourceMethod;
  *
  * @author Htoonlin
  */
-public class DefaultResource implements IBaseResource {
+public class DefaultResource implements IBaseResource, IUserListener {
 
     private static final Logger LOG = Logger.getLogger(DefaultResource.class.getName());
 
+    protected Logger getLogger() {
+        return Logger.getLogger(this.getClass());
+    }
+    
     @Context
     private UriInfo uriInfo;
-
-    @Inject
-    private HttpSession httpSession;
 
     @Context
     private Request request;
 
+    /**
+     * Caching Start
+     */
     private static String eTag = UUID.randomUUID().toString();
     private static Date lastModified = new Date();
 
@@ -103,20 +107,21 @@ public class DefaultResource implements IBaseResource {
         cacheHeader.put(HttpHeaders.LAST_MODIFIED, lastModified);
         return cacheHeader;
     }
-
+    
+     /**
+     * Caching End
+     */
+    
     @Override
-    public HttpSession getHttpSession() {
-        return this.httpSession;
-    }
-
-    @Override
-    public int getUserId() {
-        try {
-            return (int) this.getHttpSession().getAttribute(Constants.SessionKey.USER_ID);
-        } catch (Exception e) {
-            LOG.error("There is no session. <" + e.getLocalizedMessage() + ">");
-            return 0;
+    public int getCurrentUserID() {
+        try{
+            ContainerRequest container = (ContainerRequest) request;
+            int userId = (int) container.getProperty(Constants.REQUEST_USER);
+            return userId;
+        }catch(Exception ex){
+            LOG.warn("There is no user");
         }
+        return 0;
     }
 
     @Override
@@ -127,14 +132,6 @@ public class DefaultResource implements IBaseResource {
     @Override
     public void setUriInfo(UriInfo uriInfo) {
         this.uriInfo = uriInfo;
-    }
-
-    public String getBaseURI() {
-        String[] baseURI = getUriInfo().getAbsolutePath().toString().split("/api/", 2);
-        if (baseURI.length > 1) {
-            return baseURI[0] + "/";
-        }
-        return getUriInfo().getAbsolutePath().toString();
     }
 
     protected List<RouteModel> collectRoute(Resource resource, String basePath, Class clsResource) {
@@ -203,8 +200,7 @@ public class DefaultResource implements IBaseResource {
         try {
             Resource resource = Resource.from(this.getClass());
             if (resource == null) {
-                MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-                return new DefaultResponse<>(message);
+                throw new NullPointerException("There is no data for your request.");
             }
             ListModel<RouteModel> content = new ListModel<>();
             content.setData(collectRoute(resource, "/", null));

@@ -132,7 +132,7 @@ public class AuthService extends GraphManager {
         userPicture.setName(facebookUser.name);
         userPicture.setExtension("jpg");
         userPicture.setPublicAccess(true);
-        FileDAO fileDao = new FileDAO(userDao.getSession(), userDao.getUserId());
+        FileDAO fileDao = new FileDAO(userDao.getSession(), null);
         userEntity.setProfileImage(fileDao.insert(userPicture, false));
     }
 }

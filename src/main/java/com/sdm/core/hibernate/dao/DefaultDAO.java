@@ -7,6 +7,7 @@ package com.sdm.core.hibernate.dao;
 
 import com.sdm.core.hibernate.HibernateConnector;
 import com.sdm.core.hibernate.audit.AuditStorage;
+import com.sdm.core.hibernate.audit.IUserListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +23,15 @@ import org.hibernate.Transaction;
 public class DefaultDAO {
 
     private Session mainSession;
-    protected final int USER_ID;
+    private IUserListener dataListener;
 
-    public DefaultDAO(int userId) {
-        this(HibernateConnector.getFactory().openSession(), userId);
+    public DefaultDAO(IUserListener listener) {
+        this(HibernateConnector.getFactory().openSession(), listener);
     }
 
-    public DefaultDAO(Session session, int userId) {
-        this.USER_ID = userId;
+    public DefaultDAO(Session session, IUserListener listener) {
         this.mainSession = session;
+        this.dataListener = listener;
     }
 
     public Session getSession() {
@@ -38,10 +39,6 @@ public class DefaultDAO {
             this.mainSession = HibernateConnector.getFactory().openSession();
         }
         return this.mainSession;
-    }
-
-    public int getUserId() {
-        return this.USER_ID;
     }
 
     public void closeSession() {
@@ -52,7 +49,12 @@ public class DefaultDAO {
     }
 
     public void beginTransaction() {
-        AuditStorage.INSTANCE.set(this.USER_ID);
+        int userId = 0;
+        if (this.dataListener != null) {
+            userId = this.dataListener.getCurrentUserID();
+        }
+
+        AuditStorage.INSTANCE.set(userId);
         this.getSession().beginTransaction();
     }
 
@@ -84,6 +86,26 @@ public class DefaultDAO {
         return query;
     }
 
+    public Query createQueryByName(String queryName, Map<String, Object> params, int size, int start) {
+        Query query = this.getSession().createNamedQuery(queryName);
+        if (params != null) {
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                query.setParameter(param.getKey(), param.getValue());
+            }
+        }
+        return query.setFirstResult(start).setMaxResults(size);
+    }
+
+    public Query createQueryByName(String queryName, Map<String, Object> params, int size) {
+        Query query = this.getSession().createNamedQuery(queryName);
+        if (params != null) {
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                query.setParameter(param.getKey(), param.getValue());
+            }
+        }
+        return query.setMaxResults(size);
+    }
+
     public Query createQueryByName(String queryName, Map<String, Object> params) {
         Query query = this.getSession().createNamedQuery(queryName);
         if (params != null) {
@@ -102,6 +124,24 @@ public class DefaultDAO {
     public Query createQuery(String hqlString, Map<String, Object> params, int size, int start) {
         Query query = this.createQuery(hqlString, params);
         return query.setFirstResult(start).setMaxResults(size);
+    }
+
+    public List<?> fetchByNamedQuery(String queryName, Map<String, Object> params, int size, int start) {
+        List<?> queryList = this.createQueryByName(queryName, params, size, start).getResultList();
+        if (queryList != null && queryList.size() > 0) {
+            return queryList;
+        }
+
+        return new ArrayList<>();
+    }
+
+    public List<?> fetchByNamedQuery(String queryName, Map<String, Object> params, int size) {
+        List<?> queryList = this.createQueryByName(queryName, params, size).getResultList();
+        if (queryList != null && queryList.size() > 0) {
+            return queryList;
+        }
+
+        return new ArrayList<>();
     }
 
     public List<?> fetchByNamedQuery(String queryName, Map<String, Object> params) {
@@ -123,7 +163,7 @@ public class DefaultDAO {
     }
 
     public <T extends Serializable> T fetchOneByNamedQuery(String queryName, Map<String, Object> params) {
-        List<T> results = this.createQueryByName(queryName, params).getResultList();
+        List<T> results = this.createQueryByName(queryName, params).setMaxResults(1).getResultList();
         if (results == null || results.size() < 1) {
             return null;
         }
@@ -131,7 +171,7 @@ public class DefaultDAO {
     }
 
     public <T extends Serializable> T fetchOne(String hqlString, Map<String, Object> params) {
-        List<T> results = this.createQuery(hqlString, params).getResultList();
+        List<T> results = this.createQuery(hqlString, params).setMaxResults(1).getResultList();
         if (results == null || results.size() < 1) {
             return null;
         }

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 /**
  * Created by Converter => saturngod on 23/1/15. Zawgyi Detector => Technomation
+ * Zawgyi Detecotor from myanmar tools.
  * Studio
  */
 public class MyanmarFontManager {
@@ -24,6 +25,7 @@ public class MyanmarFontManager {
     private static final Pattern IS_MYANMAR_PATTERN = Pattern.compile("[\u1000-\u1021]+|[\u1025-\u1027]");
 
     private static String convert(String rule, String output) {
+        
         JSONArray rule_array = new JSONArray(rule);
         int max_loop = rule_array.length();
 
@@ -48,15 +50,27 @@ public class MyanmarFontManager {
     }
 
     public static boolean isMyanmar(String input) {
+        if(input == null){
+            return false;
+        }
+        
         Matcher matcher = IS_MYANMAR_PATTERN.matcher(input);
         return matcher.find();
     }
 
     public static boolean isUnicode(String input) {
+        if(input == null){
+            return false;
+        }
+        
         return zgDetector.getZawgyiProbability(input) <= THRESHOLD;
     }
 
     public static boolean isZawgyi(String input) {
+        if(input == null){
+            return false;
+        }
+        
         return zgDetector.getZawgyiProbability(input) > THRESHOLD;
     }
 

@@ -6,6 +6,35 @@ This RESTful framework was developed by following:
 
 So, you have to know about these frameworks and libraries.
 
+## Version 3.0 Change Log
+- Upgrade maven libraries
+- Remove and Reduce 
+    - Remove SESSION management to prevent multi session creation 
+    - Remove JSP Web Page 
+    - Remove application path "api" 
+    - Generate upload directory ({basePath}/upload) if does not exist in setting (com.sdm.path.upload)
+    - Remove GeoIPCache 
+    - Hide (Null/Empty) property in JSON Response
+- Change routeList path (sample/customers/route => /sample/customers/~info)
+- Auth allowed userName/email 
+- Performance Improvement and Bug Fixed 
+- Use Exceptions instead of MessageModel for ErrorMessages
+```java
+MessageModel(204, "...") => throw new NullPointerException("...") 
+MessageModel(400, "...") => throw new InvalidRequestException("...", "...", "...")
+```
+
+### New Rest Resources 
+```java
+@Path("sample/customers")
+public class CustomerResource extends RestResource<CustomerEntity, Integer> {
+    public CustomerResource() {
+        super();
+    }
+}
+```
+
+
 ## Getting started
 - Clone or download the project from [github](https://github.com/Htoonlin/MasterAPI)
 - Open project in Java IDE such as Eclipse, NetBeans, etc ...

@@ -15,7 +15,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface IAccessManager {
-
+    
     boolean validateToken(Claims request);
 
     boolean checkPermission(Claims request, Method method, String httpMethod, Class<?> resourceClass);

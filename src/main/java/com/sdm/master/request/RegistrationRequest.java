@@ -37,7 +37,7 @@ public class RegistrationRequest implements IBaseRequest {
 
     @Pattern(regexp = "[a-zA-Z0-9_\\.]+", 
             message = "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09")
-    @NotBlank(message = "User name is required.")
+    @NotBlank(message = "User name/E-mail is required.")
     @Size(min = 1, max = 255)
     public String getUserName() {
         return userName;
@@ -58,7 +58,6 @@ public class RegistrationRequest implements IBaseRequest {
     }
 
     @Email(message = "Ivalid email format.")
-    @NotBlank(message = "Email can't be blank.")
     @Size(min = 6, max = 255)
     public String getEmail() {
         return this.email;

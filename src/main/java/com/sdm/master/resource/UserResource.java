@@ -8,7 +8,6 @@ package com.sdm.master.resource;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.exception.InvalidRequestException;
-import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
@@ -24,11 +23,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Path;
-import org.apache.log4j.Logger;
 
 /**
  * REST Web Service
@@ -38,59 +35,41 @@ import org.apache.log4j.Logger;
 @Path("users")
 public class UserResource extends RestResource<UserEntity, Integer> {
 
-    private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
-
     @Inject
     ITemplateManager templateManager;
 
     @Inject
     IMailManager mailManager;
 
-    private UserDAO userDAO;
-    private UserExtraDAO extraDAO;
-
-    @PostConstruct
-    protected void init() {
-        if (this.userDAO == null) {
-            userDAO = new UserDAO(getUserId());
-        }
-
-        extraDAO = new UserExtraDAO(userDAO.getSession(), getUserId());
-    }
-
-    @Override
-    protected RestDAO getDAO() {
-        return this.userDAO;
-    }
-    
     @Override
     public IBaseResponse create(@Valid UserEntity request) {
+        UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
         try {
             //Check user by userName
             UserEntity user = userDAO.checkUser(request.getUserName());
             if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
-                InvalidRequestException invalidRequest = new InvalidRequestException();
-                invalidRequest.addError("user name", "Sorry! someone already registered with this user name", request.getUserName());
-                throw invalidRequest;
+                throw new InvalidRequestException("user name", 
+                        "Sorry! someone already registered with this user name", 
+                        request.getUserName());
             }
 
             //Validate user name.
-            Pattern pattern= Pattern.compile("[a-zA-Z0-9_\\.]+");
+            Pattern pattern = Pattern.compile("[a-zA-Z0-9_\\.]+");
             boolean isValid = pattern.matcher(request.getUserName()).matches();
             if (request.getUserName().contains(" ") || !isValid) {
-                InvalidRequestException invalidRequest = new InvalidRequestException();
-                invalidRequest.addError("user name", "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09", request.getUserName());
-                throw invalidRequest;
+                throw new InvalidRequestException("user_name", 
+                        "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09", 
+                        request.getUserName());
             }
-            
+
             //Check user by email.
-            if(request.hasEmail()){
-               user = userDAO.checkUser(request.getEmail());
-               if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-                   InvalidRequestException invalidRequest = new InvalidRequestException();
-                   invalidRequest.addError("email", "Sorry! someone already registered with this email", request.getEmail());
-                   throw invalidRequest;
-               }   
+            if (request.hasEmail()) {
+                user = userDAO.checkUser(request.getEmail());
+                if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+                    throw new InvalidRequestException("email", 
+                            "Sorry! someone already registered with this email", 
+                            request.getEmail());
+                }
             }
 
             String rawPassword = request.getPassword();
@@ -98,6 +77,8 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             request.setStatus('A');
             userDAO.beginTransaction();
             UserEntity createdUser = userDAO.insert(request, false);
+
+            UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
 
             Set<UserExtraEntity> extras = request.getExtra();
             for (UserExtraEntity extra : extras) {
@@ -108,15 +89,15 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             userDAO.commitTransaction();
 
             this.modifiedResource();
-            
+
             // Send Welcome mail to User
-            if(request.hasEmail()){
+            if (request.hasEmail()) {
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.welcomeUser(createdUser, rawPassword);
             }
 
-            return new DefaultResponse<UserEntity>(201, ResponseType.SUCCESS, createdUser);
-        } catch (Exception ex) {
+            return new DefaultResponse<>(201, ResponseType.SUCCESS, createdUser);
+        } catch (InvalidRequestException ex) {
             userDAO.rollbackTransaction();
             getLogger().error(ex);
             throw ex;
@@ -125,14 +106,13 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 
     @Override
     public IBaseResponse update(@Valid UserEntity request, Integer id) {
+
+        UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
+
         try {
-            UserEntity dbEntity = userDAO.fetchById(id);
-            if (dbEntity == null) {
-                MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-                return new DefaultResponse<>(message);
-            } else if (!Objects.equals(dbEntity.getId(), request.getId())) {
-                MessageModel message = new MessageModel(400, "Invalid", "Invalid request ID.");
-                return new DefaultResponse<>(message);
+            UserEntity dbEntity = this.checkData(id);
+            if (!Objects.equals(dbEntity.getId(), request.getId())) {
+                throw new InvalidRequestException("id", "Invalid request ID.", id);
             }
 
             userDAO.beginTransaction();
@@ -146,6 +126,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 
             Set<UserExtraEntity> extras = request.getExtra();
 
+            UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
             //Delete All Extras
             List<UserExtraEntity> oldExtras = extraDAO.getUserExtraByUser(dbEntity.getId());
             for (UserExtraEntity oldExtra : oldExtras) {
@@ -162,25 +143,23 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             userDAO.commitTransaction();
             this.modifiedResource();
 
-            return new DefaultResponse<UserEntity>(202, ResponseType.SUCCESS, request);
-        } catch (Exception e) {
+            return new DefaultResponse<>(202, ResponseType.SUCCESS, request);
+        } catch (InvalidRequestException | NullPointerException e) {
             userDAO.rollbackTransaction();
-            LOG.error(e);
+            getLogger().error(e);
             throw e;
         }
     }
 
     @Override
     public IBaseResponse remove(Integer id) {
+        UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
         try {
-            MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-            UserEntity entity = userDAO.fetchById(id);
-            if (entity == null) {
-                return new DefaultResponse<>(message);
-            }
+            UserEntity entity = this.checkData(id);
 
             userDAO.beginTransaction();
 
+            UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
             //Delete All Extras
             List<UserExtraEntity> extras = extraDAO.getUserExtraByUser(id);
             for (UserExtraEntity extra : extras) {
@@ -192,17 +171,12 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             userDAO.commitTransaction();
             this.modifiedResource();
 
-            message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
+            MessageModel message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
             return new DefaultResponse<>(202, ResponseType.SUCCESS, message);
         } catch (Exception e) {
             userDAO.rollbackTransaction();
             getLogger().error(e);
             throw e;
         }
-    }
-
-    @Override
-    protected Logger getLogger() {
-        return UserResource.LOG;
     }
 }

@@ -13,6 +13,7 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
@@ -35,8 +36,16 @@ public class ResponseFilter implements ContainerResponseFilter {
             if (userHeaders != null) {
                 MultivaluedMap<String, Object> headers = responseContext.getHeaders();
                 for (String key : userHeaders.keySet()) {
-                    headers.putSingle(key, userHeaders.get(key));
+                    Object value = userHeaders.get(key);
+                    headers.putSingle(key, value);
                 }
+            }
+            
+            //Support Emoji content-type
+            String contentType = responseContext.getHeaderString(HttpHeaders.CONTENT_TYPE);
+            if(contentType.startsWith("application/json")){
+                responseContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, 
+                        "application/json; charset=utf8");
             }
 
             // Skip Http staus code 204 to 200 because 204 can't response any data.

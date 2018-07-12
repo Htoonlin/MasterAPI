@@ -17,17 +17,13 @@ import javax.ws.rs.core.UriInfo;
  * @author Htoonlin
  */
 public interface IBaseResource {
-
-    public Object getHttpSession();
-
-    public int getUserId();
-
+            
     public UriInfo getUriInfo();
 
     public void setUriInfo(UriInfo uriInfo);
 
     @GET
-    @Path("route")
+    @Path("~info")
     @Produces(MediaType.APPLICATION_JSON)
     public IBaseResponse getRoutes();
 }

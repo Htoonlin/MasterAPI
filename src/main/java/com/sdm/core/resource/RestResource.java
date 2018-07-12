@@ -25,12 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.persistence.Entity;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -38,15 +35,22 @@ import org.apache.log4j.Logger;
  * @param <T>
  * @param <PK>
  */
-public abstract class RestResource<T extends DefaultEntity, PK extends Serializable> extends DefaultResource
+public class RestResource<T extends DefaultEntity, PK extends Serializable> extends DefaultResource
         implements IRestResource<T, PK> {
 
-    protected abstract Logger getLogger();
+    private RestDAO mainDAO;
 
-    protected abstract RestDAO getDAO();
+    public RestResource() {
+        this.mainDAO = new RestDAO(this.getEntityClass().getName(), this);
+    }
 
-    @Context
-    protected HttpServletRequest SERVLET_REQUEST;
+    protected RestDAO getDAO() {
+        return mainDAO;
+    }
+
+    protected void setDAO(RestDAO mainDAO) {
+        this.mainDAO = mainDAO;
+    }
 
     @PreDestroy
     protected void onDestroy() {
@@ -59,6 +63,15 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
         ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
         Class<T> entityClass = (Class<T>) type.getActualTypeArguments()[0];
         return entityClass;
+    }
+
+    protected T checkData(PK id) {
+        T entity = getDAO().fetchById(id);
+        if (entity == null) {
+            throw new NullPointerException("There is no data for your request.");
+        }
+
+        return entity;
     }
 
     @Override
@@ -140,13 +153,12 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
             if (MyanmarFontManager.isMyanmar(filter) && MyanmarFontManager.isZawgyi(filter)) {
                 filter = MyanmarFontManager.toUnicode(filter);
             }
-            
+
             long total = getDAO().getTotal(filter);
             List<T> data = (List<T>) getDAO().paging(filter, pageId, pageSize, sortString);
 
             if (data == null) {
-                MessageModel message = new MessageModel(204, "No Data", "There is no data for your query string.");
-                return new DefaultResponse<>(message);
+                throw new NullPointerException("There is no data for your query string.");
             }
 
             PaginationModel<T> content = new PaginationModel<T>(data, total, pageId, pageSize);
@@ -172,11 +184,8 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
             return response;
         }
 
-        T data = getDAO().fetchById(id);
-        if (data == null) {
-            MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-            return new DefaultResponse<>(message);
-        }
+        T data = this.checkData(id);
+
         response = new DefaultResponse<T>(HttpStatus.SC_OK, ResponseType.SUCCESS, data);
         response.setHeaders(this.buildCache());
         return response;
@@ -217,12 +226,9 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
     @Override
     public IBaseResponse update(@Valid T request, PK id) {
+        T dbEntity = this.checkData(id);
+
         try {
-            T dbEntity = getDAO().fetchById(id);
-            if (dbEntity == null) {
-                MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-                return new DefaultResponse<>(message);
-            }
             T entity = getDAO().update(request, true);
             this.modifiedResource();
             return new DefaultResponse<T>(202, ResponseType.SUCCESS, entity);
@@ -255,17 +261,13 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
 
     @Override
     public IBaseResponse remove(PK id) {
-        try {
-            MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-            T entity = getDAO().fetchById(id);
-            if (entity == null) {
-                return new DefaultResponse<>(message);
-            }
+        T entity = this.checkData(id);
 
+        try {
             getDAO().delete(entity, true);
             this.modifiedResource();
 
-            message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
+            MessageModel message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
             return new DefaultResponse<>(202, ResponseType.SUCCESS, message);
         } catch (Exception e) {
             getLogger().error(e);
@@ -353,8 +355,7 @@ public abstract class RestResource<T extends DefaultEntity, PK extends Serializa
         HashMap<String, Object> data = auditDAO.getDataByVersion(getEntityClass(), id, version);
 
         if (data == null) {
-            MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-            return new DefaultResponse<>(message);
+            throw new NullPointerException("There is no data for your request.");
         }
         response = new DefaultResponse<>(HttpStatus.SC_OK, ResponseType.SUCCESS, data);
         response.setHeaders(this.buildCache());

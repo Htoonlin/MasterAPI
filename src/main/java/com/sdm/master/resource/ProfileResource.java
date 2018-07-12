@@ -6,6 +6,7 @@
 package com.sdm.master.resource;
 
 import com.sdm.core.resource.DefaultResource;
+import com.sdm.core.resource.UserAllowed;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
@@ -14,7 +15,6 @@ import com.sdm.master.dao.UserDAO;
 import com.sdm.master.entity.UserEntity;
 import com.sdm.master.request.ChangePasswordRequest;
 import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
  *
  * @author Htoonlin
  */
+@UserAllowed
 @Path("/me")
 public class ProfileResource extends DefaultResource {
 
@@ -38,65 +39,54 @@ public class ProfileResource extends DefaultResource {
 
     @PostConstruct
     protected void init() {
-        userDAO = new UserDAO(getUserId());
+        userDAO = new UserDAO(this);
     }
 
-    @RolesAllowed("user")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getProfile() throws Exception {
+    public IBaseResponse getProfile() {
         DefaultResponse response = this.validateCache();
         // Cache validation
         if (response != null) {
             return response;
         }
 
-        UserEntity user = userDAO.fetchById(getUserId());
+        UserEntity user = userDAO.fetchById(getCurrentUserID());
         if (user == null) {
-            MessageModel message = new MessageModel(204, "Invalid User", "There is no user. (or) User is not active.");
-            return new DefaultResponse<>(message);
+            throw new NullPointerException("There is no user. (or) User is not active.");
         }
-        response = new DefaultResponse<UserEntity>(user);
+
+        response = new DefaultResponse<>(user);
         response.setHeaders(this.buildCache());
         return response;
     }
 
-    @RolesAllowed("user")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public IBaseResponse setProfile(@Valid UserEntity request) throws Exception {
+    public IBaseResponse setProfile(@Valid UserEntity request) {
         try {
-            UserEntity currentUser = userDAO.fetchById(getUserId());
+            UserEntity currentUser = userDAO.fetchById(getCurrentUserID());
             if (currentUser == null) {
-                MessageModel message = new MessageModel(204, "Invalid User",
-                        "There is no user. (or) User is not active.");
-                return new DefaultResponse<>(message);
+                throw new NullPointerException("There is no user. (or) User is not active.");
             }
-            /*
-            request.setPassword(currentUser.getPassword());
-            request.setuPassword(currentUser.getuPassword());
-            request.setEmail(currentUser.getEmail());
-            request.setFacebookId(currentUser.getFacebookId());
-            request.setUserName(currentUser.getUserName());
-             */
-            currentUser.setDisplayName(request.getDisplayName());
 
+            currentUser.setDisplayName(request.getDisplayName());
             currentUser = userDAO.update(currentUser, true);
+
             this.modifiedResource();
-            return new DefaultResponse<UserEntity>(currentUser);
-        } catch (Exception e) {
+            return new DefaultResponse<>(currentUser);
+        } catch (NullPointerException e) {
             LOG.error(e);
             throw e;
         }
     }
 
-    @RolesAllowed("user")
     @Path("changePassword")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse changePassword(ChangePasswordRequest request) throws Exception {
+    public IBaseResponse changePassword(ChangePasswordRequest request) {
         try {
             MessageModel message = new MessageModel(202, "Changed password",
                     "We updated the new password on your request successfully.");
@@ -104,9 +94,8 @@ public class ProfileResource extends DefaultResource {
             String oldPassword = SecurityManager.hashString(request.getOldPassword());
             UserEntity user = userDAO.userAuth(request.getUser(), oldPassword);
 
-            if (user == null || user.getId() != getUserId()) {
-                message = new MessageModel(204, "Invalid request", "There is no user (or) old password is wrong. Pls try again.");
-                return new DefaultResponse<>(message);
+            if (user == null || user.getId() != getCurrentUserID()) {
+                throw new NullPointerException("There is no user (or) old password is wrong. Pls try again.");
             }
 
             String newPassword = SecurityManager.hashString(request.getNewPassword());
@@ -114,7 +103,7 @@ public class ProfileResource extends DefaultResource {
             userDAO.update(user, true);
             this.modifiedResource();
             return new DefaultResponse<>(message);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             LOG.error(e);
             throw e;
         }

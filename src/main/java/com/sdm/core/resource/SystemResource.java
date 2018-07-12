@@ -30,7 +30,7 @@ public class SystemResource extends DefaultResource {
     @PermitAll
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse welcome() throws Exception {
+    public IBaseResponse welcome(){
         DefaultResponse response = this.validateCache();
         if (response != null) {
             return response;

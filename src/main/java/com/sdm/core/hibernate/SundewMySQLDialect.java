@@ -5,19 +5,37 @@
  */
 package com.sdm.core.hibernate;
 
-import org.hibernate.dialect.MySQL57InnoDBDialect;
-import org.hibernate.dialect.function.SQLFunctionTemplate;
-import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.dialect.InnoDBStorageEngine;
+import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.MySQLStorageEngine;
 
 /**
  *
  * @author Htoonlin
  */
-public class SundewMySQLDialect extends MySQL57InnoDBDialect {
+public class SundewMySQLDialect extends MySQLDialect {
 
     public SundewMySQLDialect() {
         super();
-        registerFunction("regexp", new SQLFunctionTemplate(StandardBasicTypes.INTEGER, "?1 REGEXP ?2"));
     }
 
+    @Override
+    protected MySQLStorageEngine getDefaultMySQLStorageEngine() {
+        return InnoDBStorageEngine.INSTANCE;
+    }
+
+    @Override
+    protected String getEngineKeyword() {
+        //Default is type. It is invalid code in mysql.
+        return "ENGINE";
+    }
+
+    @Override
+    public String[] getCreateCatalogCommand(String catalogName) {
+        //Default create database
+        String query = "CREATE DATABASE " + catalogName;
+        //Add charset to support emoji and other extra unicode text.
+        query += " DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci";
+        return new String[] { query };
+    }
 }

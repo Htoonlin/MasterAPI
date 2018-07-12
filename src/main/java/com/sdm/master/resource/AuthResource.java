@@ -5,13 +5,13 @@
  */
 package com.sdm.master.resource;
 
-import com.sdm.Constants;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sdm.core.Globalizer;
-import com.sdm.core.Setting;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.exception.InvalidRequestException;
 import com.sdm.core.resource.DefaultResource;
+import com.sdm.core.resource.UserAllowed;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.model.MessageModel;
@@ -28,12 +28,12 @@ import com.sdm.master.request.FacebookAuthRequest;
 import com.sdm.master.request.RegistrationRequest;
 import com.sdm.master.util.AuthMailSend;
 import eu.bitwalker.useragentutils.UserAgent;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -47,7 +47,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.log4j.Logger;
 
 /**
  * REST Web Service
@@ -57,33 +56,11 @@ import org.apache.log4j.Logger;
 @Path("auth")
 public class AuthResource extends DefaultResource {
 
-    private static final Logger LOG = Logger.getLogger(AuthResource.class.getName());
-
     @Inject
     private ITemplateManager templateManager;
 
     @Inject
     private IMailManager mailManager;
-
-    private UserDAO userDao;
-
-    private int getFailed() {
-        try {
-            return (int) getHttpSession().getAttribute(Constants.SessionKey.FAILED_COUNT);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    private int blockTime() {
-        int seconds = getHttpSession().getMaxInactiveInterval() * 2;
-        return (seconds / 60);
-    }
-
-    @PostConstruct
-    public void init() {
-        userDao = new UserDAO(getUserId());
-    }
 
     @HeaderParam("user-agent")
     private String userAgentString;
@@ -93,50 +70,39 @@ public class AuthResource extends DefaultResource {
         return userAgent.getOperatingSystem().getName();
     }
 
-    private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws Exception {
+    private IBaseResponse authProcess(AuthRequest request, boolean cleanToken) throws SQLException {
+        UserDAO userDao = new UserDAO(this);
         try {
-            MessageModel message = new MessageModel(401, "Invalid!",
-                    "Opp! Request email or password is something wrong");
-            int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
-            if (getFailed() >= limit) {
-                message = new MessageModel(401, "Blocked!",
-                        "Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
-            } else {
-                UserEntity authUser = userDao.userAuth(request.getUser(), request.getCryptPassword());
-
-                if (authUser != null && authUser.getStatus() == UserEntity.ACTIVE && request.isAuth(authUser)) {
-                    userDao.beginTransaction();
-                    TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
-                    if (cleanToken) {
-                        tokenDAO.cleanToken(authUser.getId());
-                    }
-                    TokenEntity authToken = tokenDAO.generateToken(authUser.getId(), request.getDeviceId(),
-                            this.getDeviceOS());
-
-                    // Generate and store JWT
-                    String token = authToken.generateJWT(userAgentString);
-                    getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
-
-                    authUser.setCurrentToken(token);
-                    userDao.commitTransaction();
-
-                    // Reset failed count
-                    getHttpSession().setAttribute(Constants.SessionKey.FAILED_COUNT, 0);
-
-                    return new DefaultResponse<UserEntity>(authUser);
-                }
+            UserEntity authUser = userDao.userAuth(request.getUser(), request.getCryptPassword());
+            if (authUser == null || authUser.getStatus() != UserEntity.ACTIVE || !request.isAuth(authUser)) {
+                throw new InvalidRequestException("request",
+                        "Opp! Request email or password is something wrong",
+                        request);
             }
-            // Increase failed count
-            getHttpSession().setAttribute(Constants.SessionKey.FAILED_COUNT, getFailed() + 1);
-            return new DefaultResponse<>(message);
-        } catch (Exception e) {
+
+            userDao.beginTransaction();
+            TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), this);
+            if (cleanToken) {
+                tokenDAO.cleanToken(authUser.getId());
+            }
+            TokenEntity authToken = tokenDAO.generateToken(authUser.getId(), request.getDeviceId(),
+                    this.getDeviceOS());
+
+            // Generate and store JWT
+            String token = authToken.generateJWT(userAgentString);
+
+            authUser.setCurrentToken(token);
+            userDao.commitTransaction();
+
+            return new DefaultResponse<>(authUser);
+        } catch (SQLException e) {
             userDao.rollbackTransaction();
-            LOG.error(e);
+            getLogger().error(e);
             throw e;
         }
     }
 
-    @RolesAllowed("user")
+    @UserAllowed
     @POST
     @Path("clean")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -150,45 +116,34 @@ public class AuthResource extends DefaultResource {
     @Path("facebook")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public IBaseResponse facebookAuth(@Valid FacebookAuthRequest request) throws Exception {
-
-        // Validate failed count
-        int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
-        if (getFailed() >= limit) {
-            MessageModel message = new MessageModel(401, "Blocked!",
-                    "Sorry! Server blocked you. You need to wait " + blockTime() + " minutes.");
-            return new DefaultResponse<>(message);
-        }
-
+    public IBaseResponse facebookAuth(@Valid FacebookAuthRequest request) throws SQLException {
+        UserDAO userDao = new UserDAO(this);
         try {
             userDao.beginTransaction();
 
-            LOG.info("requesting to facebook by token.");
+            getLogger().info("requesting to facebook by token.");
             AuthService facebookAuth = new AuthService(request.getAccessToken(), userDao);
             UserEntity userEntity = facebookAuth.authByFacebook();
-            LOG.info("Finished request to facebook by token.");
+            getLogger().info("Finished request to facebook by token.");
 
             if (userEntity == null) {
-                // Increase failed count
-                getHttpSession().setAttribute(Constants.SessionKey.FAILED_COUNT, getFailed() + 1);
-                MessageModel message = new MessageModel(401, "Invalid!",
-                        "Opp! Request email or password is something wrong");
-                return new DefaultResponse<>(message);
+                throw new InvalidRequestException("request",
+                        "Opp! Request email or password is something wrong",
+                        request);
             }
 
-            TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
+            TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), this);
             TokenEntity authToken = tokenDAO.generateToken(userEntity.getId(), request.getDeviceId(),
                     this.getDeviceOS());
 
             // Generate and store JWT
             String token = authToken.generateJWT(userAgentString);
-            getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
 
             userEntity.setCurrentToken(token);
             userDao.commitTransaction();
-            return new DefaultResponse<UserEntity>(userEntity);
-        } catch (Exception ex) {
-            LOG.error(ex);
+            return new DefaultResponse<>(userEntity);
+        } catch (SQLException ex) {
+            getLogger().error(ex);
             userDao.rollbackTransaction();
             throw ex;
         }
@@ -198,8 +153,8 @@ public class AuthResource extends DefaultResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse authWithEmail(@Valid AuthRequest request, @HeaderParam("user-agent") String userAgent)
-            throws Exception {
+    public IBaseResponse authWithEmail(@Valid AuthRequest request,
+            @HeaderParam("user-agent") String userAgent) throws Exception {
         return this.authProcess(request, false);
     }
 
@@ -208,51 +163,43 @@ public class AuthResource extends DefaultResource {
     @Path("register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse userRegistration(@Valid RegistrationRequest request) throws Exception {
-        try {
-            InvalidRequestException invalidRequest = new InvalidRequestException();
-
-            //Check user by user name
-            UserEntity user = userDao.checkUser(request.getUserName());
-            if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
-                invalidRequest.addError("email", "Sorry! someone already registered with this username",
-                        request.getUserName());
-                throw invalidRequest;
-            }
-
-            //Check user by user email
-            user = userDao.checkUser(request.getEmail());
-            if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-                invalidRequest.addError("email", "Sorry! someone already registered with this email",
-                        request.getEmail());
-                throw invalidRequest;
-            }
-
-            String password = SecurityManager.hashString(request.getPassword());
-            user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(), password,
-                    true, UserEntity.PENDING);
-            userDao.insert(user, true);
-
-            if (user.hasEmail()) {
-                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-                mailSend.activateLink(user, userAgentString);
-            }
-
-            MessageModel message = new MessageModel(200, "Registration Success",
-                    "Thank you for your registration. Pls check your mail for activation.");
-            
-            return new DefaultResponse<>(message);
-        } catch (Exception e) {
-            LOG.error(e);
-            throw e;
+    public IBaseResponse userRegistration(@Valid RegistrationRequest request) throws JsonProcessingException {
+        UserDAO userDao = new UserDAO(this);
+        //Check user by user name
+        UserEntity user = userDao.checkUser(request.getUserName());
+        if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
+            throw new InvalidRequestException("email", "Sorry! someone already registered with this username",
+                    request.getUserName());
         }
+
+        //Check user by user email
+        user = userDao.checkUser(request.getEmail());
+        if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+            throw new InvalidRequestException("email", "Sorry! someone already registered with this email",
+                    request.getEmail());
+        }
+
+        String password = SecurityManager.hashString(request.getPassword());
+        user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(), password,
+                true, UserEntity.PENDING);
+        userDao.insert(user, true);
+
+        if (user.hasEmail()) {
+            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+            mailSend.activateLink(user, userAgentString);
+        }
+
+        MessageModel message = new MessageModel(200, "Registration Success",
+                "Thank you for your registration.");
+
+        return new DefaultResponse<>(message);
     }
 
     @PermitAll
     @GET
     @Path("activate")
     @Produces(MediaType.TEXT_HTML)
-    public Response linkActivation(@DefaultValue("") @QueryParam("token") String request) throws Exception {
+    public Response linkActivation(@DefaultValue("") @QueryParam("token") String request) {
 
         Map<String, Object> data = new HashMap<>();
         data.put("current_year", Globalizer.getDateString("yyyy", new Date()));
@@ -272,8 +219,8 @@ public class AuthResource extends DefaultResource {
                 data.put("message",
                         "<p class=\"text-warning\">Sorry! Your activation token is <strong>Invalid.</strong></p>");
             }
-        } catch (Exception e) {
-            LOG.error(e);
+        } catch (IOException | SQLException e) {
+            getLogger().error(e);
             data.put("title", "SERVER ERROR");
             data.put("message", "<p class=\"text-danger\">" + e.getLocalizedMessage() + "</p>");
         }
@@ -287,21 +234,21 @@ public class AuthResource extends DefaultResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse otpActivation(@Valid ActivateRequest request) throws Exception {
+    public IBaseResponse otpActivation(@Valid ActivateRequest request) throws JsonProcessingException, SQLException {
+        UserDAO userDao = new UserDAO(this);
         try {
             UserEntity user = userDao.checkToken(request.getEmail(), request.getToken());
             if (user == null) {
-                MessageModel message = new MessageModel(204, "No Data", "There is no data for your request.");
-                return new DefaultResponse<>(message);
+                throw new NullPointerException("There is no data for your request.");
             }
 
             if (user.getOtpExpired().before(new Date())) {
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.activateLink(user, userAgentString);
                 userDao.update(user, true);
-                MessageModel message = new MessageModel(400, "Token Expired",
-                        "Sorry! Your token has expired. We send new token to your email.");
-                return new DefaultResponse<>(message);
+                throw new InvalidRequestException("token",
+                        "Sorry! Your token has expired. We send new token to your email.",
+                        request.getToken());
             }
 
             userDao.beginTransaction();
@@ -309,19 +256,18 @@ public class AuthResource extends DefaultResource {
             user.setOtpExpired(null);
             user.setStatus(UserEntity.ACTIVE);
             userDao.update(user, false);
-            TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), getUserId());
+            TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), this);
             TokenEntity authToken = tokenDAO.generateToken(user.getId(), request.getDeviceId(), this.getDeviceOS());
 
             // Generate and store JWT
             String token = authToken.generateJWT(userAgentString);
-            getHttpSession().setAttribute(Constants.SessionKey.USER_TOKEN, token);
 
             user.setCurrentToken(token);
             userDao.commitTransaction();
-            return new DefaultResponse<UserEntity>(user);
-        } catch (Exception e) {
+            return new DefaultResponse<>(user);
+        } catch (JsonProcessingException | SQLException e) {
             userDao.rollbackTransaction();
-            LOG.error(e);
+            getLogger().error(e);
             throw e;
         }
     }
@@ -331,36 +277,36 @@ public class AuthResource extends DefaultResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse resetPassword(@Valid ChangePasswordRequest request) throws Exception {
+    public IBaseResponse resetPassword(@Valid ChangePasswordRequest request) throws JsonProcessingException {
+        UserDAO userDao = new UserDAO(this);
+
         try {
-            MessageModel message = new MessageModel(400, "Invalid!", "Sorry! Requested token is invalid or expired.");
             String token = request.getToken();
             UserEntity user = userDao.checkToken(request.getUser(), request.getToken());
-
             if (user == null) {
-                message = new MessageModel(204, "No Data", "There is no data for your request.");
-                return new DefaultResponse<>(message);
+                throw new NullPointerException("There is no data for your request.");
             }
 
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
                 AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
                 mailSend.forgetPasswordLink(user);
                 userDao.update(user, true);
-                message = new MessageModel(400, "Token Expired",
-                        "Sorry! Your token has expired. We send new link to your email.");
-            } else {
-                String newPassword = SecurityManager.hashString(request.getNewPassword());
-
-                user.setOtpExpired(null);
-                user.setOtpToken(null);
-                user.setPassword(newPassword);
-                userDao.update(user, true);
-                message = new MessageModel(202, "OK", "We updated the new password on your request successfully.");
+                throw new InvalidRequestException("token",
+                        "Sorry! Your token has expired. We send new token to your email.",
+                        request.getToken());
             }
 
+            String newPassword = SecurityManager.hashString(request.getNewPassword());
+
+            user.setOtpExpired(null);
+            user.setOtpToken(null);
+            user.setPassword(newPassword);
+            userDao.update(user, true);
+            MessageModel message = new MessageModel(202, "OK", "We updated the new password on your request successfully.");
+
             return new DefaultResponse<>(message);
-        } catch (Exception e) {
-            LOG.error(e);
+        } catch (JsonProcessingException e) {
+            getLogger().error(e);
             throw e;
         }
     }
@@ -370,26 +316,25 @@ public class AuthResource extends DefaultResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public IBaseResponse forgetPassword(@PathParam("email") String email) throws Exception {
-        MessageModel message;
+    public IBaseResponse forgetPassword(@PathParam("email") String email) throws JsonProcessingException {
+        UserDAO userDao = new UserDAO(this);
         try {
             if (!mailManager.checkMail(email)) {
-                message = new MessageModel(400, "Invalid!", "Invalid email address.");
-            } else {
-                UserEntity user = userDao.checkUser(email);
-                if (user == null) {
-                    message = new MessageModel(400, "Invalid!", "Invalid email address");
-                } else {
-
-                    AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-                    mailSend.forgetPasswordLink(user);
-                    userDao.update(user, true);
-                    message = new MessageModel(201, "Send Mail", "We send the reset password link to your e-mail.");
-                }
+                throw new InvalidRequestException("email", "Invalid email address.", email);
             }
+
+            UserEntity user = userDao.checkUser(email);
+            if (user == null) {
+                throw new InvalidRequestException("email", "Invalid email address.", email);
+            }
+
+            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+            mailSend.forgetPasswordLink(user);
+            userDao.update(user, true);
+            MessageModel message = new MessageModel(201, "Send Mail", "We send the reset password link to your e-mail.");
             return new DefaultResponse<>(message);
-        } catch (Exception e) {
-            LOG.error(e);
+        } catch (JsonProcessingException e) {
+            getLogger().error(e);
             throw e;
         }
     }

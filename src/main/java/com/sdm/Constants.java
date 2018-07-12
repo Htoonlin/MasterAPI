@@ -191,11 +191,6 @@ public interface Constants {
         String TOKEN_CHARS = "com.sdm.security.token_chars";
 
         /**
-         * How many time user can try auth by token.
-         */
-        String AUTH_FAILED_COUNT = "com.sdm.security.auth_failed_count";
-
-        /**
          * Display date time format.
          */
         String DATE_TIME_FORMAT = "com.sdm.format.date_time";
@@ -229,11 +224,6 @@ public interface Constants {
          * CORS Allow Headers.
          */
         String CORS_ALLOW_HEADERS = "com.sdm.cors.headers";
-        
-        /**
-         * Supported mail type => webmail, mailgun
-         */
-        String MAIL_TYPE = "com.sdm.mail";
 
         /**
          * Web mail host name. example => smtp.gmail.com
@@ -259,25 +249,6 @@ public interface Constants {
          */
         String MAIL_PASSWORD = "com.sdm.mail.password";
 
-        /**
-         * Mailgun private key to access mailgun server.
-         */
-        String MAILGUN_PRI_KEY = "com.sdm.mailgun.private_key";
-
-        /**
-         * Mailgun public key to access mailgun server.
-         */
-        String MAILGUN_PUB_KEY = "com.sdm.mailgun.public_key";
-
-        /**
-         * Mailgun domain name for mail.
-         */
-        String MAILGUN_DOMAIN = "com.sdm.mailgun.domain";
-
-        /**
-         * Mailgun default mail sender.
-         */
-        String MAILGUN_DEFAULT_MAIL = "com.sdm.mailgun.default_mail";
 
         /**
          * Facebook api_id for OAuth
@@ -291,30 +262,6 @@ public interface Constants {
     }
 
     /**
-     * Http Sesssion storage keys
-     *
-     * @author Htoonlin
-     *
-     */
-    public interface SessionKey {
-
-        /**
-         * HttpSession key for auth failed count.
-         */
-        String FAILED_COUNT = "com.sdm.session.auth_failed_count";
-
-        /**
-         * HttpSession key for current user.
-         */
-        String USER_ID = "com.sdm.session.auth_user_id";
-
-        /**
-         * HttpSession key for current token.
-         */
-        String USER_TOKEN = "com.sdm.session.user_token";
-    }
-
-    /**
      * It will use to create user upload folder and JWT Key subject.
      */
     String USER_PREFIX = "user-";
@@ -323,5 +270,10 @@ public interface Constants {
      * Prefix of Authorization Token String
      */
     String AUTH_TYPE = "Bearer";
+    
+    /**
+     * Requested Property for User ID
+     */
+    String REQUEST_USER = "com.sdm.request.USER";
 
 }

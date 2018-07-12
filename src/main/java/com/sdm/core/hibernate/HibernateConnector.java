@@ -24,7 +24,7 @@ public final class HibernateConnector {
 
     public static synchronized void init() {
         LOG.info("Creating new hibernate instance....");
-        StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
+        final StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
         try {
             mainFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
             instance_count++;

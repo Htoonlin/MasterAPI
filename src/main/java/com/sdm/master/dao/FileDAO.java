@@ -9,8 +9,8 @@ import com.sdm.Constants;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.exception.InvalidRequestException;
+import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.hibernate.dao.RestDAO;
-import com.sdm.core.response.model.ErrorModel;
 import com.sdm.master.entity.FileEntity;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,12 +34,12 @@ public class FileDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(FileDAO.class.getName());
 
-    public FileDAO(int userId) {
-        super(FileEntity.class.getName(), userId);
+    public FileDAO(IUserListener listener) {
+        super(FileEntity.class.getName(), listener);
     }
 
-    public FileDAO(Session session, int userId) {
-        super(session, FileEntity.class.getName(), userId);
+    public FileDAO(Session session, IUserListener listener) {
+        super(session, FileEntity.class.getName(), listener);
     }
 
     @Override
@@ -67,8 +67,8 @@ public class FileDAO extends RestDAO {
         File saveFile = this.generateFile(entity.getOwnerId(), entity.getExtension());
 
         // Get File Type from saved file.
-        if(entity.getType() == null || entity.getType().length() <= 0){
-            final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();    
+        if (entity.getType() == null || entity.getType().length() <= 0) {
+            final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
             String type = fileTypeMap.getContentType(saveFile);
             entity.setType(type);
         }
@@ -95,11 +95,10 @@ public class FileDAO extends RestDAO {
     @Override
     public <T extends Serializable> T insert(T requestEntity, boolean autoCommit) {
         FileEntity entity = (FileEntity) requestEntity;
-        InvalidRequestException errorResponse = new InvalidRequestException();
         if (entity.getExternalURL() == null || entity.getExternalURL().isEmpty()) {
-            errorResponse.addError("external_url",
-                    new ErrorModel("External URL can't be blank. Otherwise, try to use file upload path.", ""));
-            throw errorResponse;
+            throw new InvalidRequestException("external_url",
+                "External URL can't be blank. Otherwise, try to use file upload path.",
+                "");
         }
 
         entity.setStatus(FileEntity.EXTERNAL);

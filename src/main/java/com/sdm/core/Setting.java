@@ -126,11 +126,22 @@ public final class Setting implements Constants.Setting {
             }
         }
 
-        this.settingFile = new File(this.settingProps.get(ROOT_DIRECTORY) + SETTING_FILE);
+        this.settingFile = new File(this.settingProps.getProperty(ROOT_DIRECTORY, "/var/www/") + SETTING_FILE);
         if (this.settingFile.exists()) {
             this.loadSetting();
         } else {
             LOG.info("Generating system properites ....");
+            String uploadDir = this.settingProps.getProperty(UPLOAD_DIRECTORY, "");
+            if(uploadDir == null || uploadDir.isEmpty()){
+                uploadDir = this.settingFile.getParent() + "/upload/";
+                this.settingProps.setProperty(UPLOAD_DIRECTORY, uploadDir);
+            }
+            //If upload directory is not exists, create directories.
+            File uploadDirPath = new File(uploadDir);
+            if(!uploadDirPath.exists()){
+                uploadDirPath.mkdirs();
+            }
+            
             this.settingProps.setProperty(JWT_KEY, SecurityManager.generateJWTKey());
             this.settingProps.setProperty(ENCRYPT_SALT, SecurityManager.generateSalt());
             this.settingProps.setProperty(FB_MESSENGER_TOKEN, Globalizer.generateToken(64));

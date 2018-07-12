@@ -29,6 +29,7 @@ public class Globalizer {
     public static ObjectMapper jsonMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);

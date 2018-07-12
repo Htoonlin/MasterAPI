@@ -8,8 +8,8 @@ package com.sdm.core.filter;
 import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
+import com.sdm.core.resource.UserAllowed;
 import com.sdm.core.response.model.MessageModel;
-import com.sdm.core.util.SecurityManager;
 import io.jsonwebtoken.ClaimJwtException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,9 +23,7 @@ import java.util.List;
 import javax.annotation.Priority;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -47,49 +45,28 @@ import org.apache.log4j.Logger;
 public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
     private static final Logger LOG = Logger.getLogger(AuthorizationRequestFilter.class);
-
+    
     @Context
     private ResourceInfo resourceInfo;
 
     @Inject
-    private HttpSession httpSession;
-
-    @Inject
     private IAccessManager accessManager;
-
-    private int getFailed() {
-        try {
-            return (int) httpSession.getAttribute(Constants.SessionKey.FAILED_COUNT);
-        } catch (Exception e) {
-            LOG.error(e);
-            return 0;
-        }
-    }
-
-    private int blockTime() {
-        int seconds = httpSession.getMaxInactiveInterval() * 2;
-        return (seconds / 60);
-    }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         Method method = resourceInfo.getResourceMethod();
         Class<?> resourceClass = resourceInfo.getResourceClass();
         
-        //Skip Data Permission if Resource Permission is public.
-        if (resourceClass.isAnnotationPresent(PermitAll.class)) {
+        //Skip Data Permission if Resource Permission is public or there is no AccessManager
+        if (resourceClass.isAnnotationPresent(PermitAll.class) || accessManager == null) {
+            //Auth Success
+            requestContext.setProperty(Constants.REQUEST_USER, 0);
             return;
         }
 
         if (!method.isAnnotationPresent(PermitAll.class)) {
-            int limit = Setting.getInstance().getInt(Setting.AUTH_FAILED_COUNT, "3");
-            if (this.getFailed() >= limit) {
-                requestContext.abortWith(buildResponse(403,
-                        "Sorry! Server blocked your request. You need to wait " + blockTime() + " minutes."));
-                return;
-            }
-
             if (method.isAnnotationPresent(DenyAll.class)) {
+                //Deny all Auth
                 requestContext.abortWith(errorResponse(403));
                 return;
             }
@@ -99,18 +76,14 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
             final List<String> userAgents = headers.get(HttpHeaders.USER_AGENT);
 
             if (authorization == null || authorization.isEmpty() || userAgents == null || userAgents.isEmpty()) {
+                //There is not Auth
                 requestContext.abortWith(errorResponse(401));
-                return;
-            }
-
-            if (accessManager == null) {
-                requestContext.abortWith(buildResponse(500, "AccessManager Interface is null or invalid."));
                 return;
             }
 
             try {
                 // Clean Token
-                String settingKey = Setting.getInstance().get(Setting.JWT_KEY, SecurityManager.generateJWTKey());
+                String settingKey = Setting.getInstance().get(Setting.JWT_KEY);
                 String tokenString = authorization.get(0).substring(Constants.AUTH_TYPE.length()).trim();
                 byte[] jwtKey = Base64.getDecoder().decode(settingKey);
 
@@ -119,28 +92,38 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
                             .parseClaimsJws(tokenString).getBody();
 
                     if (!accessManager.validateToken(authorizeToken)) {
-                        requestContext.abortWith(errorResponse(403));
-                        return;
-                    }
-                    // Separate UserID and Save
-                    int userId = Integer
-                            .parseInt(authorizeToken.getSubject().substring(Constants.USER_PREFIX.length()).trim());
-                    
-                    RolesAllowed roles = resourceClass.getAnnotation(RolesAllowed.class);
-                    if (roles != null) {
-                        //Skip Data Permission if Resource Permission is user.
-                        for (String role : roles.value()) {
-                            if (role.equalsIgnoreCase("user")) {
-                                this.saveUserId(userId);
-                                return;
-                            }
-                        }
-                    } else if (!accessManager.checkPermission(authorizeToken, method, requestContext.getMethod(),resourceClass)) {
+                        //Auth Failed 
                         requestContext.abortWith(errorResponse(403));
                         return;
                     }
                     
-                    this.saveUserId(userId);
+                    int userId = Integer.parseInt(authorizeToken.getSubject().substring(Constants.USER_PREFIX.length()).trim());
+                    
+                    //Check @UserAllowed in Class
+                    UserAllowed userAllowed = resourceClass.getAnnotation(UserAllowed.class);
+                    if(userAllowed != null && userAllowed.value()){
+                        //Skip Permission for User Allowed Class
+                        requestContext.setProperty(Constants.REQUEST_USER, userId);
+                        return;
+                    }
+                    
+                    //Check @UserAllowed in Method
+                    userAllowed = resourceClass.getAnnotation(UserAllowed.class);
+                    if(userAllowed != null && userAllowed.value()){
+                        //Skip Permission for User Allowed Method
+                        requestContext.setProperty(Constants.REQUEST_USER, userId);
+                        return;
+                    }
+                    
+                    //Check permission from DB
+                    if(!accessManager.checkPermission(authorizeToken, method, requestContext.getMethod(), resourceClass)){
+                        //Validate dynamic Permission failed
+                        requestContext.abortWith(errorResponse(403));
+                        return;
+                    }
+                    
+                    requestContext.setProperty(Constants.REQUEST_USER, userId);
+                    
                 } catch (ClaimJwtException ex) {
                     requestContext.abortWith(buildResponse(403, ex.getLocalizedMessage()));
                 }
@@ -154,7 +137,6 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
     private Response errorResponse(int code) {
         String description = "";
-        this.httpSession.setAttribute(Constants.SessionKey.FAILED_COUNT, getFailed() + 1);
         switch (code) {
             case 401:
                 description = "Hmmm! Your authorization is failed. If you are trying to hack server, don't do it again.";
@@ -169,10 +151,5 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
     private Response buildResponse(int code, String description) {
         MessageModel message = new MessageModel(code, HttpStatus.getStatusText(code), description);
         return Response.status(code).entity(message).build();
-    }
-
-    private void saveUserId(int userId) {
-        this.httpSession.setAttribute(Constants.SessionKey.FAILED_COUNT, 0);
-        this.httpSession.setAttribute(Constants.SessionKey.USER_ID, userId);
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import com.sdm.core.hibernate.audit.IUserListener;
 
 /**
  *
@@ -26,13 +27,13 @@ public class RestDAO extends DefaultDAO {
 
     protected final String ENTITY_NAME;
 
-    public RestDAO(String entityName, int userId) {
-        super(userId);
+    public RestDAO(String entityName, IUserListener listener) {
+        super(listener);
         this.ENTITY_NAME = entityName;
     }
 
-    public RestDAO(Session session, String entityName, int userId) {
-        super(session, userId);
+    public RestDAO(Session session, String entityName, IUserListener listener) {
+        super(session, listener);
         this.ENTITY_NAME = entityName;
     }
 

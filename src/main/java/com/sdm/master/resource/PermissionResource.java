@@ -5,21 +5,7 @@
  */
 package com.sdm.master.resource;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.log4j.Logger;
-import org.glassfish.jersey.server.model.Resource;
-
 import com.sdm.ApplicationConfig;
-import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.core.resource.RestResource;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
@@ -29,9 +15,18 @@ import com.sdm.core.response.model.RouteModel;
 import com.sdm.master.dao.PermissionDAO;
 import com.sdm.master.entity.PermissionEntity;
 import com.sdm.master.request.PermissionRouteRequest;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import org.glassfish.jersey.server.model.Resource;
 
 /**
  *
@@ -39,22 +34,6 @@ import javax.ws.rs.POST;
  */
 @Path("permissions")
 public class PermissionResource extends RestResource<PermissionEntity, Long> {
-
-    private static final Logger LOG = Logger.getLogger(PermissionResource.class.getName());
-
-    private PermissionDAO mainDAO;
-
-    @PostConstruct
-    protected void init() {
-        if (this.mainDAO == null) {
-            mainDAO = new PermissionDAO(getUserId());
-        }
-    }
-
-    @Override
-    protected RestDAO getDAO() {
-        return this.mainDAO;
-    }
 
     @GET
     @Path("/routes")
@@ -66,7 +45,7 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
             Resource resource = Resource.from(clsResource);
             if (resource != null) {
                 String resourceName = clsResource.getName();
-                List<RouteModel> routes = collectRoute(resource, "/",clsResource);
+                List<RouteModel> routes = collectRoute(resource, "/", clsResource);
                 resources.put(resourceName, routes);
             }
         }
@@ -76,20 +55,21 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
     @GET
     @Path("/role/{roleId:\\d+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws Exception {
+    public IBaseResponse getPermissionsByRole(@PathParam("roleId") int roleId) throws SQLException {
         DefaultResponse response = this.validateCache();
         if (response != null) {
             return response;
         }
 
         try {
-            List<PermissionEntity> permissions = mainDAO.fetchByRole(roleId);
-            ListModel<PermissionEntity> content = new ListModel<PermissionEntity>(permissions);
+            PermissionDAO permissionDAO = new PermissionDAO(getDAO().getSession(), this);
+            List<PermissionEntity> permissions = permissionDAO.fetchByRole(roleId);
+            ListModel<PermissionEntity> content = new ListModel<>(permissions);
             response = new DefaultResponse<>(content);
             response.setHeaders(this.buildCache());
             return response;
-        } catch (Exception e) {
-            LOG.error(e);
+        } catch (SQLException e) {
+            getLogger().error(e);
             throw e;
         }
     }
@@ -126,17 +106,12 @@ public class PermissionResource extends RestResource<PermissionEntity, Long> {
             getDAO().commitTransaction();
             this.modifiedResource();
 
-                ListModel<PermissionEntity> content = new ListModel<>(processedList);
+            ListModel<PermissionEntity> content = new ListModel<>(processedList);
             return new DefaultResponse(201, ResponseType.SUCCESS, content);
         } catch (Exception e) {
             getDAO().rollbackTransaction();
-            LOG.error(e);
+            getLogger().error(e);
             throw e;
         }
-    }
-
-    @Override
-    protected Logger getLogger() {
-        return PermissionResource.LOG;
     }
 }

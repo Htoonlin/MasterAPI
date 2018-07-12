@@ -55,7 +55,7 @@ public class BarCodeManager {
 
     public static void createBarcode(File barcodeFile, BarcodeFormat format, String content, int width, int height)
             throws WriterException, IOException {
-        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
+        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
         MultiFormatWriter codeWriter = new MultiFormatWriter();
         BitMatrix byteMatrix = codeWriter.encode(content, format, width, height, hintMap);
@@ -63,7 +63,7 @@ public class BarCodeManager {
     }
 
     public static void createQR(File qrFile, String content, int size) throws WriterException, IOException {
-        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
+        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
         QRCodeWriter codeWriter = new QRCodeWriter();
         BitMatrix byteMatrix = codeWriter.encode(content, BarcodeFormat.QR_CODE, size, size, hintMap);

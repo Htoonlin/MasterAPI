@@ -5,24 +5,19 @@
  */
 package com.sdm;
 
-import com.sdm.core.Setting;
-import com.sdm.core.di.HttpSessionFactory;
 import com.sdm.core.di.IAccessManager;
 import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.resource.SystemResource;
 import com.sdm.core.util.JSPTemplateService;
-import com.sdm.core.util.mail.MailgunService;
 import com.sdm.core.util.mail.WebMailService;
 import com.sdm.master.util.AccessService;
-import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.glassfish.jersey.process.internal.RequestScoped;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
@@ -30,7 +25,7 @@ import org.glassfish.jersey.server.ServerProperties;
  *
  * @author Htoonlin
  */
-@javax.ws.rs.ApplicationPath("api")
+@javax.ws.rs.ApplicationPath("/")
 public class ApplicationConfig extends ResourceConfig {
 
     private static final Logger LOG = Logger.getLogger(ApplicationConfig.class.getName());
@@ -59,9 +54,6 @@ public class ApplicationConfig extends ResourceConfig {
             @Override
             protected void configure() {
                 LOG.info("Loading Dependency Injections....");
-                // Inject HttpSession
-                bindFactory(HttpSessionFactory.class).to(HttpSession.class).proxy(true).proxyForSameScope(false)
-                        .in(RequestScoped.class);
 
                 // Inject DefaultEntity
                 bind(DefaultEntity.class).to(DefaultEntity.class);
@@ -73,12 +65,7 @@ public class ApplicationConfig extends ResourceConfig {
                 bindAsContract(JSPTemplateService.class).to(ITemplateManager.class);
 
                 // Inject MailManager
-                String mailType = Setting.getInstance().get(Setting.MAIL_TYPE, "webmail");
-                if (mailType.equalsIgnoreCase("mailgun")) {
-                    bindAsContract(MailgunService.class).to(IMailManager.class);
-                } else {
-                    bindAsContract(WebMailService.class).to(IMailManager.class);
-                }
+                bindAsContract(WebMailService.class).to(IMailManager.class);
 
                 LOG.info("Successfully loaded Dependency Injections....");
             }

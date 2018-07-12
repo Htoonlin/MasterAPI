@@ -57,7 +57,7 @@ public class RSAManager {
         this.privateKey = keyFactory.generatePrivate(keySpec);
     }
 
-    public String encrypt(String data) throws Exception {
+    public String encrypt(String data)throws Exception {
         byte[] dataToEncrypt = data.getBytes();
         byte[] encryptedData = null;
         if (publicKey == null) {

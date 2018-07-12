@@ -5,6 +5,7 @@
  */
 package com.sdm.master.dao;
 
+import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.UserExtraEntity;
 import java.util.HashMap;
@@ -23,13 +24,13 @@ public class UserExtraDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
 
-    public UserExtraDAO(int userId) {
-        super(UserExtraEntity.class.getName(), userId);
+    public UserExtraDAO(IUserListener listener) {
+        super(UserExtraEntity.class.getName(), listener);
         LOG.info("Start DAO");
     }
 
-    public UserExtraDAO(Session session, int userId) {
-        super(session, UserExtraEntity.class.getName(), userId);
+    public UserExtraDAO(Session session, IUserListener listener) {
+        super(session, UserExtraEntity.class.getName(), listener);
     }
 
     public List<UserExtraEntity> getUserExtraByUser(int id) {

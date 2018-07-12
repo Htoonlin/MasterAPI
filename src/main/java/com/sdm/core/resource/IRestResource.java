@@ -45,7 +45,7 @@ public interface IRestResource<T extends IBaseRequest, PK extends Serializable> 
     @GET
     @Path("all")
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse getAll() throws Exception;
+    public IBaseResponse getAll();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

@@ -84,7 +84,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
     private int id;
 
     @UIStructure(order = 1, label = "E-mail", inputType = UIInputType.email)
-    @Column(name = "email", nullable = false, length = 255)
+    @Column(name = "email", nullable = true, length = 255)
     private String email;
 
     @UIStructure(order = 2, label = "User Name", inputType = UIInputType.text)
@@ -316,22 +316,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
 
         this.extra.add(new UserExtraEntity(this.id, key, value));
     }
-
-    /* 
-    public Map<String, String> getExtra() {
-        return extra;
-    }
-
-    public void setExtra(Map<String, String> extra) {
-        this.extra = extra;
-    }
-
-    public void addExtra(String key, String value) {
-        if (this.extra == null) {
-            this.extra = new HashMap<>();
-        }
-        this.extra.put(key, value);
-    }*/
 
     public String getCurrentToken() {
         return currentToken;

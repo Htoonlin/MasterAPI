@@ -5,6 +5,7 @@
  */
 package com.sdm.master.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sdm.core.request.IBaseRequest;
 import com.sdm.core.util.SecurityManager;
@@ -76,16 +77,18 @@ public class AuthRequest implements IBaseRequest {
         this.password = value;
     }
 
+    @JsonIgnore
     public String getCryptPassword() {
         return SecurityManager.hashString(this.password);
     }
 
+    @JsonIgnore
     public boolean isAuth(UserEntity authUser) {
         if (authUser == null) {
             return false;
         }
         
-        boolean checkUser = authUser.getEmail().equalsIgnoreCase(this.user) || authUser.getUserName().equalsIgnoreCase(this.user);
+        boolean checkUser = authUser.getUserName().equalsIgnoreCase(this.user) || authUser.getEmail().equalsIgnoreCase(this.user);
         
         String cryptPassword = this.getCryptPassword();
         return (checkUser && authUser.getPassword().equals(cryptPassword));

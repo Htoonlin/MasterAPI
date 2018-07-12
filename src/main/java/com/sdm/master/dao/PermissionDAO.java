@@ -5,8 +5,10 @@
  */
 package com.sdm.master.dao;
 
+import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.PermissionEntity;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +23,16 @@ public class PermissionDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(PermissionDAO.class.getName());
 
-    public PermissionDAO(int userId) {
-        super(PermissionEntity.class.getName(), userId);
+    public PermissionDAO(IUserListener listener) {
+        super(PermissionEntity.class.getName(), listener);
     }
 
-    public PermissionDAO(Session session, int userId) {
-        super(session, PermissionEntity.class.getName(), userId);
+    public PermissionDAO(Session session, IUserListener listener) {
+        super(session, PermissionEntity.class.getName(), listener);
     }
 
     @Deprecated
-    public List<PermissionEntity> fetchByRole(int roleId) throws Exception {
+    public List<PermissionEntity> fetchByRole(int roleId) throws SQLException {
         Map<String, Object> params = new HashMap<>();
         params.put("roleId", roleId);
         return (List<PermissionEntity>) this.fetchByNamedQuery("PermissionEntity.GET_BY_ROLE", params);

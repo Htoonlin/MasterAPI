@@ -5,6 +5,7 @@
  */
 package com.sdm.master.dao;
 
+import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.UserEntity;
 import java.util.HashMap;
@@ -19,13 +20,13 @@ public class UserDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
 
-    public UserDAO(int userId) {
-        super(UserEntity.class.getName(), userId);
+    public UserDAO(IUserListener listener) {
+        super(UserEntity.class.getName(), listener);
         LOG.info("Start DAO");
     }
 
-    public UserDAO(Session session, int userId) {
-        super(session, UserEntity.class.getName(), userId);
+    public UserDAO(Session session, IUserListener listener) {
+        super(session, UserEntity.class.getName(), listener);
     }
 
     /**
@@ -39,20 +40,20 @@ public class UserDAO extends RestDAO {
         params.put("user", user);
         return super.fetchOneByNamedQuery("UserEntity.CHECK_USER", params);
     }
-    
-    public UserEntity userAuth(String user, String password){
+
+    public UserEntity userAuth(String user, String password) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("user", user);
-        params.put("password", user);
+        params.put("password", password);
         return super.fetchOneByNamedQuery("UserEntity.AUTH_BY_USER", params);
     }
-    
+
     public UserEntity userAuthByFacebook(String facebookId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("facebookId", facebookId);
         return super.fetchOneByNamedQuery("UserEntity.AUTH_BY_FACEBOOK", params);
     }
-    
+
     public UserEntity checkToken(String email, String token) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("email", email);

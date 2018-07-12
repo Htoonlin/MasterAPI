@@ -17,7 +17,6 @@ import com.sdm.master.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import java.lang.reflect.Method;
 import java.util.Date;
-import javax.annotation.security.RolesAllowed;
 import org.apache.log4j.Logger;
 
 /**
@@ -45,7 +44,7 @@ public class AccessService implements IAccessManager {
         String deviceOS = request.get("device_os").toString();
         int userId = Integer.parseInt(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
 
-        TokenDAO tokenDao = new TokenDAO(userId);
+        TokenDAO tokenDao = new TokenDAO(null);
         try {
             currentToken = tokenDao.fetchById(request.getId());
         } catch (Exception ex) {
@@ -63,7 +62,8 @@ public class AccessService implements IAccessManager {
 
         boolean result = (currentToken.getToken().equalsIgnoreCase(token)
                 && currentToken.getDeviceId().equalsIgnoreCase(deviceId)
-                && currentToken.getDeviceOs().equalsIgnoreCase(deviceOS) && currentToken.getUserId() == userId);
+                && currentToken.getDeviceOs().equalsIgnoreCase(deviceOS)
+                && currentToken.getUserId() == userId);
 
         if (result) {
             currentToken.setLastLogin(new Date());
@@ -86,7 +86,7 @@ public class AccessService implements IAccessManager {
         }
 
         // Check User Status
-        UserDAO userDAO = new UserDAO(authUserId);
+        UserDAO userDAO = new UserDAO(null);
         UserEntity user;
         try {
             user = userDAO.fetchById(authUserId);
@@ -113,29 +113,16 @@ public class AccessService implements IAccessManager {
             return true;
         }
 
-        // Skip Permission for User Methods => user
-        RolesAllowed roles = method.getAnnotation(RolesAllowed.class);
-        if (roles != null) {
-            for (String role : roles.value()) {
-                if (role.equalsIgnoreCase("user")) {
-                    return true;
-                }
-            }
-        }
-
         // Check Permission by User Roles
         //String className = method.getDeclaringClass().getName();
         String className = resourceClass.getName();
-        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), authUserId);
+        PermissionDAO permissionDAO = new PermissionDAO(userDAO.getSession(), null);
         boolean permission = false;
         for (RoleEntity role : user.getRoles()) {
             permission = permissionDAO.checkRole(role.getId(), className, method.getName(), httpMethod);
             if (permission) {
                 break;
             }
-        }
-        if (!permission) {
-            return false;
         }
 
         return true;

@@ -6,8 +6,10 @@
 package com.sdm.master.dao;
 
 import com.sdm.core.Globalizer;
+import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.TokenEntity;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,24 +25,24 @@ public class TokenDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(TokenDAO.class.getName());
 
-    public TokenDAO(int userId) {
-        super(TokenEntity.class.getName(), userId);
+    public TokenDAO(IUserListener listener) {
+        super(TokenEntity.class.getName(), listener);
         LOG.info("Start TokenDAO");
     }
 
-    public TokenDAO(Session session, int userId) {
-        super(session, TokenEntity.class.getName(), userId);
+    public TokenDAO(Session session, IUserListener listener) {
+        super(session, TokenEntity.class.getName(), listener);
     }
 
     @Deprecated
-    public void cleanToken(int userId) throws Exception {
+    public void cleanToken(int userId) throws SQLException {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         super.executeByNamedQuery("TokenEntity.CLEAN_TOKEN", params);
     }
 
     @Deprecated
-    public TokenEntity getTokenByUserInfo(int userId, String deviceId, String deviceOS) throws Exception {
+    public TokenEntity getTokenByUserInfo(int userId, String deviceId, String deviceOS) throws SQLException {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("deviceId", deviceId);
@@ -56,7 +58,7 @@ public class TokenDAO extends RestDAO {
         super.executeByNamedQuery("TokenEntity.UPDATE_EXPIRED_BY_TOKEN", params);
     }
 
-    public TokenEntity generateToken(int userId, String deviceId, String deviceOS) throws Exception {
+    public TokenEntity generateToken(int userId, String deviceId, String deviceOS) throws SQLException {
         boolean isNew = false;
         TokenEntity token = this.getTokenByUserInfo(userId, deviceId, deviceOS);
         if (token == null) {
