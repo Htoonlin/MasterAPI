@@ -4,9 +4,9 @@ This RESTful framework was developed by following:
 - [maven](https://maven.apache.org/) for repository management.
 - [hibernate ORM](http://hibernate.org/) and mysql jdbc for Database.
 
-So, you have to know about these frameworks and libraries.
+So, you have to know about these frameworks and libraries. [Getting Started](#getting_started)
 
-## Version 3.0 Change Log
+## Version 3.0 Changelog
 - Upgrade maven libraries
 - Remove and Reduce 
     - Remove SESSION management to prevent multi session creation 
@@ -33,9 +33,9 @@ public class CustomerResource extends RestResource<CustomerEntity, Integer> {
     }
 }
 ```
+---
 
-
-## Getting started
+## <a name="getting_started"></a>Getting started
 - Clone or download the project from [github](https://github.com/Htoonlin/MasterAPI)
 - Open project in Java IDE such as Eclipse, NetBeans, etc ...
 - Clone following setting files:
