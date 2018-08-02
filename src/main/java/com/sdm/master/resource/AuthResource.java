@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -45,6 +46,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -61,6 +63,9 @@ public class AuthResource extends DefaultResource {
 
     @Inject
     private IMailManager mailManager;
+
+    @Context
+    private HttpServletRequest servletRequest;
 
     @HeaderParam("user-agent")
     private String userAgentString;
@@ -168,7 +173,7 @@ public class AuthResource extends DefaultResource {
         //Check user by user name
         UserEntity user = userDao.checkUser(request.getUserName());
         if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
-            throw new InvalidRequestException("email", "Sorry! someone already registered with this username",
+            throw new InvalidRequestException("username", "Sorry! someone already registered with this username",
                     request.getUserName());
         }
 
@@ -182,12 +187,12 @@ public class AuthResource extends DefaultResource {
         String password = SecurityManager.hashString(request.getPassword());
         user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(), password,
                 true, UserEntity.PENDING);
-        userDao.insert(user, true);
-
         if (user.hasEmail()) {
-            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+            AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
             mailSend.activateLink(user, userAgentString);
         }
+        
+        userDao.insert(user, true);
 
         MessageModel message = new MessageModel(200, "Registration Success",
                 "Thank you for your registration.");
@@ -225,7 +230,7 @@ public class AuthResource extends DefaultResource {
             data.put("message", "<p class=\"text-danger\">" + e.getLocalizedMessage() + "</p>");
         }
 
-        String output = templateManager.buildTemplate("auth-message.jsp", data);
+        String output = templateManager.buildTemplate("auth-message.vm", data);
         return Response.ok(output).build();
     }
 
@@ -243,7 +248,7 @@ public class AuthResource extends DefaultResource {
             }
 
             if (user.getOtpExpired().before(new Date())) {
-                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+                AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
                 mailSend.activateLink(user, userAgentString);
                 userDao.update(user, true);
                 throw new InvalidRequestException("token",
@@ -274,6 +279,49 @@ public class AuthResource extends DefaultResource {
 
     @PermitAll
     @Path("resetPassword")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public IBaseResponse resetPasswordWithToken(@DefaultValue("") @QueryParam("token") String request) throws IOException {
+        UserDAO userDao = new UserDAO(this);
+
+        try {
+            request = SecurityManager.base64Decode(request);
+            ActivateRequest activateRequest = Globalizer.jsonMapper().readValue(request, ActivateRequest.class);
+            UserEntity user = userDao.checkToken(activateRequest.getEmail(), activateRequest.getToken());
+            if (user == null) {
+                throw new NullPointerException("There is no data for your request.");
+            }
+
+            if (!user.getOtpToken().equals(activateRequest.getToken()) || user.getOtpExpired().before(new Date())) {
+                AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
+                mailSend.forgetPasswordLink(user);
+                userDao.update(user, true);
+                throw new InvalidRequestException("token",
+                        "Sorry! Your token has expired. We send new token to your email.",
+                        activateRequest.getToken());
+            }
+
+            String rawPassword = Globalizer.generateToken(12);
+
+            user.setOtpExpired(null);
+            user.setOtpToken(null);
+            user.setPassword(SecurityManager.hashString(rawPassword));
+            AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
+            mailSend.welcomeUser(user, rawPassword, "Created new password!");
+            userDao.update(user, true);
+            
+        } catch (IOException e) {
+            getLogger().error(e);
+            throw e;
+        }
+
+        MessageModel message = new MessageModel(202, "OK", "We created new password and send mail to you.");
+        return new DefaultResponse<>(message);
+    }
+
+    @PermitAll
+    @Path("resetPassword")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -288,7 +336,7 @@ public class AuthResource extends DefaultResource {
             }
 
             if (!user.getOtpToken().equals(token) || user.getOtpExpired().before(new Date())) {
-                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+                AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
                 mailSend.forgetPasswordLink(user);
                 userDao.update(user, true);
                 throw new InvalidRequestException("token",
@@ -328,7 +376,7 @@ public class AuthResource extends DefaultResource {
                 throw new InvalidRequestException("email", "Invalid email address.", email);
             }
 
-            AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
+            AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
             mailSend.forgetPasswordLink(user);
             userDao.update(user, true);
             MessageModel message = new MessageModel(201, "Send Mail", "We send the reset password link to your e-mail.");

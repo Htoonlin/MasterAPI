@@ -24,8 +24,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 
 /**
  * REST Web Service
@@ -41,6 +43,9 @@ public class UserResource extends RestResource<UserEntity, Integer> {
     @Inject
     IMailManager mailManager;
 
+    @Context
+    HttpServletRequest servletRequest;
+
     @Override
     public IBaseResponse create(@Valid UserEntity request) {
         UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
@@ -48,8 +53,8 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             //Check user by userName
             UserEntity user = userDAO.checkUser(request.getUserName());
             if (user != null && user.getUserName().equalsIgnoreCase(request.getUserName())) {
-                throw new InvalidRequestException("user name", 
-                        "Sorry! someone already registered with this user name", 
+                throw new InvalidRequestException("user name",
+                        "Sorry! someone already registered with this user name",
                         request.getUserName());
             }
 
@@ -57,8 +62,8 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             Pattern pattern = Pattern.compile("[a-zA-Z0-9_\\.]+");
             boolean isValid = pattern.matcher(request.getUserName()).matches();
             if (request.getUserName().contains(" ") || !isValid) {
-                throw new InvalidRequestException("user_name", 
-                        "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09", 
+                throw new InvalidRequestException("user_name",
+                        "Sorry! invalid user name, allow char (a-zA-Z0-9) and special char (`.` and `_`). Eg./ mg_hla.09",
                         request.getUserName());
             }
 
@@ -66,8 +71,8 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             if (request.hasEmail()) {
                 user = userDAO.checkUser(request.getEmail());
                 if (user != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
-                    throw new InvalidRequestException("email", 
-                            "Sorry! someone already registered with this email", 
+                    throw new InvalidRequestException("email",
+                            "Sorry! someone already registered with this email",
                             request.getEmail());
                 }
             }
@@ -76,7 +81,14 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             request.setPassword(SecurityManager.hashString(rawPassword));
             request.setStatus('A');
             userDAO.beginTransaction();
+
             UserEntity createdUser = userDAO.insert(request, false);
+
+            // Send Welcome mail to User
+            if (request.hasEmail()) {
+                AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
+                mailSend.welcomeUser(createdUser, rawPassword, "Welcome New User!");
+            }
 
             UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
 
@@ -89,12 +101,6 @@ public class UserResource extends RestResource<UserEntity, Integer> {
             userDAO.commitTransaction();
 
             this.modifiedResource();
-
-            // Send Welcome mail to User
-            if (request.hasEmail()) {
-                AuthMailSend mailSend = new AuthMailSend(mailManager, templateManager);
-                mailSend.welcomeUser(createdUser, rawPassword);
-            }
 
             return new DefaultResponse<>(201, ResponseType.SUCCESS, createdUser);
         } catch (InvalidRequestException ex) {

@@ -10,7 +10,7 @@ import com.sdm.core.di.IMailManager;
 import com.sdm.core.di.ITemplateManager;
 import com.sdm.core.hibernate.entity.DefaultEntity;
 import com.sdm.core.resource.SystemResource;
-import com.sdm.core.util.JSPTemplateService;
+import com.sdm.core.util.VelocityTemplateService;
 import com.sdm.core.util.mail.WebMailService;
 import com.sdm.master.util.AccessService;
 import org.apache.log4j.Logger;
@@ -62,7 +62,7 @@ public class ApplicationConfig extends ResourceConfig {
                 bindAsContract(AccessService.class).to(IAccessManager.class);
 
                 // Inject TemplateManager
-                bindAsContract(JSPTemplateService.class).to(ITemplateManager.class);
+                bindAsContract(VelocityTemplateService.class).to(ITemplateManager.class);
 
                 // Inject MailManager
                 bindAsContract(WebMailService.class).to(IMailManager.class);

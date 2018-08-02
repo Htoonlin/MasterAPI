@@ -28,7 +28,7 @@ public class UtilityResource extends DefaultResource {
     public IBaseResponse generateJWTKey() {
         return new DefaultResponse<>(SecurityManager.generateJWTKey());
     }
-
+    
     @PermitAll
     @GET
     @Path("strRandom/{len}")
