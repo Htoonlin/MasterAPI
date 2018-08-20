@@ -6,7 +6,7 @@ This RESTful framework was developed by following:
 
 So, you have to know about these frameworks and libraries. [Getting Started](#getting_started)
 
-## Version 3.0 Changelog
+## Version 3 Changelog
 - Upgrade maven libraries
 - Remove and Reduce 
     - Remove SESSION management to prevent multi session creation 
@@ -19,6 +19,14 @@ So, you have to know about these frameworks and libraries. [Getting Started](#ge
 - Auth allowed userName/email 
 - Performance Improvement and Bug Fixed 
 - Use Exceptions instead of MessageModel for ErrorMessages
+
+### 3.1 Changelog
+- Changed JSP Template => Velocity Template 
+
+### 3.2 Changelog
+- Full Info for User AuditInfo
+- Support Firebase Cloud Messaging
+
 ```java
 MessageModel(204, "...") => throw new NullPointerException("...") 
 MessageModel(400, "...") => throw new InvalidRequestException("...", "...", "...")
