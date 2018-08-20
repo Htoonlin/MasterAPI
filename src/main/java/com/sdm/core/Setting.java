@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,6 +113,51 @@ public final class Setting implements Constants.Setting {
         }
 
     }
+    
+    private void createUploadDir(){
+        String uploadDir = this.settingProps.getProperty(UPLOAD_DIRECTORY, "");
+        if(uploadDir == null || uploadDir.isEmpty()){
+            uploadDir = this.settingFile.getParent() + "/upload/";
+            this.settingProps.setProperty(UPLOAD_DIRECTORY, uploadDir);
+        }
+        //If upload directory is not exists, create directories.
+        File uploadDirPath = new File(uploadDir);
+        if(!uploadDirPath.exists()){
+            uploadDirPath.mkdirs();
+        }
+    }
+    
+    private void copyTemplates(){
+        try {
+            String templateDir = this.settingProps.getProperty(TEMPLATE_DIRECTORY, "");
+            if(templateDir == null || templateDir.isEmpty()){
+                templateDir = this.settingFile.getParent() + "/template/";
+                this.settingProps.setProperty(TEMPLATE_DIRECTORY, templateDir);
+            }
+            String resourceURL = getClass().getClassLoader().getResource("template").getPath();
+            File templatePath = new File(URLDecoder.decode(resourceURL, "UTF-8"));
+            Globalizer.copyFileOrDirectory(templatePath, new File(templateDir));
+            LOG.info("Copied all templates => " + templatePath);
+        } catch (IOException ex) {
+            LOG.error(ex);
+        }
+    }
+    
+    private void copyFirebase(){
+        try {
+            String firebaseServiceAccountPath = this.settingProps.getProperty(FIREBASE_SERVICE_ACCOUNT_PATH, "");
+            if(firebaseServiceAccountPath == null || firebaseServiceAccountPath.isEmpty()){
+                firebaseServiceAccountPath = this.settingFile.getParent() + "/firebase.json";
+                this.settingProps.setProperty(FIREBASE_SERVICE_ACCOUNT_PATH, firebaseServiceAccountPath);
+            }
+            String resourceURL = getClass().getClassLoader().getResource("firebase.json").getPath();
+            File jsonFile = new File(URLDecoder.decode(resourceURL, "UTF-8"));
+            Globalizer.copyFileOrDirectory(jsonFile, new File(firebaseServiceAccountPath));
+            LOG.info("Copied firebase.json => " + jsonFile);
+        } catch (IOException ex) {
+            LOG.error(ex);
+        }
+    }
 
     public void init() {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(SETTING_FILE);
@@ -130,18 +176,16 @@ public final class Setting implements Constants.Setting {
         if (this.settingFile.exists()) {
             this.loadSetting();
         } else {
-            LOG.info("Generating system properites ....");
-            String uploadDir = this.settingProps.getProperty(UPLOAD_DIRECTORY, "");
-            if(uploadDir == null || uploadDir.isEmpty()){
-                uploadDir = this.settingFile.getParent() + "/upload/";
-                this.settingProps.setProperty(UPLOAD_DIRECTORY, uploadDir);
-            }
-            //If upload directory is not exists, create directories.
-            File uploadDirPath = new File(uploadDir);
-            if(!uploadDirPath.exists()){
-                uploadDirPath.mkdirs();
-            }
+            LOG.info("Createing upload dir....");
+            this.createUploadDir();
             
+            LOG.info("Copying templates....");
+            this.copyTemplates();
+            
+            LOG.info("Copying firebase.json ....");
+            this.copyFirebase();
+            
+            LOG.info("Generating system properites ....");
             this.settingProps.setProperty(JWT_KEY, SecurityManager.generateJWTKey());
             this.settingProps.setProperty(ENCRYPT_SALT, SecurityManager.generateSalt());
             this.settingProps.setProperty(FB_MESSENGER_TOKEN, Globalizer.generateToken(64));

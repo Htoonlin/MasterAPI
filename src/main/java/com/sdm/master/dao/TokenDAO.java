@@ -6,12 +6,13 @@
 package com.sdm.master.dao;
 
 import com.sdm.core.Globalizer;
-import com.sdm.core.hibernate.audit.IUserListener;
+import com.sdm.core.hibernate.audit.IAuthListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.TokenEntity;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.log4j.Logger;
@@ -25,24 +26,31 @@ public class TokenDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(TokenDAO.class.getName());
 
-    public TokenDAO(IUserListener listener) {
+    public TokenDAO(IAuthListener listener) {
         super(TokenEntity.class.getName(), listener);
         LOG.info("Start TokenDAO");
     }
 
-    public TokenDAO(Session session, IUserListener listener) {
+    public TokenDAO(Session session, IAuthListener listener) {
         super(session, TokenEntity.class.getName(), listener);
     }
 
-    @Deprecated
-    public void cleanToken(int userId) throws SQLException {
+    public List<TokenEntity> getTokensByUserId(long userId){
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
-        super.executeByNamedQuery("TokenEntity.CLEAN_TOKEN", params);
+        return (List<TokenEntity>) super.fetchByNamedQuery("TokenEntity.GET_TOKEN_BY_USERID", params);
+    }
+    
+    public void cleanToken(long userId) {
+        List<TokenEntity> tokens = this.getTokensByUserId(userId);
+        super.beginTransaction();
+        for (TokenEntity token : tokens) {
+            this.delete(token, false);
+        }
+        super.commitTransaction();
     }
 
-    @Deprecated
-    public TokenEntity getTokenByUserInfo(int userId, String deviceId, String deviceOS) throws SQLException {
+    public TokenEntity getTokenByUserInfo(long userId, String deviceId, String deviceOS) throws SQLException {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("deviceId", deviceId);
@@ -50,33 +58,25 @@ public class TokenDAO extends RestDAO {
         return super.fetchOneByNamedQuery("TokenEntity.CHECK_USER", params);
     }
 
-    @Deprecated
-    public void extendToken(String token) {
+    public TokenEntity getTokenByDeviceInfo(String deviceId, String deviceOS) throws SQLException {
         Map<String, Object> params = new HashMap<>();
-        params.put("expired", Globalizer.getTokenExpired());
-        params.put("token", token);
-        super.executeByNamedQuery("TokenEntity.UPDATE_EXPIRED_BY_TOKEN", params);
+        params.put("deviceId", deviceId);
+        params.put("deviceOS", deviceOS);
+        return super.fetchOneByNamedQuery("TokenEntity.CHECK_DEVICE", params);
     }
 
-    public TokenEntity generateToken(int userId, String deviceId, String deviceOS) throws SQLException {
-        boolean isNew = false;
-        TokenEntity token = this.getTokenByUserInfo(userId, deviceId, deviceOS);
-        if (token == null) {
-            isNew = true;
-            token = new TokenEntity();
-            token.setUserId(userId);
-            token.setDeviceId(deviceId);
-            token.setDeviceOs(deviceOS);
-            token.setToken(UUID.randomUUID().toString());
-            token.setTokenExpired(Globalizer.getTokenExpired());
-        }
-
+    public TokenEntity generateToken(TokenEntity token) throws SQLException {
         token.setTokenExpired(Globalizer.getTokenExpired());
         token.setLastLogin(new Date());
-        if (isNew) {
+        
+        TokenEntity existToken = this.getTokenByUserInfo(token.getUserId(), token.getDeviceId(), token.getDeviceOs());
+        if (existToken == null) {
+            token.setToken(UUID.randomUUID().toString());
             return super.insert(token, false);
-        } else {
+        }else{
+            token.setId(existToken.getId());
             return super.update(token, false);
         }
+
     }
 }

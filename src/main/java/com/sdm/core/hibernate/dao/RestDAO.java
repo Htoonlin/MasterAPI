@@ -5,6 +5,7 @@
  */
 package com.sdm.core.hibernate.dao;
 
+import com.sdm.core.hibernate.audit.IAuthListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import com.sdm.core.hibernate.audit.IUserListener;
 
 /**
  *
@@ -27,12 +27,12 @@ public class RestDAO extends DefaultDAO {
 
     protected final String ENTITY_NAME;
 
-    public RestDAO(String entityName, IUserListener listener) {
+    public RestDAO(String entityName, IAuthListener listener) {
         super(listener);
         this.ENTITY_NAME = entityName;
     }
 
-    public RestDAO(Session session, String entityName, IUserListener listener) {
+    public RestDAO(Session session, String entityName, IAuthListener listener) {
         super(session, listener);
         this.ENTITY_NAME = entityName;
     }
@@ -200,6 +200,7 @@ public class RestDAO extends DefaultDAO {
                 rollbackTransaction();
             }
             LOG.error(e);
+            throw e;
         }
     }
 

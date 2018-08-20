@@ -9,7 +9,6 @@ import com.sdm.Constants;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.exception.InvalidRequestException;
-import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.FileEntity;
 import java.io.File;
@@ -25,6 +24,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import com.sdm.core.hibernate.audit.IAuthListener;
 
 /**
  *
@@ -34,11 +34,11 @@ public class FileDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(FileDAO.class.getName());
 
-    public FileDAO(IUserListener listener) {
+    public FileDAO(IAuthListener listener) {
         super(FileEntity.class.getName(), listener);
     }
 
-    public FileDAO(Session session, IUserListener listener) {
+    public FileDAO(Session session, IAuthListener listener) {
         super(session, FileEntity.class.getName(), listener);
     }
 
@@ -52,7 +52,7 @@ public class FileDAO extends RestDAO {
         super.delete(fileEntity, autoCommit);
     }
 
-    private File generateFile(int userId, String ext) {
+    private File generateFile(long userId, String ext) {
         String uploadPath = "/" + Constants.USER_PREFIX + userId + Globalizer.getDateString("/yyyy/MMMM/", new Date());
         String fileName = Globalizer.generateToken(8) + "." + ext;
 

@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,9 +28,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -53,11 +55,14 @@ import org.hibernate.validator.constraints.Email;
 @Table(name = "tbl_user")
 @NamedQueries({
     @NamedQuery(name = "UserEntity.GET_USER_BY_TOKEN",
-            query = "FROM UserEntity u WHERE u.email = :email AND u.otpToken = :token"),
+            query = "FROM UserEntity u WHERE u.email = :email AND u.otpToken = :token")
+    ,
     @NamedQuery(name = "UserEntity.CHECK_USER",
-            query = "FROM UserEntity u WHERE u.email = :user OR u.userName = :user"),
+            query = "FROM UserEntity u WHERE u.email = :user OR u.userName = :user")
+    ,
     @NamedQuery(name = "UserEntity.AUTH_BY_USER",
-            query = "FROM UserEntity u WHERE (u.email = :user OR u.userName = :user) AND u.password = :password"),
+            query = "FROM UserEntity u WHERE (u.email = :user OR u.userName = :user) AND u.password = :password")
+    ,
     @NamedQuery(name = "UserEntity.AUTH_BY_FACEBOOK",
             query = "FROM UserEntity u WHERE u.facebookId = :facebookId")})
 
@@ -81,7 +86,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @UIStructure(order = 0, label = "#", readOnly = true)
     @Column(name = "id", unique = true, nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
-    private int id;
+    private long id;
 
     @UIStructure(order = 1, label = "E-mail", inputType = UIInputType.email)
     @Column(name = "email", nullable = true, length = 255)
@@ -104,27 +109,25 @@ public class UserEntity extends DefaultEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "userId", fetch = FetchType.EAGER)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @UIStructure(order = 9, label = "User Extra", inputType = UIInputType.objectlist)
-    private Set<UserExtraEntity> extra = new HashSet<>();
+    @ElementCollection
+    @MapKeyColumn(name = "name")
+    @Column(name = "value")
+    @CollectionTable(name = "tbl_user_extra", joinColumns = @JoinColumn(
+            name = "userId", nullable = false, columnDefinition = "MEDIUMINT UNSIGNED"
+    ))
+    private Map<String, String> extras = new HashMap();
 
     @UIStructure(order = 3, label = "Password", inputType = UIInputType.password)
     @Column(name = "password", columnDefinition = "VARCHAR(255)", nullable = false, length = 255)
     private String password;
 
-    @NotAudited
-    @UIStructure(order = 4, label = "Is online?", inputType = UIInputType.checkbox)
-    @Column(name = "isOnline", nullable = false)
-    private boolean online;
-
     @UIStructure(order = 6, label = "Image", inputType = UIInputType.image)
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "profileImage", columnDefinition = "BIGINT UNSIGNED", nullable = true)
+    @JoinColumn(name = "profileImage", nullable = true)
     @NotFound(action = NotFoundAction.IGNORE)
     private FileEntity profileImage;
 
-    @Column(name = "facebookId", columnDefinition = "VARCHAR(255)", unique = true, nullable = true, length = 255)
+    @Column(name = "facebookId", unique = true, nullable = true, length = 500)
     private String facebookId;
 
     @JsonIgnore
@@ -147,18 +150,24 @@ public class UserEntity extends DefaultEntity implements Serializable {
     public UserEntity() {
     }
 
-    public UserEntity(String email, String userName, String displayName, String password, boolean online, char status) {
+    public UserEntity(String email, String userName, String displayName, String password, char status) {
         this.email = email;
         this.userName = userName;
         this.displayName = displayName;
         this.password = password;
-        this.online = online;
+        this.status = status;
+    }
+
+    public UserEntity(String userName, String displayName, String password, char status) {
+        this.userName = userName;
+        this.displayName = displayName;
+        this.password = password;
         this.status = status;
     }
 
     @JsonGetter("&detail_link")
     public LinkModel getSelfLink() {
-        String selfLink = UriBuilder.fromResource(UserResource.class).path(Integer.toString(this.id)).build()
+        String selfLink = UriBuilder.fromResource(UserResource.class).path(Long.toString(this.id)).build()
                 .toString();
         return new LinkModel(selfLink);
     }
@@ -171,11 +180,11 @@ public class UserEntity extends DefaultEntity implements Serializable {
         this.search = search;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -188,8 +197,8 @@ public class UserEntity extends DefaultEntity implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    public boolean hasEmail(){
+
+    public boolean hasEmail() {
         return this.email != null && this.email.length() > 3 && Globalizer.isEmail(this.email);
     }
 
@@ -241,7 +250,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
     public void setRoles(Set<RoleEntity> roles) {
         this.roles = roles;
     }
-    
+
     @JsonIgnore
     @Size(min = 6, max = 255)
     public String getPassword() {
@@ -251,14 +260,6 @@ public class UserEntity extends DefaultEntity implements Serializable {
     @JsonSetter("password")
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public boolean isOnline() {
-        return online;
-    }
-
-    public void setOnline(boolean online) {
-        this.online = online;
     }
 
     public FileEntity getProfileImage() {
@@ -301,20 +302,20 @@ public class UserEntity extends DefaultEntity implements Serializable {
         this.status = status;
     }
 
-    public Set<UserExtraEntity> getExtra() {
-        return extra;
+    public Map<String, String> getExtras() {
+        return extras;
     }
 
-    public void setExtra(Set<UserExtraEntity> extra) {
-        this.extra = extra;
+    public void setExtras(Map<String, String> extras) {
+        this.extras = extras;
     }
 
     public void addExtra(String key, String value) {
-        if (this.extra == null) {
-            this.extra = new HashSet<>();
+        if (this.extras == null) {
+            this.extras = new HashMap<>();
         }
 
-        this.extra.add(new UserExtraEntity(this.id, key, value));
+        this.extras.put(key, value);
     }
 
     public String getCurrentToken() {

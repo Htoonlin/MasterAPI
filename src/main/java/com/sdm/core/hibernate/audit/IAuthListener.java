@@ -5,10 +5,12 @@
  */
 package com.sdm.core.hibernate.audit;
 
+import com.sdm.core.hibernate.entity.AuthInfo;
+
 /**
  *
  * @author htoonlin
  */
-public interface IUserListener {
-    public int getCurrentUserID();
+public interface IAuthListener {
+    public AuthInfo getAuthInfo();
 }

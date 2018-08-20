@@ -15,13 +15,9 @@ import com.sdm.core.response.ResponseType;
 import com.sdm.core.response.model.MessageModel;
 import com.sdm.core.util.SecurityManager;
 import com.sdm.master.dao.UserDAO;
-import com.sdm.master.dao.UserExtraDAO;
 import com.sdm.master.entity.UserEntity;
-import com.sdm.master.entity.UserExtraEntity;
 import com.sdm.master.util.AuthMailSend;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +31,7 @@ import javax.ws.rs.core.Context;
  * @author Htoonlin
  */
 @Path("users")
-public class UserResource extends RestResource<UserEntity, Integer> {
+public class UserResource extends RestResource<UserEntity, Long> {
 
     @Inject
     ITemplateManager templateManager;
@@ -46,6 +42,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
     @Context
     HttpServletRequest servletRequest;
 
+    @SuppressWarnings("Need to check user extra")
     @Override
     public IBaseResponse create(@Valid UserEntity request) {
         UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
@@ -90,13 +87,14 @@ public class UserResource extends RestResource<UserEntity, Integer> {
                 mailSend.welcomeUser(createdUser, rawPassword, "Welcome New User!");
             }
 
+            /*
             UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
 
             Set<UserExtraEntity> extras = request.getExtra();
             for (UserExtraEntity extra : extras) {
                 extra.setUserId(createdUser.getId());
                 extraDAO.insert(extra, false);
-            }
+            }*/
 
             userDAO.commitTransaction();
 
@@ -110,8 +108,9 @@ public class UserResource extends RestResource<UserEntity, Integer> {
         }
     }
 
+    @SuppressWarnings("Need to update user extra")
     @Override
-    public IBaseResponse update(@Valid UserEntity request, Integer id) {
+    public IBaseResponse update(@Valid UserEntity request, Long id) {
 
         UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
 
@@ -130,6 +129,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
 
             userDAO.update(request, false);
 
+            /*
             Set<UserExtraEntity> extras = request.getExtra();
 
             UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
@@ -144,7 +144,7 @@ public class UserResource extends RestResource<UserEntity, Integer> {
                 extra.setUserId(dbEntity.getId());
 
                 extraDAO.insert(extra, false);
-            }
+            }*/
 
             userDAO.commitTransaction();
             this.modifiedResource();
@@ -157,20 +157,23 @@ public class UserResource extends RestResource<UserEntity, Integer> {
         }
     }
 
+    @SuppressWarnings("Need to delete user extras")
     @Override
-    public IBaseResponse remove(Integer id) {
+    public IBaseResponse remove(Long id) {
         UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
         try {
             UserEntity entity = this.checkData(id);
 
             userDAO.beginTransaction();
 
+            /*
             UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
+            
             //Delete All Extras
             List<UserExtraEntity> extras = extraDAO.getUserExtraByUser(id);
             for (UserExtraEntity extra : extras) {
                 extraDAO.delete(extra, false);
-            }
+            }*/
 
             userDAO.delete(entity, false);
 

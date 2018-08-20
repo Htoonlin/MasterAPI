@@ -13,6 +13,12 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sdm.core.util.security.AccessType;
 import com.sdm.core.util.security.AccessorType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -115,9 +121,71 @@ public class Globalizer {
         byte access = (byte) type.getValue();
         return ((allow & access) == access);
     }
-    
-    public static boolean isEmail(String email){
-        Pattern pattern=Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
+    public static boolean isEmail(String email) {
+        Pattern pattern = Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
         return pattern.matcher(email).matches();
+    }
+
+    public static String compressText(String fullText, int maxLines, int maxLength) {
+        String[] textLines = fullText.split("[\r|\n]");
+        String text = fullText;
+        if (textLines.length > maxLines) {
+            text = "";
+            for(int i = 0; i < maxLines; i++){
+                text += textLines[i];
+                if(i < (maxLines - 1)){
+                    text += "\n";
+                }
+            }
+        }
+
+        if (text.length() > maxLength) {
+            text = text.substring(0, maxLength);
+            int index = text.lastIndexOf(" ");
+            text = text.substring(0, index);
+            text += "...";
+        };
+        return text;
+    }
+
+    public static void copyFileOrDirectory(File src, File dest)
+            throws IOException {
+
+        if (src.isDirectory()) {
+
+            //if directory not exists, create it
+            if (!dest.exists()) {
+                dest.mkdir();
+            }
+
+            //list all the directory contents
+            String files[] = src.list();
+
+            for (String file : files) {
+                //construct the src and dest file structure
+                File srcFile = new File(src, file);
+                File destFile = new File(dest, file);
+                //recursive copy
+                copyFileOrDirectory(srcFile, destFile);
+            }
+
+        } else {
+            //if file, then copy it
+            //Use bytes stream to support all file types
+            InputStream in = new FileInputStream(src);
+            OutputStream out = new FileOutputStream(dest);
+
+            byte[] buffer = new byte[1024];
+
+            int length;
+            //copy the file content in bytes 
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+
+            in.close();
+            out.close();
+        }
     }
 }

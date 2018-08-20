@@ -1,5 +1,8 @@
 package com.sdm.core.hibernate.audit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sdm.core.Globalizer;
+import com.sdm.core.hibernate.entity.AuthInfo;
 import org.apache.log4j.Logger;
 
 public final class AuditStorage {
@@ -8,19 +11,27 @@ public final class AuditStorage {
 
     public static AuditStorage INSTANCE = new AuditStorage();
 
-    private static final ThreadLocal<Integer> storage = new ThreadLocal<>();
+    private static final ThreadLocal<AuthInfo> storage = new ThreadLocal<>();
 
-    public void set(Integer value) {
-        LOG.info("Set User ID " + value);
-        storage.set(value);
+    public void set(AuthInfo value) {
+        try {
+            LOG.info("Set Auth " + Globalizer.jsonMapper().writeValueAsString(value));
+            storage.set(value);
+        } catch (JsonProcessingException ex) {
+            LOG.error(ex);
+        }
     }
 
     public void clean() {
-        LOG.info("Clean User ID from local storage.");
+        LOG.info("Clean Auth Info from local storage.");
         storage.remove();
     }
 
-    public Integer get() {
-        return storage.get();
+    public AuthInfo get() {
+        AuthInfo auth = storage.get();
+        if(auth == null){
+            return new AuthInfo(0, "public-token", "no_device");
+        }
+        return auth;
     }
 }

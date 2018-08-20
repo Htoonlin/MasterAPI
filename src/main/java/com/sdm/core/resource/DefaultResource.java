@@ -7,7 +7,8 @@ package com.sdm.core.resource;
 
 import com.sdm.Constants;
 import com.sdm.core.Setting;
-import com.sdm.core.hibernate.audit.IUserListener;
+import com.sdm.core.hibernate.audit.IAuthListener;
+import com.sdm.core.hibernate.entity.AuthInfo;
 import com.sdm.core.response.DefaultResponse;
 import com.sdm.core.response.IBaseResponse;
 import com.sdm.core.response.ResponseType;
@@ -41,7 +42,7 @@ import org.glassfish.jersey.server.model.ResourceMethod;
  *
  * @author Htoonlin
  */
-public class DefaultResource implements IBaseResource, IUserListener {
+public class DefaultResource implements IBaseResource, IAuthListener {
 
     private static final Logger LOG = Logger.getLogger(DefaultResource.class.getName());
 
@@ -112,16 +113,26 @@ public class DefaultResource implements IBaseResource, IUserListener {
      * Caching End
      */
     
+    /**
+     * Auth Info
+     * @return AuthInfo
+     */
     @Override
-    public int getCurrentUserID() {
-        try{
-            ContainerRequest container = (ContainerRequest) request;
-            int userId = (int) container.getProperty(Constants.REQUEST_USER);
-            return userId;
-        }catch(Exception ex){
-            LOG.warn("There is no user");
+    public AuthInfo getAuthInfo(){
+        ContainerRequest container = (ContainerRequest) request;
+        if(container.getPropertyNames().contains(Constants.REQUEST_TOKEN)){
+            try{
+                return (AuthInfo) container.getProperty(Constants.REQUEST_TOKEN);
+            }catch(Exception ex){
+                LOG.error("There is no authorization token.");
+            }
         }
-        return 0;
+        
+        return null;
+    }
+    
+    protected long getCurrentUserId(){
+        return getAuthInfo().getUserId();
     }
 
     @Override

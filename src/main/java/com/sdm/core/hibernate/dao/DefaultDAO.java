@@ -7,7 +7,8 @@ package com.sdm.core.hibernate.dao;
 
 import com.sdm.core.hibernate.HibernateConnector;
 import com.sdm.core.hibernate.audit.AuditStorage;
-import com.sdm.core.hibernate.audit.IUserListener;
+import com.sdm.core.hibernate.audit.IAuthListener;
+import com.sdm.core.hibernate.entity.AuthInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,13 @@ import org.hibernate.Transaction;
 public class DefaultDAO {
 
     private Session mainSession;
-    private IUserListener dataListener;
+    private IAuthListener dataListener;
 
-    public DefaultDAO(IUserListener listener) {
+    public DefaultDAO(IAuthListener listener) {
         this(HibernateConnector.getFactory().openSession(), listener);
     }
 
-    public DefaultDAO(Session session, IUserListener listener) {
+    public DefaultDAO(Session session, IAuthListener listener) {
         this.mainSession = session;
         this.dataListener = listener;
     }
@@ -49,12 +50,11 @@ public class DefaultDAO {
     }
 
     public void beginTransaction() {
-        int userId = 0;
         if (this.dataListener != null) {
-            userId = this.dataListener.getCurrentUserID();
+            AuthInfo authInfo = this.dataListener.getAuthInfo();
+            AuditStorage.INSTANCE.set(authInfo);            
         }
 
-        AuditStorage.INSTANCE.set(userId);
         this.getSession().beginTransaction();
     }
 
@@ -178,6 +178,7 @@ public class DefaultDAO {
         return (T) results.get(0);
     }
 
+    /*
     public void executeByNamedQuery(String queryName, Map<String, Object> params) {
         this.createQueryByName(queryName, params).executeUpdate();
     }
@@ -185,4 +186,5 @@ public class DefaultDAO {
     public void execute(String hqlString, Map<String, Object> params) {
         this.createQuery(hqlString, params).executeUpdate();
     }
+    */
 }

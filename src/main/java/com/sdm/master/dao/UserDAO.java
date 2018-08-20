@@ -5,12 +5,12 @@
  */
 package com.sdm.master.dao;
 
-import com.sdm.core.hibernate.audit.IUserListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.UserEntity;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import com.sdm.core.hibernate.audit.IAuthListener;
 
 /**
  *
@@ -20,12 +20,12 @@ public class UserDAO extends RestDAO {
 
     private static final Logger LOG = Logger.getLogger(UserDAO.class.getName());
 
-    public UserDAO(IUserListener listener) {
+    public UserDAO(IAuthListener listener) {
         super(UserEntity.class.getName(), listener);
         LOG.info("Start DAO");
     }
 
-    public UserDAO(Session session, IUserListener listener) {
+    public UserDAO(Session session, IAuthListener listener) {
         super(session, UserEntity.class.getName(), listener);
     }
 

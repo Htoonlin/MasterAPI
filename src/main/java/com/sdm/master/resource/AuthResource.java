@@ -86,17 +86,18 @@ public class AuthResource extends DefaultResource {
             }
 
             userDao.beginTransaction();
+            TokenEntity token = new TokenEntity();
+            token.setUserId(authUser.getId());
+            token.setDeviceId(request.getDeviceId());
+            token.setDeviceOs(this.getDeviceOS());
             TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), this);
             if (cleanToken) {
                 tokenDAO.cleanToken(authUser.getId());
             }
-            TokenEntity authToken = tokenDAO.generateToken(authUser.getId(), request.getDeviceId(),
-                    this.getDeviceOS());
+            TokenEntity authToken = tokenDAO.generateToken(token);
 
             // Generate and store JWT
-            String token = authToken.generateJWT(userAgentString);
-
-            authUser.setCurrentToken(token);
+            authUser.setCurrentToken(authToken.generateJWT(userAgentString));
             userDao.commitTransaction();
 
             return new DefaultResponse<>(authUser);
@@ -137,14 +138,16 @@ public class AuthResource extends DefaultResource {
                         request);
             }
 
+            TokenEntity token = new TokenEntity();
+            token.setUserId(userEntity.getId());
+            token.setDeviceId(request.getDeviceId());
+            token.setDeviceOs(this.getDeviceOS());
             TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), this);
-            TokenEntity authToken = tokenDAO.generateToken(userEntity.getId(), request.getDeviceId(),
-                    this.getDeviceOS());
+            TokenEntity authToken = tokenDAO.generateToken(token);
 
             // Generate and store JWT
-            String token = authToken.generateJWT(userAgentString);
-
-            userEntity.setCurrentToken(token);
+            userEntity.setCurrentToken(authToken.generateJWT(userAgentString));
+            
             userDao.commitTransaction();
             return new DefaultResponse<>(userEntity);
         } catch (SQLException ex) {
@@ -185,13 +188,13 @@ public class AuthResource extends DefaultResource {
         }
 
         String password = SecurityManager.hashString(request.getPassword());
-        user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(), password,
-                true, UserEntity.PENDING);
+        user = new UserEntity(request.getEmail(), request.getUserName(), request.getDisplayName(),
+                password, UserEntity.PENDING);
         if (user.hasEmail()) {
             AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
             mailSend.activateLink(user, userAgentString);
         }
-        
+
         userDao.insert(user, true);
 
         MessageModel message = new MessageModel(200, "Registration Success",
@@ -261,13 +264,18 @@ public class AuthResource extends DefaultResource {
             user.setOtpExpired(null);
             user.setStatus(UserEntity.ACTIVE);
             userDao.update(user, false);
+            
+            TokenEntity token = new TokenEntity();
+            token.setUserId(user.getId());
+            token.setDeviceId(request.getDeviceId());
+            token.setDeviceOs(this.getDeviceOS());
             TokenDAO tokenDAO = new TokenDAO(userDao.getSession(), this);
-            TokenEntity authToken = tokenDAO.generateToken(user.getId(), request.getDeviceId(), this.getDeviceOS());
+            
+            TokenEntity authToken = tokenDAO.generateToken(token);
 
             // Generate and store JWT
-            String token = authToken.generateJWT(userAgentString);
-
-            user.setCurrentToken(token);
+            user.setCurrentToken(authToken.generateJWT(userAgentString));
+            
             userDao.commitTransaction();
             return new DefaultResponse<>(user);
         } catch (JsonProcessingException | SQLException e) {
@@ -310,7 +318,7 @@ public class AuthResource extends DefaultResource {
             AuthMailSend mailSend = new AuthMailSend(mailManager, servletRequest, templateManager);
             mailSend.welcomeUser(user, rawPassword, "Created new password!");
             userDao.update(user, true);
-            
+
         } catch (IOException e) {
             getLogger().error(e);
             throw e;

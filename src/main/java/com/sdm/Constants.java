@@ -259,6 +259,16 @@ public interface Constants {
          * Facebook verify token for messenger platform
          */
         String FB_MESSENGER_TOKEN = "com.sdm.facebook.messenger.token";
+        
+        /**
+         * Firebase Service Account File Path
+         */
+        String FIREBASE_SERVICE_ACCOUNT_PATH = "com.sdm.firebase.service.path";
+        
+        /**
+         * Firebase Project URL
+         */
+        String FIREBASE_URL = "com.sdm.firebase.url";
     }
 
     /**
@@ -270,10 +280,9 @@ public interface Constants {
      * Prefix of Authorization Token String
      */
     String AUTH_TYPE = "Bearer";
-    
-    /**
-     * Requested Property for User ID
-     */
-    String REQUEST_USER = "com.sdm.request.USER";
 
+    /**
+     * Requested Property for Auth Token
+     */
+    String REQUEST_TOKEN = "com.sdm.request.AUTH_TOKEN";
 }

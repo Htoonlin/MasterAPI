@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Base64;
 import java.util.Map;
@@ -48,7 +47,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
  * @author Htoonlin
  */
 @Path("files")
-public class FileResource extends RestResource<FileEntity, BigInteger> {
+public class FileResource extends RestResource<FileEntity, Long> {
 
     private final int CACHE_AGE = 3600 * 24 * 7;
 
@@ -143,7 +142,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
             //rawEntity.setPublicAccess(false);
             rawEntity.setType(fileBody.getMediaType().toString());
             rawEntity.setPublicAccess(isPublic);
-            rawEntity.setOwnerId(getCurrentUserID());
+            rawEntity.setOwnerId(getCurrentUserId());
             rawEntity.setStatus(FileEntity.STORAGE);
             FileDAO fileDAO = new FileDAO(getDAO().getSession(), this);
 
@@ -160,7 +159,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
     @PermitAll
     @GET
     @Path("{id:\\d+}/public")
-    public Response publicDownload(@PathParam("id") BigInteger id,
+    public Response publicDownload(@PathParam("id") long id,
             @DefaultValue("0") @QueryParam("width") int width,
             @DefaultValue("0") @QueryParam("height") int height,
             @DefaultValue("false") @QueryParam("is64") boolean is64,
@@ -181,7 +180,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
 
     @GET
     @Path("{id:\\d+}/download")
-    public Response privateDownload(@PathParam("id") BigInteger id,
+    public Response privateDownload(@PathParam("id") long id,
             @DefaultValue("0") @QueryParam("width") int width,
             @DefaultValue("0") @QueryParam("height") int height,
             @DefaultValue("false") @QueryParam("is64") boolean is64,
@@ -205,7 +204,7 @@ public class FileResource extends RestResource<FileEntity, BigInteger> {
     @Path("{id:\\d+}/rename")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public IBaseResponse rename(FileEntity file, @PathParam("id") BigInteger id) {
+    public IBaseResponse rename(FileEntity file, @PathParam("id") long id) {
         try {
             FileEntity entity = this.checkData(id);
 

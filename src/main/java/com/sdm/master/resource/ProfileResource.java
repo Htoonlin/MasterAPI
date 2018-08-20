@@ -51,7 +51,7 @@ public class ProfileResource extends DefaultResource {
             return response;
         }
 
-        UserEntity user = userDAO.fetchById(getCurrentUserID());
+        UserEntity user = userDAO.fetchById(getCurrentUserId());
         if (user == null) {
             throw new NullPointerException("There is no user. (or) User is not active.");
         }
@@ -66,7 +66,7 @@ public class ProfileResource extends DefaultResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public IBaseResponse setProfile(@Valid UserEntity request) {
         try {
-            UserEntity currentUser = userDAO.fetchById(getCurrentUserID());
+            UserEntity currentUser = userDAO.fetchById(getCurrentUserId());
             if (currentUser == null) {
                 throw new NullPointerException("There is no user. (or) User is not active.");
             }
@@ -94,7 +94,7 @@ public class ProfileResource extends DefaultResource {
             String oldPassword = SecurityManager.hashString(request.getOldPassword());
             UserEntity user = userDAO.userAuth(request.getUser(), oldPassword);
 
-            if (user == null || user.getId() != getCurrentUserID()) {
+            if (user == null || user.getId() != getCurrentUserId()) {
                 throw new NullPointerException("There is no user (or) old password is wrong. Pls try again.");
             }
 

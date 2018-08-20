@@ -15,7 +15,6 @@ import com.sdm.core.ui.UIStructure;
 import com.sdm.core.util.FileManager;
 import com.sdm.master.resource.FileResource;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -57,13 +56,13 @@ public class FileEntity extends DefaultEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "id", unique = true, nullable = false)
     @UIStructure(order = 0, label = "#", readOnly = true)
-    private BigInteger id;
+    private long id;
 
     @UIStructure(order = 1, label = "Owner ID", inputType = UIInputType.number)
     @Column(name = "owner", columnDefinition = "MEDIUMINT UNSIGNED", nullable = false)
-    private int ownerId;
+    private long ownerId;
 
     @NotBlank
     @UIStructure(order = 2, label = "Name")
@@ -102,7 +101,7 @@ public class FileEntity extends DefaultEntity implements Serializable {
         this.status = STORAGE;
     }
 
-    public FileEntity(BigInteger id, int ownerId, String name, String extension, String type, long fileSize,
+    public FileEntity(long id, int ownerId, String name, String extension, String type, long fileSize,
             String storagePath, String externalUrl) {
         if (externalUrl == null || externalUrl.length() <= 0) {
             this.status = STORAGE;
@@ -120,7 +119,7 @@ public class FileEntity extends DefaultEntity implements Serializable {
 
     @JsonGetter("&file_links")
     public Map<String, LinkModel> getLinks() {
-        UriBuilder baseUri = UriBuilder.fromResource(FileResource.class).path(this.id.toString());
+        UriBuilder baseUri = UriBuilder.fromResource(FileResource.class).path(Long.toString(id));
         Map<String, LinkModel> links = new HashMap<>();
         String selfLink = baseUri.build().toString();
         links.put("self", new LinkModel(selfLink));
@@ -152,19 +151,27 @@ public class FileEntity extends DefaultEntity implements Serializable {
         this.search = search;
     }
 
-    public BigInteger getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getOwnerId() {
+    public String getExternalUrl() {
+        return externalUrl;
+    }
+
+    public void setExternalUrl(String externalUrl) {
+        this.externalUrl = externalUrl;
+    }
+
+    public long getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(int ownerId) {
+    public void setOwnerId(long ownerId) {
         this.ownerId = ownerId;
     }
 

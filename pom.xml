@@ -54,6 +54,12 @@
             <version>${mail.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+
         <!-- Zxing BarCode Library -->
         <dependency>
             <groupId>com.google.zxing</groupId>

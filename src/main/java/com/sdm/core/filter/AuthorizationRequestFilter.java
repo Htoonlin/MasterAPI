@@ -8,6 +8,7 @@ package com.sdm.core.filter;
 import com.sdm.Constants;
 import com.sdm.core.Setting;
 import com.sdm.core.di.IAccessManager;
+import com.sdm.core.hibernate.entity.AuthInfo;
 import com.sdm.core.resource.UserAllowed;
 import com.sdm.core.response.model.MessageModel;
 import io.jsonwebtoken.ClaimJwtException;
@@ -60,7 +61,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
         //Skip Data Permission if Resource Permission is public or there is no AccessManager
         if (resourceClass.isAnnotationPresent(PermitAll.class) || accessManager == null) {
             //Auth Success
-            requestContext.setProperty(Constants.REQUEST_USER, 0);
+            requestContext.setProperty(Constants.REQUEST_TOKEN, new AuthInfo(0, "public-token", "unknown"));
             return;
         }
 
@@ -96,14 +97,18 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
                         requestContext.abortWith(errorResponse(403));
                         return;
                     }
+                                        
+                    String token = authorizeToken.getId();
+                    String device = authorizeToken.get("device_id").toString() + ":" + authorizeToken.get("device_os").toString();
+                    long userId = Long.parseLong(authorizeToken.getSubject().substring(Constants.USER_PREFIX.length()).trim());
                     
-                    int userId = Integer.parseInt(authorizeToken.getSubject().substring(Constants.USER_PREFIX.length()).trim());
+                    AuthInfo authInfo = new AuthInfo(userId, token, device);
                     
                     //Check @UserAllowed in Class
                     UserAllowed userAllowed = resourceClass.getAnnotation(UserAllowed.class);
                     if(userAllowed != null && userAllowed.value()){
                         //Skip Permission for User Allowed Class
-                        requestContext.setProperty(Constants.REQUEST_USER, userId);
+                        requestContext.setProperty(Constants.REQUEST_TOKEN, authInfo);
                         return;
                     }
                     
@@ -111,7 +116,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
                     userAllowed = resourceClass.getAnnotation(UserAllowed.class);
                     if(userAllowed != null && userAllowed.value()){
                         //Skip Permission for User Allowed Method
-                        requestContext.setProperty(Constants.REQUEST_USER, userId);
+                        requestContext.setProperty(Constants.REQUEST_TOKEN, authInfo);
                         return;
                     }
                     
@@ -122,7 +127,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
                         return;
                     }
                     
-                    requestContext.setProperty(Constants.REQUEST_USER, userId);
+                    requestContext.setProperty(Constants.REQUEST_TOKEN, authInfo);
                     
                 } catch (ClaimJwtException ex) {
                     requestContext.abortWith(buildResponse(403, ex.getLocalizedMessage()));
@@ -134,7 +139,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
             }
         }
     }
-
+    
     private Response errorResponse(int code) {
         String description = "";
         switch (code) {

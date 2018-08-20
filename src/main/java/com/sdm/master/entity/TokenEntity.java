@@ -35,11 +35,13 @@ import org.hibernate.envers.NotAudited;
 @Table(name = "tbl_user_token")
 @NamedQueries({
     @NamedQuery(name = "TokenEntity.CHECK_USER",
-            query = "FROM TokenEntity t WHERE t.userId = :userId AND t.deviceId = :deviceId AND t.deviceOs = :deviceOS"),
-    @NamedQuery(name = "TokenEntity.CLEAN_TOKEN",
-            query = "DELETE FROM TokenEntity t WHERE t.userId = :userId"),
-    @NamedQuery(name = "TokenEntity.UPDATE_EXPIRED_BY_TOKEN",
-            query = "UPDATE TokenEntity t SET t.tokenExpired = :expired WHERE t.token = :token")})
+            query = "FROM TokenEntity t WHERE t.userId = :userId AND t.deviceId = :deviceId AND t.deviceOs = :deviceOS")
+    ,
+    @NamedQuery(name = "TokenEntity.GET_TOKEN_BY_USERID",
+            query = "FROM TokenEntity t WHERE t.userId = :userId")
+    ,
+    @NamedQuery(name = "TokenEntity.CHECK_DEVICE",
+            query = "FROM TokenEntity t WHERE t.deviceId = :deviceId AND t.deviceOs = :deviceOS"),})
 @JsonPropertyOrder(value = {"token", "deviceId", "device_os", "token_expired"})
 public class TokenEntity extends DefaultEntity implements Serializable {
 
@@ -51,8 +53,8 @@ public class TokenEntity extends DefaultEntity implements Serializable {
     private String token;
 
     @UIStructure(order = 1, label = "User ID", inputType = UIInputType.number)
-    @Column(name = "userId", nullable = false)
-    private int userId;
+    @Column(name = "userId", nullable = false, columnDefinition = "MEDIUMINT UNSIGNED")
+    private long userId;
 
     @UIStructure(order = 2, label = "Device-ID")
     @Column(name = "deviceId", nullable = false, length = 255)
@@ -62,22 +64,26 @@ public class TokenEntity extends DefaultEntity implements Serializable {
     @Column(name = "deviceOS", nullable = false, length = 50)
     private String deviceOs;
 
+    @UIStructure(order = 4, label = "Firebase Token")
+    @Column(name = "firebaseToken", nullable = false, length = 500)
+    private String firebaseToken;
+
     @NotAudited
     @Temporal(TemporalType.TIMESTAMP)
-    @UIStructure(order = 4, label = "Lasted Login")
+    @UIStructure(order = 5, label = "Lasted Login")
     @Column(name = "lastedLogin", nullable = false, length = 19, updatable = true)
     private Date lastLogin;
 
     @NotAudited
     @Temporal(TemporalType.TIMESTAMP)
-    @UIStructure(order = 5, label = "Expired")
+    @UIStructure(order = 6, label = "Expired")
     @Column(name = "tokenExpired", nullable = false, length = 19)
     private Date tokenExpired;
 
     public TokenEntity() {
     }
 
-    public TokenEntity(String token, int userId, String deviceId, String deviceOs, Date lastLogin, Date tokenExpired) {
+    public TokenEntity(String token, long userId, String deviceId, String deviceOs, Date lastLogin, Date tokenExpired) {
         this.token = token;
         this.userId = userId;
         this.deviceId = deviceId;
@@ -113,11 +119,11 @@ public class TokenEntity extends DefaultEntity implements Serializable {
         this.token = token;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -135,6 +141,14 @@ public class TokenEntity extends DefaultEntity implements Serializable {
 
     public void setDeviceOs(String deviceOs) {
         this.deviceOs = deviceOs;
+    }
+
+    public String getFirebaseToken() {
+        return firebaseToken;
+    }
+
+    public void setFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
     }
 
     public Date getLastLogin() {

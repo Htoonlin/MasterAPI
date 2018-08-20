@@ -5,15 +5,12 @@
         <!-- Hibernate Connection Properties -->
         <property name="hibernate.dialect">com.sdm.core.hibernate.SundewMySQLDialect</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/master_api</property>
-        <property name="hibernate.connection.useUnicode">true</property>
-        <property name="hibernate.connection.CharSet">utf8mb4</property>
-        <property name="hibernate.connection.characterEncoding">utf8</property>
-        <property name="hibernate.default_schema">master_api</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/sundew_api?useUnicode=true&amp;characterEncoding=UTF-8</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">root</property>
-        
+        <property name="hibernate.default_schema">sundew_api</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
         <!-- Hibernate Enver properties -->
         <property name="org.hibernate.envers.audit_table_suffix">_history</property>
         <property name="org.hibernate.envers.revision_field_name">version</property>
@@ -30,18 +27,17 @@
         <property name="hibernate.c3p0.idle_test_period">1800</property>
 
         <!-- Audit entity mapping -->
-        <mapping class="com.sdm.core.hibernate.entity.AuditEntity"/>
+        <mapping class="com.sdm.core.hibernate.entity.AuditEntity" />
 
         <!-- Master Entities Mapping -->
-        <mapping class="com.sdm.master.entity.UserEntity"/>
-        <mapping class="com.sdm.master.entity.UserExtraEntity"/>
-        <mapping class="com.sdm.master.entity.RoleEntity"/>
-        <mapping class="com.sdm.master.entity.PermissionEntity"/>
-        <mapping class="com.sdm.master.entity.TokenEntity"/>
-        <mapping class="com.sdm.master.entity.FileEntity"/>
-        <mapping class="com.sdm.master.entity.MenuEntity"/>
-        
-        <!-- Sample Entities Mapping --> 
-        <mapping class="com.sdm.sample.entity.CustomerEntity"/>
+        <mapping class="com.sdm.master.entity.UserEntity" />
+        <mapping class="com.sdm.master.entity.RoleEntity" />
+        <mapping class="com.sdm.master.entity.PermissionEntity" />
+        <mapping class="com.sdm.master.entity.TokenEntity" />
+        <mapping class="com.sdm.master.entity.FileEntity" />
+        <mapping class="com.sdm.master.entity.MenuEntity" />
+
+        <!--Sample Entities Mapping -->
+        <mapping class="com.sdm.sample.entity.CustomerEntity" />
     </session-factory>
 </hibernate-configuration>

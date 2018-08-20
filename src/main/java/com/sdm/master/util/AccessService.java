@@ -42,7 +42,7 @@ public class AccessService implements IAccessManager {
         String token = request.getId();
         String deviceId = request.get("device_id").toString();
         String deviceOS = request.get("device_os").toString();
-        int userId = Integer.parseInt(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
+        long userId = Long.parseLong(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
 
         TokenDAO tokenDao = new TokenDAO(null);
         try {
@@ -96,15 +96,6 @@ public class AccessService implements IAccessManager {
         }
 
         if (user == null || user.getStatus() != UserEntity.ACTIVE) {
-            return false;
-        }
-
-        // Set User is online
-        user.setOnline(true);
-        try {
-            userDAO.update(user, true);
-        } catch (Exception e) {
-            LOG.error(e);
             return false;
         }
 

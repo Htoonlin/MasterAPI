@@ -13,7 +13,7 @@ import org.hibernate.envers.RevisionTimestamp;
 @Entity(name = "AuditEntity")
 @Table(name = "tbl_audit_info")
 @RevisionEntity(AuditListener.class)
-public class AuditEntity implements Serializable {
+public class AuditEntity extends AuthInfo implements Serializable {
 
     /**
      *
@@ -27,8 +27,6 @@ public class AuditEntity implements Serializable {
 
     @RevisionTimestamp
     private long timestamp;
-
-    private int userId;
 
     public long getVersion() {
         return version;
@@ -44,14 +42,6 @@ public class AuditEntity implements Serializable {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     @Override
