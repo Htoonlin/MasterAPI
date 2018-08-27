@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Query;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -23,6 +24,8 @@ import org.hibernate.Transaction;
  */
 public class DefaultDAO {
 
+    private static final Logger LOG = Logger.getLogger(DefaultDAO.class.getName());
+    
     private Session mainSession;
     private IAuthListener dataListener;
 
@@ -54,7 +57,7 @@ public class DefaultDAO {
             AuthInfo authInfo = this.dataListener.getAuthInfo();
             AuditStorage.INSTANCE.set(authInfo);            
         }
-
+        LOG.info("Begin transaction");
         this.getSession().beginTransaction();
     }
 
@@ -63,7 +66,7 @@ public class DefaultDAO {
         if (transaction != null) {
             transaction.commit();
         }
-
+        LOG.info("Commint transaction");
         this.closeSession();
     }
 
@@ -72,7 +75,7 @@ public class DefaultDAO {
         if (transaction != null) {
             transaction.rollback();
         }
-
+        LOG.info("Rollback transaction");
         this.closeSession();
     }
 
@@ -178,13 +181,27 @@ public class DefaultDAO {
         return (T) results.get(0);
     }
 
-    /*
-    public void executeByNamedQuery(String queryName, Map<String, Object> params) {
+    
+    protected void executeByNamedQuery(String queryName, Map<String, Object> params, boolean autoCommit) {
+        if(autoCommit){
+            beginTransaction();
+        }
         this.createQueryByName(queryName, params).executeUpdate();
+        
+        if(autoCommit){
+            commitTransaction();
+        }
     }
 
-    public void execute(String hqlString, Map<String, Object> params) {
+    public void execute(String hqlString, Map<String, Object> params, boolean autoCommit) {
+        if(autoCommit){
+            beginTransaction();
+        }
+        
         this.createQuery(hqlString, params).executeUpdate();
+        
+        if(autoCommit){
+            commitTransaction();
+        }
     }
-    */
 }

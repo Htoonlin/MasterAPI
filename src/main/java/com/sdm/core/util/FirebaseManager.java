@@ -71,7 +71,7 @@ public class FirebaseManager {
                 .build();
     }
 
-    private ApnsConfig iosNotification(String title, String body) {
+    private ApnsConfig iosNotification(String title, String body, int badgeCount) {
         return ApnsConfig.builder()
                 .putHeader("apns-priority", "10")
                 .setAps(Aps.builder()
@@ -79,16 +79,17 @@ public class FirebaseManager {
                                 .setTitle(title)
                                 .setBody(body)
                                 .build())
+                        .setBadge(badgeCount)
                         .build())
                 .build();
     }
 
-    public ApiFuture<String> sendMessage(String token, String title, String body,
+    public ApiFuture<String> sendMessage(String token, String title, String body, int badgeCount,
             Map<String, String> data) {
         Message message = Message.builder()
                 .setToken(token)
                 .setNotification(new Notification(title, body))
-                .setApnsConfig(this.iosNotification(title, body))
+                .setApnsConfig(this.iosNotification(title, body, badgeCount))
                 .setAndroidConfig(this.androidNotification(title, body))
                 .putAllData(data)
                 .build();

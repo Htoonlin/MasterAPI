@@ -28,7 +28,6 @@ public class TokenDAO extends RestDAO {
 
     public TokenDAO(IAuthListener listener) {
         super(TokenEntity.class.getName(), listener);
-        LOG.info("Start TokenDAO");
     }
 
     public TokenDAO(Session session, IAuthListener listener) {

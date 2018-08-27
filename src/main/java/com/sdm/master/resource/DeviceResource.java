@@ -64,7 +64,6 @@ public class DeviceResource extends DefaultResource {
                 + Globalizer.getDateString("yyyyMMddHHmmss", new Date()) + "_"
                 + Globalizer.generateToken("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
 
-        String displayName = request.getName();
         String rawPassword = Globalizer.generateToken(size);
         String password = com.sdm.core.util.SecurityManager.hashString(rawPassword);
 
@@ -81,7 +80,6 @@ public class DeviceResource extends DefaultResource {
                 existToken.setFirebaseToken(request.getFirebaseToken());
                 tokenDAO.generateToken(existToken);
 
-                existUser.setDisplayName(displayName);
                 this.setExtras(request, existUser);
                 userDAO.update(existUser, false);
 
@@ -89,13 +87,13 @@ public class DeviceResource extends DefaultResource {
                 
                 existUser.setCurrentToken(existToken.generateJWT(request.getUserAgent()));
                 return new DefaultResponse(201, ResponseType.SUCCESS, existUser);
-            } catch (Exception ex) {
+            } catch (SQLException ex) {
                 userDAO.rollbackTransaction();
                 throw ex;
             }
         }
 
-        UserEntity user = new UserEntity(userName, displayName, password, UserEntity.ACTIVE);
+        UserEntity user = new UserEntity(userName, request.getName(), password, UserEntity.ACTIVE);
         this.setExtras(request, user);
 
         userDAO.beginTransaction();

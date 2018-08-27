@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sdm.core.util.security.AccessType;
 import com.sdm.core.util.security.AccessorType;
 import java.io.File;
@@ -38,8 +37,9 @@ public class Globalizer {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+        
+        //mapper.enable(SerializationFeature.INDENT_OUTPUT);
         return mapper;
     }
 
@@ -125,28 +125,6 @@ public class Globalizer {
     public static boolean isEmail(String email) {
         Pattern pattern = Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
         return pattern.matcher(email).matches();
-    }
-
-    public static String compressText(String fullText, int maxLines, int maxLength) {
-        String[] textLines = fullText.split("[\r|\n]");
-        String text = fullText;
-        if (textLines.length > maxLines) {
-            text = "";
-            for(int i = 0; i < maxLines; i++){
-                text += textLines[i];
-                if(i < (maxLines - 1)){
-                    text += "\n";
-                }
-            }
-        }
-
-        if (text.length() > maxLength) {
-            text = text.substring(0, maxLength);
-            int index = text.lastIndexOf(" ");
-            text = text.substring(0, index);
-            text += "...";
-        };
-        return text;
     }
 
     public static void copyFileOrDirectory(File src, File dest)
