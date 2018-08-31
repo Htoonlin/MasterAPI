@@ -93,7 +93,6 @@ public class UserResource extends RestResource<UserEntity, Long> {
         }
     }
 
-    @SuppressWarnings("Need to update user extra")
     @Override
     public IBaseResponse update(@Valid UserEntity request, Long id) {
 
@@ -121,7 +120,6 @@ public class UserResource extends RestResource<UserEntity, Long> {
         }
     }
 
-    @SuppressWarnings("Need to delete user extras")
     @Override
     public IBaseResponse remove(Long id) {
         UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
