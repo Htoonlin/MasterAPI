@@ -57,15 +57,15 @@ public class TokenEntity extends DefaultEntity implements Serializable {
     private long userId;
 
     @UIStructure(order = 2, label = "Device-ID")
-    @Column(name = "deviceId", nullable = false, length = 255)
+    @Column(name = "deviceId", nullable = false, columnDefinition = "VARCHAR(255)", length = 255)
     private String deviceId;
 
     @UIStructure(order = 3, label = "Device-OS")
-    @Column(name = "deviceOS", nullable = false, length = 50)
+    @Column(name = "deviceOS", nullable = false, columnDefinition = "VARCHAR(50)", length = 50)
     private String deviceOs;
 
     @UIStructure(order = 4, label = "Firebase Token")
-    @Column(name = "firebaseToken", nullable = false, length = 500)
+    @Column(name = "firebaseToken", nullable = true, columnDefinition = "VARCHAR(500)", length = 500)
     private String firebaseToken;
 
     @NotAudited

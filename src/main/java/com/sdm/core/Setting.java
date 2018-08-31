@@ -66,7 +66,7 @@ public final class Setting implements Constants.Setting {
     public String get(String name, String defaultValue) {
         return this.settingProps.getProperty(name, defaultValue);
     }
-
+    
     public int getInt(String name) {
         return this.getInt(name, "0");
     }

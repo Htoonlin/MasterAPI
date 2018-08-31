@@ -72,6 +72,7 @@ public class ProfileResource extends DefaultResource {
             }
 
             currentUser.setDisplayName(request.getDisplayName());
+            currentUser.setExtras(request.getExtras());
             currentUser = userDAO.update(currentUser, true);
 
             this.modifiedResource();

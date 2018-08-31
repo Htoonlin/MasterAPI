@@ -42,7 +42,6 @@ public class UserResource extends RestResource<UserEntity, Long> {
     @Context
     HttpServletRequest servletRequest;
 
-    @SuppressWarnings("Need to check user extra")
     @Override
     public IBaseResponse create(@Valid UserEntity request) {
         UserDAO userDAO = new UserDAO(getDAO().getSession(), this);
@@ -77,9 +76,7 @@ public class UserResource extends RestResource<UserEntity, Long> {
             String rawPassword = request.getPassword();
             request.setPassword(SecurityManager.hashString(rawPassword));
             request.setStatus('A');
-            userDAO.beginTransaction();
-
-            UserEntity createdUser = userDAO.insert(request, false);
+            UserEntity createdUser = userDAO.insert(request, true);
 
             // Send Welcome mail to User
             if (request.hasEmail()) {
@@ -87,22 +84,10 @@ public class UserResource extends RestResource<UserEntity, Long> {
                 mailSend.welcomeUser(createdUser, rawPassword, "Welcome New User!");
             }
 
-            /*
-            UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
-
-            Set<UserExtraEntity> extras = request.getExtra();
-            for (UserExtraEntity extra : extras) {
-                extra.setUserId(createdUser.getId());
-                extraDAO.insert(extra, false);
-            }*/
-
-            userDAO.commitTransaction();
-
             this.modifiedResource();
 
             return new DefaultResponse<>(201, ResponseType.SUCCESS, createdUser);
         } catch (InvalidRequestException ex) {
-            userDAO.rollbackTransaction();
             getLogger().error(ex);
             throw ex;
         }
@@ -120,38 +105,17 @@ public class UserResource extends RestResource<UserEntity, Long> {
                 throw new InvalidRequestException("id", "Invalid request ID.", id);
             }
 
-            userDAO.beginTransaction();
-
             request.setUserName(dbEntity.getUserName());
             request.setEmail(dbEntity.getEmail());
             request.setPassword(dbEntity.getPassword());
             request.setFacebookId(dbEntity.getFacebookId());
 
-            userDAO.update(request, false);
+            userDAO.update(request, true);
 
-            /*
-            Set<UserExtraEntity> extras = request.getExtra();
-
-            UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
-            //Delete All Extras
-            List<UserExtraEntity> oldExtras = extraDAO.getUserExtraByUser(dbEntity.getId());
-            for (UserExtraEntity oldExtra : oldExtras) {
-                extraDAO.delete(oldExtra, false);
-            }
-
-            //Insert Back All User Extras
-            for (UserExtraEntity extra : extras) {
-                extra.setUserId(dbEntity.getId());
-
-                extraDAO.insert(extra, false);
-            }*/
-
-            userDAO.commitTransaction();
             this.modifiedResource();
 
             return new DefaultResponse<>(202, ResponseType.SUCCESS, request);
         } catch (InvalidRequestException | NullPointerException e) {
-            userDAO.rollbackTransaction();
             getLogger().error(e);
             throw e;
         }
@@ -164,26 +128,13 @@ public class UserResource extends RestResource<UserEntity, Long> {
         try {
             UserEntity entity = this.checkData(id);
 
-            userDAO.beginTransaction();
+            userDAO.delete(entity, true);
 
-            /*
-            UserExtraDAO extraDAO = new UserExtraDAO(getDAO().getSession(), this);
-            
-            //Delete All Extras
-            List<UserExtraEntity> extras = extraDAO.getUserExtraByUser(id);
-            for (UserExtraEntity extra : extras) {
-                extraDAO.delete(extra, false);
-            }*/
-
-            userDAO.delete(entity, false);
-
-            userDAO.commitTransaction();
             this.modifiedResource();
 
             MessageModel message = new MessageModel(202, "Deleted", "We deleted the record with your request successfully.");
             return new DefaultResponse<>(202, ResponseType.SUCCESS, message);
         } catch (Exception e) {
-            userDAO.rollbackTransaction();
             getLogger().error(e);
             throw e;
         }

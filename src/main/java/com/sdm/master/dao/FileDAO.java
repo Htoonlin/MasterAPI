@@ -9,6 +9,7 @@ import com.sdm.Constants;
 import com.sdm.core.Globalizer;
 import com.sdm.core.Setting;
 import com.sdm.core.exception.InvalidRequestException;
+import com.sdm.core.hibernate.audit.IAuthListener;
 import com.sdm.core.hibernate.dao.RestDAO;
 import com.sdm.master.entity.FileEntity;
 import java.io.File;
@@ -24,7 +25,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import com.sdm.core.hibernate.audit.IAuthListener;
 
 /**
  *
@@ -95,7 +95,7 @@ public class FileDAO extends RestDAO {
     @Override
     public <T extends Serializable> T insert(T requestEntity, boolean autoCommit) {
         FileEntity entity = (FileEntity) requestEntity;
-        if (entity.getExternalURL() == null || entity.getExternalURL().isEmpty()) {
+        if (entity.getExternalUrl()== null || entity.getExternalUrl().isEmpty()) {
             throw new InvalidRequestException("external_url",
                 "External URL can't be blank. Otherwise, try to use file upload path.",
                 "");
@@ -103,7 +103,7 @@ public class FileDAO extends RestDAO {
 
         entity.setStatus(FileEntity.EXTERNAL);
         Client client = ClientBuilder.newClient();
-        Response response = client.target(entity.getExternalURL()).request().get();
+        Response response = client.target(entity.getExternalUrl()).request().get();
         return (T) this.createFile(response.readEntity(InputStream.class), entity, autoCommit);
     }
 }

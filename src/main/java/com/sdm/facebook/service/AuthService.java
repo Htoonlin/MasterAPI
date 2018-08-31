@@ -127,7 +127,7 @@ public class AuthService extends GraphManager {
 
         // Create User Profile Picture by Facebook
         FileEntity userPicture = new FileEntity();
-        userPicture.setExternalURL(facebookUser.picture);
+        userPicture.setExternalUrl(facebookUser.picture);
         userPicture.setOwnerId(userEntity.getId());
         userPicture.setName(facebookUser.name);
         userPicture.setExtension("jpg");

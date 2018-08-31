@@ -79,7 +79,7 @@ public class AccessService implements IAccessManager {
 
     @Override
     public boolean checkPermission(Claims request, Method method, String httpMethod, Class<?> resourceClass) {
-        int authUserId = Integer.parseInt(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
+        long authUserId = Long.parseLong(request.getSubject().substring(Constants.USER_PREFIX.length()).trim());
 
         if (currentToken == null || currentToken.getUserId() != authUserId) {
             return false;
@@ -100,8 +100,12 @@ public class AccessService implements IAccessManager {
         }
 
         // Skip Permission for ROOT USER
-        if ((user.getId()) == Setting.getInstance().getInt(Setting.ROOT_ID, "1")) {
-            return true;
+        String rootIds = Setting.getInstance().get(Setting.ROOT_ID, "1");
+        String[] roots = rootIds.split("/([^,|\\s]+)/g");
+        for (String root : roots) {
+            if (Long.parseLong(root) == user.getId()) {
+                return true;
+            }
         }
 
         // Check Permission by User Roles

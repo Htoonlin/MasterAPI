@@ -225,14 +225,6 @@ public class FileEntity extends DefaultEntity implements Serializable {
         this.storagePath = storagePath;
     }
 
-    public String getExternalURL() {
-        return externalUrl;
-    }
-
-    public void setExternalURL(String externalURL) {
-        this.externalUrl = externalURL;
-    }
-
     public boolean isPublicAccess() {
         return publicAccess;
     }

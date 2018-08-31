@@ -109,7 +109,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "name")
     @Column(name = "value")
     @CollectionTable(name = "tbl_user_extra", joinColumns = @JoinColumn(
@@ -127,7 +127,7 @@ public class UserEntity extends DefaultEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private FileEntity profileImage;
 
-    @Column(name = "facebookId", unique = true, nullable = true, length = 500)
+    @Column(name = "facebookId", unique = true, nullable = true, columnDefinition = "VARCHAR(255)",  length = 500)
     private String facebookId;
 
     @JsonIgnore

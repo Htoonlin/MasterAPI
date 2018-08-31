@@ -86,11 +86,21 @@ public class FirebaseManager {
 
     public ApiFuture<String> sendMessage(String token, String title, String body, int badgeCount,
             Map<String, String> data) {
+        String zgTitle = title;
+        if(MyanmarFontManager.isMyanmar(title) && MyanmarFontManager.isUnicode(title)){
+            zgTitle = MyanmarFontManager.toZawgyi(title);
+        }
+        
+        String zgBody = body;
+        if(MyanmarFontManager.isMyanmar(body) && MyanmarFontManager.isUnicode(body)){
+            zgBody = MyanmarFontManager.toZawgyi(body);
+        }
+        
         Message message = Message.builder()
                 .setToken(token)
-                .setNotification(new Notification(title, body))
-                .setApnsConfig(this.iosNotification(title, body, badgeCount))
-                .setAndroidConfig(this.androidNotification(title, body))
+                .setNotification(new Notification(zgTitle, zgBody))
+                .setApnsConfig(this.iosNotification(zgTitle, zgBody, badgeCount))
+                .setAndroidConfig(this.androidNotification(zgTitle, zgBody))
                 .putAllData(data)
                 .build();
 
